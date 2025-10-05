@@ -1,4 +1,4 @@
-package top.blogapi.config.authentication;
+package top.blogapi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -17,7 +17,7 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         response.setContentType("application/json; charset=utf-8");
-        Result result = Result.create(401,"Vui lòng đăng nhập!");
+        Result result = Result.create(403   ,"Vui lòng đăng nhập!");
         response.getWriter().write(mapper.writeValueAsString(result));
     }
 }
