@@ -1,0 +1,38 @@
+2025-10-05T14:05:25.110+07:00  INFO 7516 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Starting BlogApiApplication using Java 21.0.3 with PID 7516 (D:\Storage\0x1lBlog\blog-api\target\classes started by lyrri in D:\Storage\0x1lBlog)
+2025-10-05T14:05:25.112+07:00 DEBUG 7516 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Running with Spring Boot v3.5.6, Spring v6.2.11
+2025-10-05T14:05:25.113+07:00  INFO 7516 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : The following 1 profile is active: "dev"
+2025-10-05T14:05:25.166+07:00  INFO 7516 --- [blog-api] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-10-05T14:05:25.167+07:00  INFO 7516 --- [blog-api] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-10-05T14:05:26.588+07:00  INFO 7516 --- [blog-api] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8090 (http)
+2025-10-05T14:05:26.606+07:00  INFO 7516 --- [blog-api] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-05T14:05:26.606+07:00  INFO 7516 --- [blog-api] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-05T14:05:26.675+07:00  INFO 7516 --- [blog-api] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-05T14:05:26.676+07:00  INFO 7516 --- [blog-api] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1508 ms
+2025-10-05T14:05:27.021+07:00  INFO 7516 --- [blog-api] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userServiceImpl
+2025-10-05T14:05:27.578+07:00  INFO 7516 --- [blog-api] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-10-05T14:05:27.622+07:00  INFO 7516 --- [blog-api] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8090 (http) with context path '/'
+2025-10-05T14:05:27.632+07:00  INFO 7516 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Started BlogApiApplication in 3.367 seconds (process running for 4.448)
+2025-10-05T14:06:19.856+07:00  INFO 7516 --- [blog-api] [http-nio-8090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-05T14:06:19.857+07:00  INFO 7516 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-05T14:06:19.858+07:00  INFO 7516 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-10-05T14:08:07.928+07:00  INFO 7516 --- [blog-api] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-05T14:08:07.943+07:00  INFO 7516 --- [blog-api] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-10-05T14:08:19.454+07:00  INFO 21280 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Starting BlogApiApplication using Java 21.0.3 with PID 21280 (D:\Storage\0x1lBlog\blog-api\target\classes started by lyrri in D:\Storage\0x1lBlog)
+2025-10-05T14:08:19.456+07:00 DEBUG 21280 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Running with Spring Boot v3.5.6, Spring v6.2.11
+2025-10-05T14:08:19.457+07:00  INFO 21280 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : The following 1 profile is active: "dev"
+2025-10-05T14:08:19.506+07:00  INFO 21280 --- [blog-api] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-10-05T14:08:19.507+07:00  INFO 21280 --- [blog-api] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-10-05T14:08:20.816+07:00  INFO 21280 --- [blog-api] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8090 (http)
+2025-10-05T14:08:20.834+07:00  INFO 21280 --- [blog-api] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-05T14:08:20.834+07:00  INFO 21280 --- [blog-api] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-05T14:08:20.900+07:00  INFO 21280 --- [blog-api] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-05T14:08:20.901+07:00  INFO 21280 --- [blog-api] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1393 ms
+2025-10-05T14:08:21.233+07:00  INFO 21280 --- [blog-api] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userServiceImpl
+2025-10-05T14:08:21.743+07:00  INFO 21280 --- [blog-api] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-10-05T14:08:21.786+07:00  INFO 21280 --- [blog-api] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8090 (http) with context path '/'
+2025-10-05T14:08:21.806+07:00  INFO 21280 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Started BlogApiApplication in 3.065 seconds (process running for 4.04)
+2025-10-05T14:08:26.224+07:00  INFO 21280 --- [blog-api] [http-nio-8090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-05T14:08:26.224+07:00  INFO 21280 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-05T14:08:26.226+07:00  INFO 21280 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-10-05T14:09:01.573+07:00  INFO 21280 --- [blog-api] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-05T14:09:01.588+07:00  INFO 21280 --- [blog-api] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
