@@ -46,7 +46,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
                                                 HttpServletResponse response) throws AuthenticationException {
 
         if (!"POST".equalsIgnoreCase(request.getMethod())) {
-            throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
+            throw new BadCredentialsException("Lỗi phương thức yêu cầu  : " + request.getMethod());
         }
 
         try {
@@ -77,7 +77,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         Map<String, Object> data = new HashMap<>();
         data.put("user", user);
-        data.put("jwt", jwtToken);
+        data.put("token", jwtToken);
 
         Result result = Result.ok("Đăng nhập thành công", data);
 

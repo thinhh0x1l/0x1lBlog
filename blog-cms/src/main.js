@@ -1,6 +1,27 @@
-import './assets/main.css'
+import { createApp} from "vue";
+import App from "@/App.vue";
+import router from "@/router/index.js";
+import './assets/css/base.css'
+// Element Plus (thay cho Element UI)
+import ElementPlus, {ElMessage} from 'element-plus'
+import 'element-plus/dist/index.css'
+const app = createApp(App)
 
-import { createApp } from 'vue'
-import App from './App.vue'
+// sử dụng plugins
+app.use(router)
+app.use(ElementPlus)
 
-createApp(App).mount('#app')
+const showMessage = (type,msg) =>{
+    try{
+        ElMessage[type](msg)
+    }catch (error){
+        console.warn('Thông báo không khả dụng', error)
+    }
+}
+
+// Global properties
+app.config.globalProperties.msgSuccess = (msg) => showMessage('success',msg)
+app.config.globalProperties.msgError = (msg) => showMessage('error',msg)
+app.config.globalProperties.msgInfo = (msg) => showMessage('info',msg)
+
+app.mount('#app')
