@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from "@/view/Login.vue"
+import Home from "@/view/Home.vue";
+import Welcome from "@/view/Welcome.vue";
 
 const routes = [
     {
@@ -13,6 +15,21 @@ const routes = [
             title: 'Đặng nhập quản trị viên '
         }
     },
+    {
+        path: '/home',
+        component: Home,
+        redirect: '/welcome',
+        children: [
+            {
+                path: '/welcome',
+                component: Welcome,
+                meta: {
+                    title: 'Quản lý hệ thống'
+                }
+            },
+
+        ]
+    }
 ]
 
 const router = createRouter({

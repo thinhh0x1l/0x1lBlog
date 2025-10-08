@@ -110,7 +110,7 @@ const handleLogin = async () => {
       sessionStorage.setItem('token', res.data.token)
 
       // Navigate to dashboard
-      router.push('/')
+      router.push('/home')
     } else {
 
       proxy.msgError(res.msg)
