@@ -11,8 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import top.blogapi.bean.Result;
-import top.blogapi.bean.User;
+import top.blogapi.util.Result;
+import top.blogapi.entity.User;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;

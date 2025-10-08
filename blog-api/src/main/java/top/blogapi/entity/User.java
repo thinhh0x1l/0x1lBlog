@@ -1,4 +1,4 @@
-package top.blogapi.bean;
+package top.blogapi.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -24,6 +23,8 @@ public class User implements UserDetails {
     String email;
     Date createTime;
     Date updateTime;
+    // 1: admin; 2: user
+    Integer role;
 
     @JsonIgnore
     @Override

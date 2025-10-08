@@ -5,16 +5,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import top.blogapi.bean.User;
-import top.blogapi.dao.UserDao;
+import top.blogapi.entity.User;
+import top.blogapi.mapper.UserMapper;
 
 @Service
 public class UserServiceImpl implements UserDetailsService {
     @Autowired
-    UserDao userDao;
+    UserMapper userMapper;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userDao.findByUserName(username);
+        User user = userMapper.findByUserName(username);
         if (user == null) {
             throw new UsernameNotFoundException("Người dùng không tồn tại!");
         }

@@ -6,8 +6,17 @@
   <component name="ChangeListManager">
     <list default="true" id="878cc2c9-a5db-470a-8a79-10d0eb9a1bd5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-cms/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-cms/src/view/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/src/view/Login.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/log/blog-dev.log-2025-10-07.0.log" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/log/blog-dev.log-2025-10-07.0.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/bean/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/util/Result.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/bean/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/JwtFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/JwtFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/JwtLoginFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/JwtLoginFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/MyAuthenticationEntryPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/MyAuthenticationEntryPoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/controller/admin/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/controller/admin/LoginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/dao/UserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/mapper/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-cms/src/view/Home.vue" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/src/view/Home.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +171,7 @@
       <workItem from="1759672065452" duration="8495000" />
       <workItem from="1759837735153" duration="10032000" />
       <workItem from="1759851039706" duration="7032000" />
-      <workItem from="1759924409230" duration="8006000" />
+      <workItem from="1759924409230" duration="9904000" />
     </task>
     <servers />
   </component>

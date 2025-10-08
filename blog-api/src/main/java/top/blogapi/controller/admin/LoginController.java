@@ -1,12 +1,11 @@
 package top.blogapi.controller.admin;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.blogapi.bean.Result;
-import top.blogapi.service.UserServiceImpl;
+import top.blogapi.util.Result;
+
 @Slf4j
 @RestController
 @RequestMapping("/admin")

@@ -49,7 +49,7 @@
               @click="saveNavState(subItem.path)"
             >
               <template #title>
-                <i class="el-icon-menu"></i>
+                <i :class="iconsObj[subItem.id]"></i>
                 <span>{{ subItem.title }}</span>
               </template>
 
@@ -93,36 +93,24 @@ const menuList = [
     children: [
       {
         id: 11,
-        title: 'Danh sách Blog',
+        title: 'Viết bài',
+        children: [],
+        path: '/write'
+      },
+      {
+        id: 12,
+        title: 'Danh sách bài viết',
         children: [],
         path: '/blogs'
       },
       {
-        id: 12,
-        title: 'Viết blog',
-        children: [],
-        path: '/write'
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: 'Quản lý danh mục',
-    children: [
-      {
-        id: 21,
+        id: 13,
         title: 'Danh sách danh mục',
         children: [],
         path: '/types'
-      }
-    ]
-  },
-  {
-    id: 3,
-    title: 'Quản lý thẻ',
-    children: [
+      },
       {
-        id: 31,
+        id: 14,
         title: 'Danh sách thẻ',
         children: [],
         path: '/tags'
@@ -130,17 +118,17 @@ const menuList = [
     ]
   },
   {
-    id: 4,
+    id: 2,
     title: 'Quản lý bình luận',
     children: [
       {
-        id: 41,
+        id: 21,
         title: 'Danh sách bình luận',
         children: [],
         path: '/comments'
       },
       {
-        id: 41,
+        id: 22,
         title: 'Thùng rác',
         children: [],
         path: '/comments/trashes'
@@ -148,30 +136,30 @@ const menuList = [
     ]
   },
   {
-    id: 5,
+    id: 3,
     title: 'Thống kê dữ liệu',
     children: [
       {
-        id: 51,
-        title: 'Lượng truy cập',
+        id: 31,
+        title: 'Lượt truy cập',
         children: [],
         path: '/pv'
       },
       {
-        id: 52,
-        title: 'Lượng truy cập trực tiếp',
+        id: 32,
+        title: 'Truy cập trực tuyến',
         children: [],
         path: '/latest'
       }
     ]
   },
   {
-    id: 6,
+    id: 4,
     title: 'Giám sát hệ thống',
     children: [
       {
-        id: 61,
-        title: 'Nhật ký',
+        id: 41,
+        title: 'Nhật ký hệ thống',
         children: [],
         path: '/log'
       }
@@ -180,12 +168,19 @@ const menuList = [
 ]
 
 const iconsObj = {
-  '1': 'el-icon-s-cooperation',
-  '2': 'el-icon-s-management',
-  '3': 'el-icon-s-opportunity',
-  '4': 'el-icon-s-order',
-  '5': 'el-icon-s-data',
-  '6': 'el-icon-s-tools',
+  '1': 'el-icon-menu',
+  '2': 'el-icon-s-order',
+  '3': 'el-icon-s-data',
+  '4': 'el-icon-s-tools',
+  '11': 'el-icon-edit',
+  '12': 'el-icon-s-order',
+  '13': 'el-icon-s-opportunity',
+  '14': 'el-icon-discount',
+  '21': 'el-icon-tickets',
+  '22': 'el-icon-delete',
+  '31': 'el-icon-s-marketing',
+  '32': 'el-icon-view',
+  '41': 'el-icon-document',
 }
 
 // Lifecycle
