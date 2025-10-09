@@ -17,7 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import top.blogapi.service.UserServiceImpl;
+import top.blogapi.service.impl.UserServiceImpl;
 
 import javax.crypto.SecretKey;
 import java.time.Duration;

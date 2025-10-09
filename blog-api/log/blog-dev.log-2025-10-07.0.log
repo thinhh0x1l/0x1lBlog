@@ -138,7 +138,7 @@ Caused by: org.mybatis.spring.MyBatisSystemException:
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
 	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:223)
 	at jdk.proxy3/jdk.proxy3.$Proxy75.findByUserName(Unknown Source)
-	at top.blogapi.service.UserServiceImpl.loadUserByUsername(UserServiceImpl.java:17)
+	at top.blogapi.service.impl.UserServiceImpl.loadUserByUsername(UserServiceImpl.java:17)
 	at org.springframework.security.authentication.dao.DaoAuthenticationProvider.retrieveUser(DaoAuthenticationProvider.java:121)
 	... 72 common frames omitted
 Caused by: org.apache.ibatis.exceptions.PersistenceException: 
@@ -292,7 +292,7 @@ Caused by: org.mybatis.spring.MyBatisSystemException:
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
 	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:223)
 	at jdk.proxy3/jdk.proxy3.$Proxy75.findByUserName(Unknown Source)
-	at top.blogapi.service.UserServiceImpl.loadUserByUsername(UserServiceImpl.java:17)
+	at top.blogapi.service.impl.UserServiceImpl.loadUserByUsername(UserServiceImpl.java:17)
 	at org.springframework.security.authentication.dao.DaoAuthenticationProvider.retrieveUser(DaoAuthenticationProvider.java:121)
 	... 72 common frames omitted
 Caused by: org.apache.ibatis.exceptions.PersistenceException: 
@@ -447,7 +447,7 @@ Caused by: org.mybatis.spring.MyBatisSystemException:
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
 	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:223)
 	at jdk.proxy3/jdk.proxy3.$Proxy75.findByUserName(Unknown Source)
-	at top.blogapi.service.UserServiceImpl.loadUserByUsername(UserServiceImpl.java:17)
+	at top.blogapi.service.impl.UserServiceImpl.loadUserByUsername(UserServiceImpl.java:17)
 	at org.springframework.security.authentication.dao.DaoAuthenticationProvider.retrieveUser(DaoAuthenticationProvider.java:121)
 	... 72 common frames omitted
 Caused by: org.apache.ibatis.exceptions.PersistenceException: 
@@ -601,7 +601,7 @@ Caused by: org.mybatis.spring.MyBatisSystemException:
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
 	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:223)
 	at jdk.proxy3/jdk.proxy3.$Proxy75.findByUserName(Unknown Source)
-	at top.blogapi.service.UserServiceImpl.loadUserByUsername(UserServiceImpl.java:17)
+	at top.blogapi.service.impl.UserServiceImpl.loadUserByUsername(UserServiceImpl.java:17)
 	at org.springframework.security.authentication.dao.DaoAuthenticationProvider.retrieveUser(DaoAuthenticationProvider.java:121)
 	... 72 common frames omitted
 Caused by: org.apache.ibatis.exceptions.PersistenceException: 

@@ -7,16 +7,13 @@
     <list default="true" id="878cc2c9-a5db-470a-8a79-10d0eb9a1bd5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-api/log/blog-dev.log-2025-10-07.0.log" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/log/blog-dev.log-2025-10-07.0.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/bean/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/util/Result.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/bean/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/JwtFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/JwtFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/JwtLoginFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/JwtLoginFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/MyAuthenticationEntryPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/MyAuthenticationEntryPoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/BlogApiApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/BlogApiApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/controller/admin/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/controller/admin/LoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/dao/UserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/mapper/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/UserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-cms/src/view/Home.vue" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/src/view/Home.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/controller/admin/LoginController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/resources/application-dev.properties" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/resources/application-dev.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/test/java/top/blogapi/BlogApiApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/test/java/top/blogapi/BlogApiApplicationTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,6 +23,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -65,6 +63,8 @@
     "Application.MD5Utils.executor": "Run",
     "HTTP Request.generated-requests | #1.executor": "Run",
     "HTTP Request.generated-requests | #2.executor": "Run",
+    "JUnit.BlogApiApplicationTests.test.executor": "Run",
+    "JUnit.BlogApiApplicationTests.testConnection.executor": "Run",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
@@ -74,6 +74,7 @@
     "Spring Boot.BlogApiApplication.executor": "Run",
     "Spring Boot.TBlogApplication.executor": "Run",
     "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
     "javascript.nodejs.core.library.configured.version": "22.14.0",
     "javascript.nodejs.core.library.typings.version": "22.14.1",
     "jdk.selected.JAVA_MODULE": "21",
@@ -94,6 +95,9 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="top.blogapi.entity" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Storage\0x1lBlog\blog-cms\src\assets\img" />
       <recent name="D:\Storage\0x1lBlog\blog-cms\src\router" />
@@ -131,6 +135,38 @@
     <configuration name="generated-requests | #2" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" index="2" requestIdentifier="#2" runType="Run single request">
       <method v="2" />
     </configuration>
+    <configuration name="BlogApiApplicationTests.test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="blog-api" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="top.blogapi.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="top.blogapi" />
+      <option name="MAIN_CLASS_NAME" value="top.blogapi.BlogApiApplicationTests" />
+      <option name="METHOD_NAME" value="test" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BlogApiApplicationTests.testConnection" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="blog-api" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="top.blogapi.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="top.blogapi" />
+      <option name="MAIN_CLASS_NAME" value="top.blogapi.BlogApiApplicationTests" />
+      <option name="METHOD_NAME" value="testConnection" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Debug Application" type="JavascriptDebugType" uri="http://localhost:5173">
       <method v="2" />
     </configuration>
@@ -143,6 +179,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.BlogApiApplicationTests.test" />
+        <item itemvalue="JUnit.BlogApiApplicationTests.testConnection" />
         <item itemvalue="HTTP Request.generated-requests | #2" />
         <item itemvalue="HTTP Request.generated-requests | #1" />
         <item itemvalue="Application.MD5Utils" />
@@ -171,7 +209,10 @@
       <workItem from="1759672065452" duration="8495000" />
       <workItem from="1759837735153" duration="10032000" />
       <workItem from="1759851039706" duration="7032000" />
-      <workItem from="1759924409230" duration="9904000" />
+      <workItem from="1759924409230" duration="15257000" />
+      <workItem from="1759945743485" duration="2743000" />
+      <workItem from="1759951263502" duration="445000" />
+      <workItem from="1759952500168" duration="9758000" />
     </task>
     <servers />
   </component>
