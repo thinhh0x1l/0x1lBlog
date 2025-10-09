@@ -15,8 +15,9 @@ public interface BlogMapper {
     // Chỉ lấy thông tin cơ bản như trong XML
     @Select("SELECT b.id, b.title, b.is_recommend, b.is_published, b.create_time, b.update_time, " +
             "c.id as category_id, c.name as category_name " +
-            "FROM blog b, category c " +
-            "WHERE b.category_id = c.id")
+            "FROM blog b " +
+            "JOIN category c " +
+            "ON b.category_id = c.id ")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "title", column = "title"),

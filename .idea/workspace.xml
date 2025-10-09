@@ -6,14 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="878cc2c9-a5db-470a-8a79-10d0eb9a1bd5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/log/blog-dev.log-2025-10-07.0.log" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/log/blog-dev.log-2025-10-07.0.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/BlogApiApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/BlogApiApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/controller/admin/LoginController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/impl/UserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/resources/application-dev.properties" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/resources/application-dev.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/test/java/top/blogapi/BlogApiApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/test/java/top/blogapi/BlogApiApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/mapper/BlogMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/mapper/BlogMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/blog-dev.log-2025-10-09.0.log" beforeDir="false" afterPath="$PROJECT_DIR$/log/blog-dev.log-2025-10-09.0.log" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,7 +67,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.BlogApiApplication.executor": "Run",
     "Spring Boot.TBlogApplication.executor": "Run",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "6c3b4c37",
     "ignore.virus.scanning.warn.message": "true",
     "javascript.nodejs.core.library.configured.version": "22.14.0",
     "javascript.nodejs.core.library.typings.version": "22.14.1",

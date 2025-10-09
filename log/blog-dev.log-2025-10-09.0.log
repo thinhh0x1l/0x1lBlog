@@ -2139,3 +2139,201 @@ Caused by: java.sql.SQLException: Access denied for user 'root'@'localhost' (usi
 2025-10-09T21:36:19.905+07:00  INFO 23772 --- [blog-api] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
 2025-10-09T21:36:19.912+07:00  INFO 23772 --- [blog-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Shutdown initiated...
 2025-10-09T21:36:19.918+07:00  INFO 23772 --- [blog-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Shutdown completed.
+2025-10-09T22:55:07.216+07:00  INFO 2568 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Starting BlogApiApplication using Java 21.0.3 with PID 2568 (D:\Storage\0x1lBlog\blog-api\target\classes started by lyrri in D:\Storage\0x1lBlog)
+2025-10-09T22:55:07.218+07:00 DEBUG 2568 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Running with Spring Boot v3.5.6, Spring v6.2.11
+2025-10-09T22:55:07.218+07:00  INFO 2568 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : The following 1 profile is active: "dev"
+2025-10-09T22:55:07.280+07:00  INFO 2568 --- [blog-api] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-10-09T22:55:07.280+07:00  INFO 2568 --- [blog-api] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-10-09T22:55:08.260+07:00  WARN 2568 --- [blog-api] [restartedMain] o.m.s.mapper.ClassPathMapperScanner      : Skipping MapperFactoryBean with name 'blogMapper' and 'top.blogapi.mapper.BlogMapper' mapperInterface. Bean already defined with the same name!
+2025-10-09T22:55:08.261+07:00  WARN 2568 --- [blog-api] [restartedMain] o.m.s.mapper.ClassPathMapperScanner      : Skipping MapperFactoryBean with name 'userMapper' and 'top.blogapi.mapper.UserMapper' mapperInterface. Bean already defined with the same name!
+2025-10-09T22:55:08.261+07:00  WARN 2568 --- [blog-api] [restartedMain] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[top.blogapi.mapper]' package. Please check your configuration.
+2025-10-09T22:55:08.778+07:00  INFO 2568 --- [blog-api] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8090 (http)
+2025-10-09T22:55:08.796+07:00  INFO 2568 --- [blog-api] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-09T22:55:08.797+07:00  INFO 2568 --- [blog-api] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-09T22:55:08.869+07:00  INFO 2568 --- [blog-api] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-09T22:55:08.870+07:00  INFO 2568 --- [blog-api] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1588 ms
+2025-10-09T22:55:09.179+07:00  INFO 2568 --- [blog-api] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userServiceImpl
+2025-10-09T22:55:09.262+07:00 DEBUG 2568 --- [blog-api] [restartedMain] top.blogapi.config.JwtLoginFilter        : Filter 'jwtLoginFilter' configured for use
+2025-10-09T22:55:09.263+07:00 DEBUG 2568 --- [blog-api] [restartedMain] top.blogapi.config.JwtFilter             : Filter 'jwtFilter' configured for use
+2025-10-09T22:55:09.316+07:00  INFO 2568 --- [blog-api] [restartedMain] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Starting...
+2025-10-09T22:55:09.883+07:00  INFO 2568 --- [blog-api] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : MyBatisHikariPool - Added connection com.mysql.cj.jdbc.ConnectionImpl@37c8c58d
+2025-10-09T22:55:09.885+07:00  INFO 2568 --- [blog-api] [restartedMain] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Start completed.
+2025-10-09T22:55:10.114+07:00 DEBUG 2568 --- [blog-api] [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 3 mappings in 'requestMappingHandlerMapping'
+2025-10-09T22:55:10.164+07:00 DEBUG 2568 --- [blog-api] [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-10-09T22:55:10.201+07:00 DEBUG 2568 --- [blog-api] [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtFilter, JwtLoginFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-09T22:55:10.252+07:00 DEBUG 2568 --- [blog-api] [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-09T22:55:10.311+07:00 DEBUG 2568 --- [blog-api] [restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-09T22:55:10.470+07:00  INFO 2568 --- [blog-api] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-10-09T22:55:10.515+07:00  INFO 2568 --- [blog-api] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8090 (http) with context path '/'
+2025-10-09T22:55:10.525+07:00  INFO 2568 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Started BlogApiApplication in 4.091 seconds (process running for 5.125)
+2025-10-09T22:55:19.867+07:00  INFO 2568 --- [blog-api] [http-nio-8090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-09T22:55:19.868+07:00  INFO 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-09T22:55:19.868+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2025-10-09T22:55:19.868+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2025-10-09T22:55:19.868+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2025-10-09T22:55:19.869+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@3a27bcdb
+2025-10-09T22:55:19.870+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@c69d330
+2025-10-09T22:55:19.870+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-10-09T22:55:19.870+07:00  INFO 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-10-09T22:55:19.889+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /
+2025-10-09T22:55:19.897+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-09T22:55:19.898+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.s.w.session.SessionManagementFilter  : Request requested invalid session id BDF9B315CB0B6B7C9D785925CE0B2A26
+2025-10-09T22:55:19.900+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /
+2025-10-09T22:55:19.903+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/", parameters={}
+2025-10-09T22:55:19.906+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2025-10-09T22:55:19.914+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.w.s.r.ResourceHttpRequestHandler     : Resource not found
+2025-10-09T22:55:19.922+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource .]
+2025-10-09T22:55:19.923+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND
+2025-10-09T22:55:19.931+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /error
+2025-10-09T22:55:19.932+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /error
+2025-10-09T22:55:19.932+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : "ERROR" dispatch for GET "/error", parameters={}
+2025-10-09T22:55:19.933+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#errorHtml(HttpServletRequest, HttpServletResponse)
+2025-10-09T22:55:19.965+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.w.s.v.ContentNegotiatingViewResolver : Selected 'text/html' given [text/html, text/html;q=0.8]
+2025-10-09T22:55:19.973+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Exiting from "ERROR" dispatch, status 404
+2025-10-09T22:55:19.974+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-09T22:55:23.406+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /admin/blogs
+2025-10-09T22:55:23.407+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-09T22:55:23.407+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-2] o.s.s.w.session.SessionManagementFilter  : Request requested invalid session id BDF9B315CB0B6B7C9D785925CE0B2A26
+2025-10-09T22:55:23.407+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /admin/blogs
+2025-10-09T22:55:23.408+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/admin/blogs", parameters={}
+2025-10-09T22:55:23.408+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to top.blogapi.controller.admin.BlogController#blogs()
+2025-10-09T22:55:23.572+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json;q=0.8', given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7] and supported [application/json, application/*+json]
+2025-10-09T22:55:23.575+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [Result(code=null, msg=Yêu cầu thành công, data={blogs=[]})]
+2025-10-09T22:55:23.598+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-10-09T22:55:23.852+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /favicon.ico
+2025-10-09T22:55:23.852+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-09T22:55:23.852+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.s.w.session.SessionManagementFilter  : Request requested invalid session id BDF9B315CB0B6B7C9D785925CE0B2A26
+2025-10-09T22:55:23.853+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /favicon.ico
+2025-10-09T22:55:23.853+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/favicon.ico", parameters={}
+2025-10-09T22:55:23.854+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2025-10-09T22:55:23.856+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.w.s.r.ResourceHttpRequestHandler     : Resource not found
+2025-10-09T22:55:23.857+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.]
+2025-10-09T22:55:23.857+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND
+2025-10-09T22:55:23.858+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /error
+2025-10-09T22:55:23.858+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /error
+2025-10-09T22:55:23.859+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.web.servlet.DispatcherServlet        : "ERROR" dispatch for GET "/error", parameters={}
+2025-10-09T22:55:23.859+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+2025-10-09T22:55:23.864+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json;q=0.8', given [image/avif, image/webp, image/apng, image/svg+xml, image/*, */*;q=0.8] and supported [application/json, application/*+json]
+2025-10-09T22:55:23.864+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Thu Oct 09 22:55:23 ICT 2025, status=404, error=Not Found, trace=org.springframework.web. (truncated)...]
+2025-10-09T22:55:23.875+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.web.servlet.DispatcherServlet        : Exiting from "ERROR" dispatch, status 404
+2025-10-09T22:55:23.876+07:00 DEBUG 2568 --- [blog-api] [http-nio-8090-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-09T22:55:31.229+07:00  INFO 2568 --- [blog-api] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-09T22:55:31.246+07:00  INFO 2568 --- [blog-api] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-10-09T22:55:31.262+07:00  INFO 2568 --- [blog-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Shutdown initiated...
+2025-10-09T22:55:31.271+07:00  INFO 2568 --- [blog-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Shutdown completed.
+2025-10-09T22:55:36.539+07:00  INFO 30028 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Starting BlogApiApplication using Java 21.0.3 with PID 30028 (D:\Storage\0x1lBlog\blog-api\target\classes started by lyrri in D:\Storage\0x1lBlog)
+2025-10-09T22:55:36.540+07:00 DEBUG 30028 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Running with Spring Boot v3.5.6, Spring v6.2.11
+2025-10-09T22:55:36.541+07:00  INFO 30028 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : The following 1 profile is active: "dev"
+2025-10-09T22:55:36.597+07:00  INFO 30028 --- [blog-api] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-10-09T22:55:36.597+07:00  INFO 30028 --- [blog-api] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-10-09T22:55:37.450+07:00  WARN 30028 --- [blog-api] [restartedMain] o.m.s.mapper.ClassPathMapperScanner      : Skipping MapperFactoryBean with name 'blogMapper' and 'top.blogapi.mapper.BlogMapper' mapperInterface. Bean already defined with the same name!
+2025-10-09T22:55:37.451+07:00  WARN 30028 --- [blog-api] [restartedMain] o.m.s.mapper.ClassPathMapperScanner      : Skipping MapperFactoryBean with name 'userMapper' and 'top.blogapi.mapper.UserMapper' mapperInterface. Bean already defined with the same name!
+2025-10-09T22:55:37.451+07:00  WARN 30028 --- [blog-api] [restartedMain] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[top.blogapi.mapper]' package. Please check your configuration.
+2025-10-09T22:55:37.899+07:00  INFO 30028 --- [blog-api] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8090 (http)
+2025-10-09T22:55:37.916+07:00  INFO 30028 --- [blog-api] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-09T22:55:37.916+07:00  INFO 30028 --- [blog-api] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-09T22:55:37.981+07:00  INFO 30028 --- [blog-api] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-09T22:55:37.982+07:00  INFO 30028 --- [blog-api] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1384 ms
+2025-10-09T22:55:38.248+07:00  INFO 30028 --- [blog-api] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userServiceImpl
+2025-10-09T22:55:38.313+07:00 DEBUG 30028 --- [blog-api] [restartedMain] top.blogapi.config.JwtLoginFilter        : Filter 'jwtLoginFilter' configured for use
+2025-10-09T22:55:38.315+07:00 DEBUG 30028 --- [blog-api] [restartedMain] top.blogapi.config.JwtFilter             : Filter 'jwtFilter' configured for use
+2025-10-09T22:55:38.365+07:00  INFO 30028 --- [blog-api] [restartedMain] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Starting...
+2025-10-09T22:55:38.781+07:00  INFO 30028 --- [blog-api] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : MyBatisHikariPool - Added connection com.mysql.cj.jdbc.ConnectionImpl@48787dc
+2025-10-09T22:55:38.783+07:00  INFO 30028 --- [blog-api] [restartedMain] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Start completed.
+2025-10-09T22:55:38.981+07:00 DEBUG 30028 --- [blog-api] [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 3 mappings in 'requestMappingHandlerMapping'
+2025-10-09T22:55:39.033+07:00 DEBUG 30028 --- [blog-api] [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-10-09T22:55:39.063+07:00 DEBUG 30028 --- [blog-api] [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtFilter, JwtLoginFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-09T22:55:39.109+07:00 DEBUG 30028 --- [blog-api] [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-09T22:55:39.158+07:00 DEBUG 30028 --- [blog-api] [restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-09T22:55:39.306+07:00  INFO 30028 --- [blog-api] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-10-09T22:55:39.350+07:00  INFO 30028 --- [blog-api] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8090 (http) with context path '/'
+2025-10-09T22:55:39.360+07:00  INFO 30028 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Started BlogApiApplication in 3.481 seconds (process running for 4.331)
+2025-10-09T22:55:41.881+07:00  INFO 30028 --- [blog-api] [http-nio-8090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-09T22:55:41.881+07:00  INFO 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-09T22:55:41.882+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2025-10-09T22:55:41.882+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2025-10-09T22:55:41.882+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2025-10-09T22:55:41.883+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@5d69fbd2
+2025-10-09T22:55:41.883+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@d8c5d24
+2025-10-09T22:55:41.884+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-10-09T22:55:41.884+07:00  INFO 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2025-10-09T22:55:41.905+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /admin/blogs
+2025-10-09T22:55:41.914+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-09T22:55:41.914+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.s.w.session.SessionManagementFilter  : Request requested invalid session id BDF9B315CB0B6B7C9D785925CE0B2A26
+2025-10-09T22:55:41.916+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /admin/blogs
+2025-10-09T22:55:41.919+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/admin/blogs", parameters={}
+2025-10-09T22:55:41.922+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to top.blogapi.controller.admin.BlogController#blogs()
+2025-10-09T22:55:42.074+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json;q=0.8', given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7] and supported [application/json, application/*+json]
+2025-10-09T22:55:42.079+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [Result(code=null, msg=Yêu cầu thành công, data={blogs=[]})]
+2025-10-09T22:55:42.124+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-10-09T22:55:43.736+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /admin/blogs
+2025-10-09T22:55:43.737+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-09T22:55:43.737+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-2] o.s.s.w.session.SessionManagementFilter  : Request requested invalid session id BDF9B315CB0B6B7C9D785925CE0B2A26
+2025-10-09T22:55:43.737+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /admin/blogs
+2025-10-09T22:55:43.737+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/admin/blogs", parameters={}
+2025-10-09T22:55:43.738+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to top.blogapi.controller.admin.BlogController#blogs()
+2025-10-09T22:55:43.741+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json;q=0.8', given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7] and supported [application/json, application/*+json]
+2025-10-09T22:55:43.741+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [Result(code=null, msg=Yêu cầu thành công, data={blogs=[]})]
+2025-10-09T22:55:43.742+07:00 DEBUG 30028 --- [blog-api] [http-nio-8090-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-10-09T22:56:04.504+07:00  INFO 30028 --- [blog-api] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-09T22:56:04.518+07:00  INFO 30028 --- [blog-api] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-10-09T22:56:04.524+07:00  INFO 30028 --- [blog-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Shutdown initiated...
+2025-10-09T22:56:04.531+07:00  INFO 30028 --- [blog-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Shutdown completed.
+2025-10-09T23:04:39.125+07:00  INFO 26004 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Starting BlogApiApplication using Java 21.0.3 with PID 26004 (D:\Storage\0x1lBlog\blog-api\target\classes started by lyrri in D:\Storage\0x1lBlog)
+2025-10-09T23:04:39.127+07:00 DEBUG 26004 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Running with Spring Boot v3.5.6, Spring v6.2.11
+2025-10-09T23:04:39.128+07:00  INFO 26004 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : The following 1 profile is active: "dev"
+2025-10-09T23:04:39.190+07:00  INFO 26004 --- [blog-api] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-10-09T23:04:39.190+07:00  INFO 26004 --- [blog-api] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-10-09T23:04:40.154+07:00  WARN 26004 --- [blog-api] [restartedMain] o.m.s.mapper.ClassPathMapperScanner      : Skipping MapperFactoryBean with name 'blogMapper' and 'top.blogapi.mapper.BlogMapper' mapperInterface. Bean already defined with the same name!
+2025-10-09T23:04:40.155+07:00  WARN 26004 --- [blog-api] [restartedMain] o.m.s.mapper.ClassPathMapperScanner      : Skipping MapperFactoryBean with name 'userMapper' and 'top.blogapi.mapper.UserMapper' mapperInterface. Bean already defined with the same name!
+2025-10-09T23:04:40.155+07:00  WARN 26004 --- [blog-api] [restartedMain] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[top.blogapi.mapper]' package. Please check your configuration.
+2025-10-09T23:04:40.756+07:00  INFO 26004 --- [blog-api] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8090 (http)
+2025-10-09T23:04:40.783+07:00  INFO 26004 --- [blog-api] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-09T23:04:40.784+07:00  INFO 26004 --- [blog-api] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-09T23:04:40.859+07:00  INFO 26004 --- [blog-api] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-09T23:04:40.859+07:00  INFO 26004 --- [blog-api] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1668 ms
+2025-10-09T23:04:41.213+07:00  INFO 26004 --- [blog-api] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userServiceImpl
+2025-10-09T23:04:41.308+07:00 DEBUG 26004 --- [blog-api] [restartedMain] top.blogapi.config.JwtLoginFilter        : Filter 'jwtLoginFilter' configured for use
+2025-10-09T23:04:41.309+07:00 DEBUG 26004 --- [blog-api] [restartedMain] top.blogapi.config.JwtFilter             : Filter 'jwtFilter' configured for use
+2025-10-09T23:04:41.365+07:00  INFO 26004 --- [blog-api] [restartedMain] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Starting...
+2025-10-09T23:04:41.906+07:00  INFO 26004 --- [blog-api] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : MyBatisHikariPool - Added connection com.mysql.cj.jdbc.ConnectionImpl@206fff78
+2025-10-09T23:04:41.908+07:00  INFO 26004 --- [blog-api] [restartedMain] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Start completed.
+2025-10-09T23:04:42.123+07:00 DEBUG 26004 --- [blog-api] [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 3 mappings in 'requestMappingHandlerMapping'
+2025-10-09T23:04:42.171+07:00 DEBUG 26004 --- [blog-api] [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-10-09T23:04:42.205+07:00 DEBUG 26004 --- [blog-api] [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtFilter, JwtLoginFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-09T23:04:42.254+07:00 DEBUG 26004 --- [blog-api] [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-09T23:04:42.310+07:00 DEBUG 26004 --- [blog-api] [restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-09T23:04:42.462+07:00  INFO 26004 --- [blog-api] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-10-09T23:04:42.507+07:00  INFO 26004 --- [blog-api] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8090 (http) with context path '/'
+2025-10-09T23:04:42.518+07:00  INFO 26004 --- [blog-api] [restartedMain] top.blogapi.BlogApiApplication           : Started BlogApiApplication in 4.183 seconds (process running for 5.216)
+2025-10-09T23:04:53.236+07:00  INFO 26004 --- [blog-api] [http-nio-8090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-09T23:04:53.237+07:00  INFO 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-09T23:04:53.237+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2025-10-09T23:04:53.237+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2025-10-09T23:04:53.238+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2025-10-09T23:04:53.239+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@45148622
+2025-10-09T23:04:53.239+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@34e4e1cf
+2025-10-09T23:04:53.239+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-10-09T23:04:53.240+07:00  INFO 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2025-10-09T23:04:53.262+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /admin/blogs
+2025-10-09T23:04:53.273+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-09T23:04:53.274+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.s.w.session.SessionManagementFilter  : Request requested invalid session id BDF9B315CB0B6B7C9D785925CE0B2A26
+2025-10-09T23:04:53.277+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /admin/blogs
+2025-10-09T23:04:53.281+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/admin/blogs", parameters={}
+2025-10-09T23:04:53.284+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to top.blogapi.controller.admin.BlogController#blogs()
+2025-10-09T23:04:53.440+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json;q=0.8', given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7] and supported [application/json, application/*+json]
+2025-10-09T23:04:53.445+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [Result(code=null, msg=Yêu cầu thành công, data={blogs=[]})]
+2025-10-09T23:04:53.471+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-10-09T23:04:55.488+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /admin/blogs
+2025-10-09T23:04:55.488+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-09T23:04:55.488+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-2] o.s.s.w.session.SessionManagementFilter  : Request requested invalid session id BDF9B315CB0B6B7C9D785925CE0B2A26
+2025-10-09T23:04:55.489+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /admin/blogs
+2025-10-09T23:04:55.489+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/admin/blogs", parameters={}
+2025-10-09T23:04:55.490+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to top.blogapi.controller.admin.BlogController#blogs()
+2025-10-09T23:04:55.494+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json;q=0.8', given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7] and supported [application/json, application/*+json]
+2025-10-09T23:04:55.496+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [Result(code=null, msg=Yêu cầu thành công, data={blogs=[]})]
+2025-10-09T23:04:55.497+07:00 DEBUG 26004 --- [blog-api] [http-nio-8090-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-10-09T23:04:58.728+07:00  INFO 26004 --- [blog-api] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-09T23:04:58.742+07:00  INFO 26004 --- [blog-api] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-10-09T23:04:58.749+07:00  INFO 26004 --- [blog-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Shutdown initiated...
+2025-10-09T23:04:58.755+07:00  INFO 26004 --- [blog-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : MyBatisHikariPool - Shutdown completed.
