@@ -3,8 +3,8 @@
     <!-- Header -->
     <el-header>
       <div class="header-left">
-        <img src="@/assets/img/logo.png" alt="Logo" height="20">
-        <span>Hệ thống quản lý Blog</span>
+        <span><img src="@/assets/img/logo.png" alt="Logo" height="60">
+           Hệ thống quản lý Blog</span>
       </div>
       <el-button type="info" @click="logout">Đăng xuất</el-button>
     </el-header>
@@ -93,13 +93,13 @@ const menuList = [
     children: [
       {
         id: 11,
-        title: 'Viết bài',
+        title: 'Viết Blog',
         children: [],
         path: '/write'
       },
       {
         id: 12,
-        title: 'Danh sách bài viết',
+        title: 'Danh sách Blog',
         children: [],
         path: '/blogs'
       },
@@ -223,7 +223,7 @@ const saveNavState = (path) => {
 }
 
 .header-left span{
- display: flex ;
+  display: flex ;
   align-items: center;
 }
 

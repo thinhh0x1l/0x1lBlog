@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from "@/view/Login.vue"
 import Home from "@/view/Home.vue";
 import Welcome from "@/view/Welcome.vue";
+import BlogList from "@/view/BlogList.vue";
 
 const routes = [
     {
@@ -27,7 +28,13 @@ const routes = [
                     title: 'Quản lý hệ thống'
                 }
             },
-
+            {
+                path: '/blogs',
+                component: BlogList,
+                meta: {
+                    title: 'Danh sách Blog'
+                }
+            },
         ]
     }
 ]
