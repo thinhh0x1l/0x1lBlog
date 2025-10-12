@@ -10,6 +10,6 @@ import java.util.List;
 @Mapper
 @Repository
 public interface CategoryMapper {
-    @Select("SELECT c.id, c.name FROM category c")
+    @Select("SELECT c.id, c.name FROM category c ORDER BY id DESC ")
     List<Category> getCategoryList();
 }

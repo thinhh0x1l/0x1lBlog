@@ -31,4 +31,7 @@ public interface BlogMapper {
             @Result(property = "category.name", column = "category_name") // vì Đối tượng lồng cần phải map
     })
     List<Blog> getListByTitleOrType(@Param("query") String query, @Param("typeId") Integer typeId);
+
+    @Delete("DELETE FROM blog WHERE id = #{id}")
+    void deleteBlogById(@Param("id") Long id);
 }

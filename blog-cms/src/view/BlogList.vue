@@ -77,7 +77,7 @@
         <el-table-column label="Thao tác" width="200">
           <template #default="scope">
             <el-button type="primary" :icon="Edit" size="small" @click="goBlogEditPage(scope.row.id)">Sửa</el-button>
-            <el-popconfirm title="Xác nhận xóa?" @confirm="removeBlogById(scope.row.id)" confirm-button-text="Xóa" cancel-button-text="Hủy">
+            <el-popconfirm title="Xác nhận xóa?" @confirm="handleDeleteBlogById(scope.row.id)" confirm-button-text="Xóa" cancel-button-text="Hủy">
               <template #reference>
                 <el-button size="small" type="danger" :icon="Delete">Xóa</el-button>
               </template>
@@ -161,7 +161,7 @@ const goBlogEditPage = (id) => {
   router.push(`/blogs/edit/${id}`)
 }
 
-const removeBlogById = async (id) => {
+const handleDeleteBlogById = async (id) => {
   try {
     const res = await deleteBlogById(id)
     console.log(res)

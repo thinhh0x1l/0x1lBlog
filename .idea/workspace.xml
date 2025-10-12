@@ -8,9 +8,10 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/controller/admin/BlogController.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/controller/admin/BlogController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/mapper/BlogMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/mapper/BlogMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/mapper/CategoryMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/mapper/CategoryMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/BlogService.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/BlogService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/impl/BlogServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/impl/BlogServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/test/java/top/blogapi/BlogApiApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/test/java/top/blogapi/BlogApiApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/util/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/util/Result.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-cms/src/view/BlogList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/src/view/BlogList.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -213,7 +214,7 @@
       <workItem from="1759952500168" duration="9758000" />
       <workItem from="1760232939293" duration="1234000" />
       <workItem from="1760234263477" duration="6564000" />
-      <workItem from="1760241093613" duration="2535000" />
+      <workItem from="1760241093613" duration="5406000" />
     </task>
     <servers />
   </component>

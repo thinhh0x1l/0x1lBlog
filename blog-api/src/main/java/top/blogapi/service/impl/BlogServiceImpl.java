@@ -19,4 +19,9 @@ public class BlogServiceImpl implements BlogService {
     public List<Blog> getListByTitleOrType(String query, Integer typeId) {
         return blogMapper.getListByTitleOrType(query, typeId);
     }
+
+    @Override
+    public void deleteBlogById(Long id) {
+        blogMapper.deleteBlogById(id);
+    }
 }

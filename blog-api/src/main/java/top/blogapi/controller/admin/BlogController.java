@@ -6,10 +6,8 @@ import com.github.pagehelper.PageInfo;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.ibatis.annotations.Delete;
+import org.springframework.web.bind.annotation.*;
 import top.blogapi.entity.Blog;
 import top.blogapi.entity.Category;
 import top.blogapi.service.BlogService;
@@ -44,6 +42,17 @@ public class BlogController {
         } catch (Exception e) {
             e.printStackTrace();
             return Result.create(500, "Lỗi ngoại lệ: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/blogs/{id}")
+    public Result delete(@PathVariable Long id) {
+        try{
+            blogService.deleteBlogById(id);
+            return Result.ok("Xóa thành công");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return Result.create(500, "[Delete] - Lỗi ngoại lệ: " + e.getMessage());
         }
     }
 }
