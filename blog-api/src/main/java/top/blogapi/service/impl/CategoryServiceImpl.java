@@ -4,19 +4,20 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
-import top.blogapi.entity.Blog;
-import top.blogapi.mapper.BlogMapper;
-import top.blogapi.service.BlogService;
+import top.blogapi.entity.Category;
+import top.blogapi.mapper.CategoryMapper;
+import top.blogapi.service.CategoryService;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
-public class BlogServiceImpl implements BlogService {
-    BlogMapper blogMapper;
+public class CategoryServiceImpl implements CategoryService {
+    CategoryMapper categoryMapper;
+
     @Override
-    public List<Blog> getListByTitleOrType(String query, Integer typeId) {
-        return blogMapper.getListByTitleOrType(query, typeId);
+    public List<Category> getCategoryList() {
+        return categoryMapper.getCategoryList();
     }
 }

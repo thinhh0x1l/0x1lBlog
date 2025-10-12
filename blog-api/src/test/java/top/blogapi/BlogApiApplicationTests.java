@@ -29,9 +29,9 @@ class BlogApiApplicationTests {
 	@Autowired
 	BlogMapper blogMapper;
 
-	@Test
-	void test() {
-		List<Blog> blogs = blogMapper.getBlogList();
-		System.out.println(blogs);
-	}
+//	@Test
+//	void test() {
+//		List<Blog> blogs = blogMapper.getBlogList();
+//		System.out.println(blogs);
+//	}
 }

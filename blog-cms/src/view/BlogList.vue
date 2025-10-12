@@ -14,26 +14,32 @@
           <el-input
               placeholder="Nhập tiêu đề"
               v-model="queryInfo.query"
-              :clearable="true"
-              @clear=""
+              clearable="clearable"
+              @clear="getBlogList"
+              @change="getBlogList"
+              style="min-width: 500px"
           >
             <template #prepend>
               <el-select
                   v-model="queryInfo.typeId"
                   placeholder="Chọn danh mục"
-                  :clearable="true"
+                  clearable="clearable"
+                  @change="getBlogList"
                   style="width: 160px"
               >
-                <el-option label="Danh mục 1" value="1"></el-option>
-                <el-option label="Danh mục 2" value="2"></el-option>
-                <el-option label="Danh mục 3" value="3"></el-option>
-                <el-option label="Danh mục 4" value="4"></el-option>
+                <el-option
+                  v-for="item in categoryList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+
               </el-select>
             </template>
             <template #append>
               <el-button
                   :icon="Search"
-                  @click=""
+                  @click="getBlogList"
               >
                 Tìm kiếm
               </el-button>
@@ -95,7 +101,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -113,6 +119,7 @@ const queryInfo = reactive({
 })
 
 const blogList = ref([])
+const categoryList = ref([])
 const total = ref(0)
 
 const getBlogList = async () => {
@@ -122,6 +129,7 @@ const getBlogList = async () => {
     if (res.code === 200) {
       ElMessage.success(res.msg)
       blogList.value = res.data.blogs.list
+      categoryList.value = res.data.categories
       total.value = res.data.blogs.total
     } else {
       ElMessage.error(res.msg)

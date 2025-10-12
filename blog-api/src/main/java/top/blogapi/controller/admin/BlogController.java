@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.blogapi.entity.Blog;
+import top.blogapi.entity.Category;
 import top.blogapi.service.BlogService;
+import top.blogapi.service.CategoryService;
 import top.blogapi.util.Result;
 
 import java.util.HashMap;
@@ -24,20 +26,24 @@ import java.util.Map;
 @RequestMapping("/admin")
 public class BlogController {
     BlogService blogService;
+    CategoryService categoryService;
 
     @GetMapping("/blogs")
     public Result blogs(@RequestParam(defaultValue = "") String query,
-                        @RequestParam(defaultValue = "") String typeId,
-                        @RequestParam(defaultValue = "1") String pageNum,
-                        @RequestParam(defaultValue = "10") String pageSize) {
+                        @RequestParam(required = false) Integer typeId,
+                        @RequestParam(defaultValue = "1") Integer pageNum,
+                        @RequestParam(defaultValue = "10") Integer pageSize) {
         String orderBy = "create_time desc";
-        try(Page<Object> page = PageHelper.startPage(Integer.parseInt(pageNum), Integer.parseInt(pageSize), orderBy)) {
-            PageInfo<Blog> pageInfo = new PageInfo<>(blogService.getBlogList());
+        try(Page<Object> page = PageHelper.startPage(pageNum, pageSize, orderBy)) {
+            PageInfo<Blog> pageInfo = new PageInfo<>(blogService.getListByTitleOrType(query, typeId));
+            List<Category> categories = categoryService.getCategoryList();
             Map<String, Object> map = new HashMap<>();
             map.put("blogs", pageInfo);
+            map.put("categories", categories);
             return Result.ok("Yêu cầu thành công", map);
         } catch (Exception e) {
-            return Result.create(500, "Lỗi ngoại lệ");
+            e.printStackTrace();
+            return Result.create(500, "Lỗi ngoại lệ: " + e.getMessage());
         }
     }
 }
