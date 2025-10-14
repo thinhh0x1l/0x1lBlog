@@ -1,4 +1,4 @@
-package top.blogapi.mapper;
+package top.blogapi.repository;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -8,7 +8,7 @@ import top.blogapi.entity.User;
 
 @Repository
 @Mapper
-public interface UserMapper {
+public interface UserRepository {
     @Select("""
         SELECT * 
         FROM User u 

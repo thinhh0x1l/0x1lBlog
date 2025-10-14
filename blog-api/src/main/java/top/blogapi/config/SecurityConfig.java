@@ -2,6 +2,10 @@ package top.blogapi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,17 +28,13 @@ import java.time.Duration;
 import java.util.List;
 
 @Configuration
-
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
 public class SecurityConfig {
-    private final UserServiceImpl userService;
-    private final MyAuthenticationEntryPoint myAuthenticationEntryPoint;
-    private final ObjectMapper objectMapper;
+    UserServiceImpl userService;
+    MyAuthenticationEntryPoint myAuthenticationEntryPoint;
+    ObjectMapper objectMapper;
 
-    public SecurityConfig(UserServiceImpl userService, MyAuthenticationEntryPoint myAuthenticationEntryPoint, ObjectMapper objectMapper) {
-        this.userService = userService;
-        this.myAuthenticationEntryPoint = myAuthenticationEntryPoint;
-        this.objectMapper = objectMapper;
-    }
 
     //SecretKey cho jwt
     @Bean
@@ -47,7 +47,7 @@ public class SecurityConfig {
     }
     @Bean
     public JwtLoginFilter jwtLoginFilter(AuthenticationManager authenticationManager) {
-        long EXPIRE_TIME = 3600;
+        long EXPIRE_TIME = 3600 * 6;
         return new JwtLoginFilter("/admin/login",authenticationManager,secretKey(),objectMapper, EXPIRE_TIME);
     }
     @Bean

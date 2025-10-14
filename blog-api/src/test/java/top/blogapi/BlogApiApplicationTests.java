@@ -3,13 +3,11 @@ package top.blogapi;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import top.blogapi.entity.Blog;
-import top.blogapi.mapper.BlogMapper;
+import top.blogapi.repository.BlogRepository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
 @SpringBootTest
 class BlogApiApplicationTests {
@@ -27,7 +25,7 @@ class BlogApiApplicationTests {
 		}
 	}
 	@Autowired
-	BlogMapper blogMapper;
+	BlogRepository blogRepository;
 
 //	@Test
 //	void test() {

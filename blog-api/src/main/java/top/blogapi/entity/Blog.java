@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -27,8 +27,8 @@ public class Blog {
     boolean appreciation; // Bật/tắt chức năng ủng hộ (donate)
     boolean shareStatement; // Bật/tắt tuyên bố bản quyền
     boolean commentEnabled; // Bật/tắt bình luận
-    Date createTime; // Thời gian tạo
-    Date updateTime; // Thời gian cập nhật
+    LocalDateTime createTime; // Thời gian tạo
+    LocalDateTime updateTime; // Thời gian cập nhật
     Integer views; // Lượt xem
     Integer words; // Số lượng từ trong bài viết
     Integer readTime; // Thời gian đọc (phút)

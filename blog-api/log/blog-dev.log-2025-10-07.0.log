@@ -39,7 +39,7 @@
 org.springframework.security.authentication.InternalAuthenticationServiceException: 
 ### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 ### The error may exist in top/blogapi/dao/UserDao.java (best guess)
-### The error may involve top.blogapi.mapper.UserMapper.findByUserName
+### The error may involve top.blogapi.repository.UserRepository.findByUserName
 ### The error occurred while executing a query
 ### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 	at org.springframework.security.authentication.dao.DaoAuthenticationProvider.retrieveUser(DaoAuthenticationProvider.java:136)
@@ -118,7 +118,7 @@ org.springframework.security.authentication.InternalAuthenticationServiceExcepti
 Caused by: org.mybatis.spring.MyBatisSystemException: 
 ### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 ### The error may exist in top/blogapi/dao/UserDao.java (best guess)
-### The error may involve top.blogapi.mapper.UserMapper.findByUserName
+### The error may involve top.blogapi.repository.UserRepository.findByUserName
 ### The error occurred while executing a query
 ### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:101)
@@ -144,7 +144,7 @@ Caused by: org.mybatis.spring.MyBatisSystemException:
 Caused by: org.apache.ibatis.exceptions.PersistenceException: 
 ### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 ### The error may exist in top/blogapi/dao/UserDao.java (best guess)
-### The error may involve top.blogapi.mapper.UserMapper.findByUserName
+### The error may involve top.blogapi.repository.UserRepository.findByUserName
 ### The error occurred while executing a query
 ### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 	at org.apache.ibatis.exceptions.ExceptionFactory.wrapException(ExceptionFactory.java:30)
@@ -193,7 +193,7 @@ Caused by: java.sql.SQLException: Access denied for user 'root'@'localhost' (usi
 org.springframework.security.authentication.InternalAuthenticationServiceException: 
 ### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 ### The error may exist in top/blogapi/dao/UserDao.java (best guess)
-### The error may involve top.blogapi.mapper.UserMapper.findByUserName
+### The error may involve top.blogapi.repository.UserRepository.findByUserName
 ### The error occurred while executing a query
 ### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 	at org.springframework.security.authentication.dao.DaoAuthenticationProvider.retrieveUser(DaoAuthenticationProvider.java:136)
@@ -272,7 +272,7 @@ org.springframework.security.authentication.InternalAuthenticationServiceExcepti
 Caused by: org.mybatis.spring.MyBatisSystemException: 
 ### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 ### The error may exist in top/blogapi/dao/UserDao.java (best guess)
-### The error may involve top.blogapi.mapper.UserMapper.findByUserName
+### The error may involve top.blogapi.repository.UserRepository.findByUserName
 ### The error occurred while executing a query
 ### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:101)
@@ -298,7 +298,7 @@ Caused by: org.mybatis.spring.MyBatisSystemException:
 Caused by: org.apache.ibatis.exceptions.PersistenceException: 
 ### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 ### The error may exist in top/blogapi/dao/UserDao.java (best guess)
-### The error may involve top.blogapi.mapper.UserMapper.findByUserName
+### The error may involve top.blogapi.repository.UserRepository.findByUserName
 ### The error occurred while executing a query
 ### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 	at org.apache.ibatis.exceptions.ExceptionFactory.wrapException(ExceptionFactory.java:30)
@@ -348,7 +348,7 @@ Caused by: java.sql.SQLException: Access denied for user 'root'@'localhost' (usi
 org.springframework.security.authentication.InternalAuthenticationServiceException: 
 ### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 ### The error may exist in top/blogapi/dao/UserDao.java (best guess)
-### The error may involve top.blogapi.mapper.UserMapper.findByUserName
+### The error may involve top.blogapi.repository.UserRepository.findByUserName
 ### The error occurred while executing a query
 ### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 	at org.springframework.security.authentication.dao.DaoAuthenticationProvider.retrieveUser(DaoAuthenticationProvider.java:136)
@@ -427,7 +427,7 @@ org.springframework.security.authentication.InternalAuthenticationServiceExcepti
 Caused by: org.mybatis.spring.MyBatisSystemException: 
 ### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 ### The error may exist in top/blogapi/dao/UserDao.java (best guess)
-### The error may involve top.blogapi.mapper.UserMapper.findByUserName
+### The error may involve top.blogapi.repository.UserRepository.findByUserName
 ### The error occurred while executing a query
 ### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:101)
@@ -453,7 +453,7 @@ Caused by: org.mybatis.spring.MyBatisSystemException:
 Caused by: org.apache.ibatis.exceptions.PersistenceException: 
 ### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 ### The error may exist in top/blogapi/dao/UserDao.java (best guess)
-### The error may involve top.blogapi.mapper.UserMapper.findByUserName
+### The error may involve top.blogapi.repository.UserRepository.findByUserName
 ### The error occurred while executing a query
 ### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 	at org.apache.ibatis.exceptions.ExceptionFactory.wrapException(ExceptionFactory.java:30)
@@ -502,7 +502,7 @@ Caused by: java.sql.SQLException: Access denied for user 'root'@'localhost' (usi
 org.springframework.security.authentication.InternalAuthenticationServiceException: 
 ### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 ### The error may exist in top/blogapi/dao/UserDao.java (best guess)
-### The error may involve top.blogapi.mapper.UserMapper.findByUserName
+### The error may involve top.blogapi.repository.UserRepository.findByUserName
 ### The error occurred while executing a query
 ### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 	at org.springframework.security.authentication.dao.DaoAuthenticationProvider.retrieveUser(DaoAuthenticationProvider.java:136)
@@ -581,7 +581,7 @@ org.springframework.security.authentication.InternalAuthenticationServiceExcepti
 Caused by: org.mybatis.spring.MyBatisSystemException: 
 ### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 ### The error may exist in top/blogapi/dao/UserDao.java (best guess)
-### The error may involve top.blogapi.mapper.UserMapper.findByUserName
+### The error may involve top.blogapi.repository.UserRepository.findByUserName
 ### The error occurred while executing a query
 ### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:101)
@@ -607,7 +607,7 @@ Caused by: org.mybatis.spring.MyBatisSystemException:
 Caused by: org.apache.ibatis.exceptions.PersistenceException: 
 ### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 ### The error may exist in top/blogapi/dao/UserDao.java (best guess)
-### The error may involve top.blogapi.mapper.UserMapper.findByUserName
+### The error may involve top.blogapi.repository.UserRepository.findByUserName
 ### The error occurred while executing a query
 ### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection
 	at org.apache.ibatis.exceptions.ExceptionFactory.wrapException(ExceptionFactory.java:30)

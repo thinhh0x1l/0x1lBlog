@@ -54,9 +54,16 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
             UsernamePasswordAuthenticationToken authRequest =
                     UsernamePasswordAuthenticationToken.unauthenticated(user.getUsername(), user.getPassword());
-
+            /**
+             * // Token (authRequest) sẽ có:
+             * isAuthenticated() = false
+             * principal = "john_doe" (String)
+             * credentials = "secret123" (String)
+             * authorities = null
+             * */
             setDetails(request, authRequest);
-            return getAuthenticationManager().authenticate(authRequest);
+            return getAuthenticationManager() //Lấy AuthenticationManager từ Spring Security
+                    .authenticate(authRequest); //Ủy quyền việc xác thực cho AuthenticationManager
 
         } catch (IOException | java.io.IOException e) {
             throw new AuthenticationServiceException("Failed to parse authentication request body", e);
@@ -72,6 +79,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
                 .signWith(secretKey)
                 .compact();
 
+        System.out.println(jwtToken);
         User user = (User) authentication.getPrincipal();
         user.setPassword(null);
 
@@ -79,7 +87,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         data.put("user", user);
         data.put("token", jwtToken);
 
-        Result result = Result.ok("Đăng nhập thành công", data);
+        Result<Map<String, Object>> result = Result.ok("Đăng nhập thành công", data);
 
         response.setContentType("application/json;charset=UTF-8");
         objectMapper.writeValue(response.getWriter(), result);
@@ -90,7 +98,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
                                          AuthenticationException exception) throws java.io.IOException {
 
         String errorMessage = getErrorMessage(exception);
-        Result result = Result.create(401, errorMessage);
+        Result<Map<String, Object>> result = Result.create(401, errorMessage);
 
         response.setStatus(401);
         response.setContentType("application/json;charset=UTF-8");

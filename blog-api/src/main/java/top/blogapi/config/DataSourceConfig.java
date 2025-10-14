@@ -13,30 +13,11 @@ import java.util.HashSet;
 import java.util.List;
 
 @Configuration
-@MapperScan(basePackages = "top.blogapi.mapper")
+@MapperScan(basePackages = "top.blogapi.repository")
 public class DataSourceConfig {
     @Bean
     public DataSource dataSource() {
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/blog");
-        dataSource.setUsername("root");
-        dataSource.setPassword("1820");
-
-        // ========== CẤU HÌNH HIKARI CP CONNECTION POOL ==========
-
-        // Số lượng kết nối tối đa trong pool (cho phép 20 kết nối đồng thời)
-        dataSource.setMaximumPoolSize(20);
-        // Số kết nối tối thiểu luôn duy trì sẵn (tránh overhead tạo kết nối mới)
-        dataSource.setMinimumIdle(5);
-        // Thời gian tối đa chờ để lấy kết nối từ pool (30 giây)
-        dataSource.setConnectionTimeout(30000);
-        // Thời gian một kết nối không sử dụng trước khi bị đóng (10 phút)
-        dataSource.setIdleTimeout(600000);
-        // Thời gian tối đa một kết nối tồn tại (30 phút), tránh memory leaks
-        dataSource.setMaxLifetime(1800000);
-        // Tên pool để nhận diện khi monitoring
-        dataSource.setPoolName("MyBatisHikariPool");
+        HikariDataSource dataSource = getHikariDataSource();
 
         // ========== TỐI ƯU HOÁ HIỆU SUẤT CHO MYSQL ==========
 
@@ -61,6 +42,30 @@ public class DataSourceConfig {
         // Tắt thống kê thời gian để tăng hiệu suất
         dataSource.addDataSourceProperty("maintainTimeStats", "false");
 
+        return dataSource;
+    }
+
+    private static HikariDataSource getHikariDataSource() {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/blog");
+        dataSource.setUsername("root");
+        dataSource.setPassword("1820");
+
+        // ========== CẤU HÌNH HIKARI CP CONNECTION POOL ==========
+
+        // Số lượng kết nối tối đa trong pool (cho phép 20 kết nối đồng thời)
+        dataSource.setMaximumPoolSize(20);
+        // Số kết nối tối thiểu luôn duy trì sẵn (tránh overhead tạo kết nối mới)
+        dataSource.setMinimumIdle(5);
+        // Thời gian tối đa chờ để lấy kết nối từ pool (30 giây)
+        dataSource.setConnectionTimeout(30000);
+        // Thời gian một kết nối không sử dụng trước khi bị đóng (10 phút)
+        dataSource.setIdleTimeout(600000);
+        // Thời gian tối đa một kết nối tồn tại (30 phút), tránh memory leaks
+        dataSource.setMaxLifetime(1800000);
+        // Tên pool để nhận diện khi monitoring
+        dataSource.setPoolName("MyBatisHikariPool");
         return dataSource;
     }
 
@@ -103,7 +108,7 @@ public class DataSourceConfig {
 
         // Đăng ký package chứa entity classes
         // Cho phép sử dụng tên class thay vì fully qualified name trong mapper
-        sessionFactory.setTypeAliasesPackage("com.example.demo.model");
+        sessionFactory.setTypeAliasesPackage("top.blogapi.entity");
 
         return sessionFactory.getObject();
     }

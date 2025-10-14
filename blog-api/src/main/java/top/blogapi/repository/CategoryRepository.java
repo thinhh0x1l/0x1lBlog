@@ -1,4 +1,4 @@
-package top.blogapi.mapper;
+package top.blogapi.repository;
 
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Mapper
 @Repository
-public interface CategoryMapper {
+public interface CategoryRepository {
     @Select("SELECT c.id, c.name FROM category c ORDER BY id DESC ")
     List<Category> getCategoryList();
 

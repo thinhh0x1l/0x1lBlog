@@ -6,8 +6,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 
 @NoArgsConstructor
 @Getter
@@ -21,8 +21,8 @@ public class User implements UserDetails {
     String nickname;
     String avatar;
     String email;
-    Date createTime;
-    Date updateTime;
+    LocalDateTime createTime;
+    LocalDateTime updateTime;
     // 1: admin; 2: user
     Integer role;
 
