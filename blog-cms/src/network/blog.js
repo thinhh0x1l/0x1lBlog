@@ -1,14 +1,18 @@
 import axios from '@/plugins/axios.js'
 
-export function blogs(query = '', typeId = null, pageNum = 1, pageSize = 10){
+
+export function blogs(query = '', categoryId = null, pageNum = 1, pageSize = 10){
     return axios({
         url: 'blogs',
         method: "GET",
         params: {
             query: query.trim(),
-            typeId,
+            categoryId,
             pageNum,
             pageSize,
+            sortBy: 'create_time',
+            sortOrder: 'desc',
+
         }
     })
 }

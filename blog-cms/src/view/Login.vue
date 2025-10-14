@@ -54,6 +54,7 @@
 import { ref, reactive, getCurrentInstance } from 'vue'
 import { useRouter } from 'vue-router'
 import { login } from '@/network/login'
+import {User} from "@element-plus/icons-vue";
 
 const router = useRouter()
 
@@ -66,13 +67,14 @@ const loginFormRef = ref()
 // Reactive data
 const loginForm = reactive({
   username: 'Thjnk',
-  password: '11'
+  password: '123'
 })
 
 // Validation rules
 const loginFormRules = {
   username: [
-    { required: true, message: 'Vui lòng nhập tên người dùng', trigger: 'blur' }
+    { required: true, message: 'Vui lòng nhập tên người dùng', trigger: 'blur' },
+    { min: 3, max: 20, message: 'Độ dài 3-20', trigger:['blur','change']},
   ],
   password: [
     { required: true, message: 'Vui lòng nhập mật khẩu', trigger: 'blur' }

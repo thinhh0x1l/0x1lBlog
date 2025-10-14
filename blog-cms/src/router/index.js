@@ -48,8 +48,8 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     if (to.path !== '/login') {
         // lấy token
-        // const tokenStr = window.sessionStorage.getItem('token')
-        // if (!tokenStr) return next("/login")
+        const tokenStr = window.sessionStorage.getItem('token')
+        if (!tokenStr) return next("/login")
     }
 
     if (to.meta.title) {

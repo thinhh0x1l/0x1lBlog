@@ -21,7 +21,7 @@
           >
             <template #prepend>
               <el-select
-                  v-model="queryInfo.typeId"
+                  v-model="queryInfo.categoryId"
                   placeholder="Chọn danh mục"
                   clearable="clearable"
                   @change="getBlogList"
@@ -113,7 +113,7 @@ const router = useRouter()
 
 const queryInfo = reactive({
   query: '',
-  typeId: null,
+  categoryId: null,
   pageNum: 1,
   pageSize: 2
 })
@@ -124,7 +124,7 @@ const total = ref(0)
 
 const getBlogList = async () => {
   try {
-    const res = await blogs(queryInfo.query, queryInfo.typeId, queryInfo.pageNum, queryInfo.pageSize)
+    const res = await blogs(queryInfo.query, queryInfo.categoryId, queryInfo.pageNum, queryInfo.pageSize)
     console.log(res)
     if (res.code === 200) {
       ElMessage.success(res.msg)
