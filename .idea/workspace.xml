@@ -5,33 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="878cc2c9-a5db-470a-8a79-10d0eb9a1bd5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/repository/CategoryRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/log/blog-dev.log-2025-10-07.0.log" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/log/blog-dev.log-2025-10-07.0.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/BlogApiApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/BlogApiApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/DataSourceConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/DataSourceConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/JwtFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/JwtFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/JwtLoginFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/JwtLoginFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/MyAuthenticationEntryPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/MyAuthenticationEntryPoint.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/config/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/controller/admin/BlogController.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/controller/admin/BlogController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/entity/Blog.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/entity/Blog.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/mapper/BlogMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/repository/BlogRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/mapper/CategoryMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/repository/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/BlogService.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/BlogService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/CategoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/CategoryService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/impl/BlogServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/impl/BlogServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/impl/CategoryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/impl/CategoryServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/service/impl/UserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/util/DatabaseChecker.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/util/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/util/Result.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-api/src/test/java/top/blogapi/BlogApiApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/test/java/top/blogapi/BlogApiApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/util/MD5Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/blog-api/src/main/java/top/blogapi/util/MD5Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-cms/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-cms/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-cms/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/src/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-cms/src/network/blog.js" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/src/network/blog.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-cms/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog-cms/src/view/BlogList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/src/view/BlogList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-cms/src/view/BlogList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/src/view/blog/BlogList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog-cms/src/view/Home.vue" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/src/view/Home.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog-cms/src/view/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/blog-cms/src/view/Login.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -90,9 +76,9 @@
     "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.BlogApiApplication.executor": "Debug",
+    "Spring Boot.BlogApiApplication.executor": "Run",
     "Spring Boot.TBlogApplication.executor": "Run",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "temp-fix",
     "ignore.virus.scanning.warn.message": "true",
     "javascript.nodejs.core.library.configured.version": "22.14.0",
     "javascript.nodejs.core.library.typings.version": "22.14.1",
@@ -119,6 +105,7 @@
       <recent name="top.blogapi.entity" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Storage\0x1lBlog\blog-cms\src\view\blog" />
       <recent name="D:\Storage\0x1lBlog\blog-cms\src\assets\img" />
       <recent name="D:\Storage\0x1lBlog\blog-cms\src\router" />
       <recent name="D:\Storage\0x1lBlog\blog-cms\src\assets\css" />
@@ -199,11 +186,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.MD5Utils" />
         <item itemvalue="JUnit.BlogApiApplicationTests.test" />
         <item itemvalue="JUnit.BlogApiApplicationTests.testConnection" />
         <item itemvalue="HTTP Request.generated-requests | #2" />
         <item itemvalue="HTTP Request.generated-requests | #1" />
-        <item itemvalue="Application.MD5Utils" />
       </list>
     </recent_temporary>
   </component>
@@ -236,7 +223,10 @@
       <workItem from="1760232939293" duration="1234000" />
       <workItem from="1760234263477" duration="6564000" />
       <workItem from="1760241093613" duration="7499000" />
-      <workItem from="1760277547819" duration="41997000" />
+      <workItem from="1760277547819" duration="42425000" />
+      <workItem from="1760457130718" duration="2382000" />
+      <workItem from="1760614130976" duration="16178000" />
+      <workItem from="1760702396129" duration="8718000" />
     </task>
     <servers />
   </component>

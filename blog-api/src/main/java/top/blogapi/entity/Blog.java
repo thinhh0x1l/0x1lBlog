@@ -1,10 +1,7 @@
 package top.blogapi.entity;
 
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
@@ -15,13 +12,14 @@ import java.util.List;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@ToString
 public class Blog {
     Long id;
     String title; // Tiêu đề bài viết
     String content; // Nội dung bài viết
     String firstPicture; // Ảnh bìa bài viết
     String description; // Mô tả
-    String flag; // Loại bài viết (nguyên gốc, sao chép, dịch thuật)
+    String flag; // Loại bài viết (nguyên tác, chuyển tải, dịch thuật)
     boolean published; // Đã xuất bản hay bản nháp
     boolean recommend; // Bật/tắt đề xuất
     boolean appreciation; // Bật/tắt chức năng ủng hộ (donate)

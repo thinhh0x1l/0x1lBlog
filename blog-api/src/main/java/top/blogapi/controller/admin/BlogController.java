@@ -53,7 +53,7 @@ public class BlogController {
 
             List<CategoryResponse> categories = categoryService.getCategoryList();
             BlogListPageResponse blogListPageResponse = new BlogListPageResponse(pageInfoDto,categories);
-            System.out.println(blogListPageResponse);
+
             return Result.ok("Yêu cầu thành công",blogListPageResponse);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -86,30 +86,31 @@ public class BlogController {
             Map<String,Object> map = new HashMap<>();
             map.put("categories", categories);
             map.put("tags", tags);
-            return Result.ok("Yêu cầu thành công");
+            return Result.ok("Yêu cầu thành công",map);
         }catch (Exception e) {
             e.printStackTrace();
             return Result.error();
         }
     }
 
-    @PostMapping("/blogs")
-    public Result<?> saveBlog(@RequestParam Map<String, Object> map) {
+    @PostMapping("/blog")
+    public Result<?> saveBlog(@RequestBody Map<String, Object> map) {
+        System.out.println(map);
         try{
             Map<String, Object> blogMap = (Map<String, Object>) map.get("blog");
             JSONObject blogJsonObject = new JSONObject(blogMap);
             Blog blog = blogJsonObject.toJavaObject(Blog.class);
-
+            System.out.println(blog);
             // Xác minh các thuộc tính
-            if (StringUtils.hasText(blog.getTitle()) || StringUtils.hasText(blog.getContent())
+            if (!(StringUtils.hasText(blog.getTitle()) || StringUtils.hasText(blog.getContent())
                     || StringUtils.hasText(blog.getFirstPicture()) || StringUtils.hasText(blog.getDescription())
-                    || StringUtils.hasText(blog.getFlag()) || blog.getWords() == null || blog.getWords() < 0) {
+                    || StringUtils.hasText(blog.getFlag()) || blog.getWords() == null || blog.getWords() < 0)) {
                 return Result.error("Tham số không chính xác");
             }
 
             // Xử lý phân loại
             Object cate = blogMap.get("cate");
-            if(cate != null)
+            if(cate == null)
                 return Result.error("Thể loại không được để trống");
 
             if(cate instanceof Integer) { // Chọn danh mục hiện có

@@ -106,7 +106,7 @@ const handleLogin = async () => {
 
     if (res.code === 200) {
 
-      proxy.msgSuccess(res.msg)
+      proxy.$msgSuccess(res.msg)
 
       // Store token
       sessionStorage.setItem('token', res.data.token)
@@ -115,12 +115,12 @@ const handleLogin = async () => {
       router.push('/home')
     } else {
 
-      proxy.msgError(res.msg)
+      proxy.$msgError(res.msg)
     }
   } catch (error) {
     console.error('Login error:', error)
 
-    proxy.msgError(error.response?.data?.msg || 'Yêu cầu thất bại')
+    proxy.$msgError(error.response?.data?.msg || 'Yêu cầu thất bại')
   } finally {
     loading.value = false
   }
