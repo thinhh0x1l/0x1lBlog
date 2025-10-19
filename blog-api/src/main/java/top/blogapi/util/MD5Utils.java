@@ -13,8 +13,9 @@ public class MD5Utils {
     }
 
     public static void main(String[] args) {
+        System.out.println(RLE(7));
         //System.out.println(ab(-7,5));
-        System.out.println(findSmallestInteger2(new int[]{3,0,3,2,4,2,1,1,0,4},5));
+   //     System.out.println(findSmallestInteger2(new int[]{3,0,3,2,4,2,1,1,0,4},5));
 //        Map<Integer,Integer> map = new HashMap<>();
 //        map.put(1,1);
 //        map.computeIfPresent(1,(k,v)->v++);
@@ -91,5 +92,26 @@ public class MD5Utils {
     }
     public static int ab (int num,int value){
         return num + value*((-num / value)+1);
+    }
+
+    public static String RLE(int n){
+        StringBuilder sb = new StringBuilder("1");
+        for (int i = 2 ; i <= n ; i++){
+            int count= 1;
+            char digit = sb.charAt(0);
+            StringBuilder sbT = new StringBuilder();
+            for(int j = 1 ; j < sb.length() ; j++){
+                if(digit == sb.charAt(j)){
+                    count++;
+                }else{
+                    sbT.append(count).append(digit);
+                    count = 1;
+                    digit = sb.charAt(j);
+                }
+            }
+            sbT.append(count).append(digit);
+            sb=sbT;
+        }
+        return sb.toString();
     }
 }

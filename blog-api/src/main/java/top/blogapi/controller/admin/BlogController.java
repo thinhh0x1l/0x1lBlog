@@ -65,12 +65,13 @@ public class BlogController {
     @DeleteMapping("/blogs/{id}")
     public Result<?> delete(@PathVariable Long id) {
         try{
-            int r = blogService.deleteBlogById(id);
-            if(r != 1)
-                return Result.error("Không xóa Blog được");
             int r1 = blogService.deleteBlogTagByBlogId(id);
             if(r1 != 1)
                 return Result.error("Lỗi không duy trì được bảng liên kết thẻ blog");
+            int r = blogService.deleteBlogById(id);
+            if(r != 1)
+                return Result.error("Không xóa Blog được");
+
             return Result.ok("Xóa Blog thành công");
         }catch (Exception e) {
             e.printStackTrace();
@@ -149,9 +150,9 @@ public class BlogController {
                     if(r == 1) // Thêm tag thành công
                         tags.add(tag);
                     else
-                        Result.error("Thêm tag không thành công");
+                        return Result.error("Thêm tag không thành công");
                 }else
-                    Result.error("Ghi tên không chính xác");
+                    return Result.error("Ghi tên không chính xác");
             }
 
             User user = new User();
@@ -165,15 +166,14 @@ public class BlogController {
                 for (Tag t : tags){
                    int r1 = blogService.saveBlogTag(blog.getId(),t.getId());
                    if(r1 != 1)
-                       Result.error("Thêm bảng liên kết bị lỗi");
+                      return Result.error("Thêm bảng liên kết bị lỗi");
                 }
             }else
-                Result.error("Thêm blog không thành công");
-            Result.ok("Thêm blog thành công");
+                return Result.error("Thêm blog không thành công");
+            return Result.ok("Thêm blog thành công");
         }catch (Exception e){
             e.printStackTrace();
             return Result.error();
         }
-        return null;
     }
 }
