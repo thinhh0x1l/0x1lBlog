@@ -24,8 +24,8 @@ const showMessage = (type,msg) =>{
 }
 
 // Global properties
-app.config.globalProperties.msgSuccess = (msg) => showMessage('success',msg)
-app.config.globalProperties.msgError = (msg) => showMessage('error',msg)
-app.config.globalProperties.msgInfo = (msg) => showMessage('info',msg)
+app.config.globalProperties.$msgSuccess = (msg) => showMessage('success',msg)
+app.config.globalProperties.$msgError = (msg) => showMessage('error',msg)
+app.config.globalProperties.$msgInfo = (msg) => showMessage('info',msg)
 
 app.mount('#app')

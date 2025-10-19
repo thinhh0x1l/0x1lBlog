@@ -60,9 +60,7 @@
 
       <!-- Right Content Area -->
       <el-main>
-        <keep-alive>
-          <router-view/>
-        </keep-alive>
+        <router-view/>
       </el-main>
 
     </el-container>
@@ -107,7 +105,7 @@ const menuList = [
         id: 13,
         title: 'Danh sách danh mục',
         children: [],
-        path: '/types'
+        path: '/categories'
       },
       {
         id: 14,

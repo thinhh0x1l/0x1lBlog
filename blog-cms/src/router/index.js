@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from "@/view/Login.vue"
 import Home from "@/view/Home.vue";
 import Welcome from "@/view/Welcome.vue";
-import BlogList from "@/view/BlogList.vue";
+import BlogList from "@/view/blog/BlogList.vue";
+import AddBlog from "@/view/blog/AddBlog.vue";
 
 const routes = [
     {
@@ -26,6 +27,13 @@ const routes = [
                 component: Welcome,
                 meta: {
                     title: 'Quản lý hệ thống'
+                }
+            },
+            {
+                path: '/write',
+                component: AddBlog,
+                meta: {
+                    title: 'Viết Blog'
                 }
             },
             {

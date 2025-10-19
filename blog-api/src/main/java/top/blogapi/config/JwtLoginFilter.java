@@ -57,8 +57,8 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
             /**
              * // Token (authRequest) sẽ có:
              * isAuthenticated() = false
-             * principal = "john_doe" (String)
-             * credentials = "secret123" (String)
+             * principal = "Thjnk" (String)
+             * credentials = "123" (String)
              * authorities = null
              * */
             setDetails(request, authRequest);

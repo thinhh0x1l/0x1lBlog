@@ -15,8 +15,8 @@
               placeholder="Nhập tiêu đề"
               v-model="queryInfo.query"
               clearable="clearable"
-              @clear="getBlogList"
-              @change="getBlogList"
+              @clear="search"
+              @change="search"
               style="min-width: 500px"
           >
             <template #prepend>
@@ -24,7 +24,7 @@
                   v-model="queryInfo.categoryId"
                   placeholder="Chọn danh mục"
                   clearable="clearable"
-                  @change="getBlogList"
+                  @change="search"
                   style="width: 160px"
               >
                 <el-option
@@ -39,7 +39,7 @@
             <template #append>
               <el-button
                   :icon="Search"
-                  @click="getBlogList"
+                  @click="search"
               >
                 Tìm kiếm
               </el-button>
@@ -51,7 +51,7 @@
       <el-table :data="blogList" border stripe>
         <el-table-column label="STT" type="index" width="55"></el-table-column>
         <el-table-column label="Tiêu đề" prop="title"></el-table-column>
-        <el-table-column label="Danh mục" prop="category.name" width="150"></el-table-column>
+        <el-table-column label="Danh mục" prop="categoryName" width="150"></el-table-column>
         <el-table-column label="Đề xuất" width="80">
           <template #default="scope">
             <el-switch
@@ -104,10 +104,12 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
 import { ArrowRight, Search, Edit, Delete } from '@element-plus/icons-vue'
-import { blogs, deleteBlogById } from '@/network/blog'
+import {getDataQuery, deleteBlogById ,getCategoryAndTag, saveBlog} from '@/network/blog.js'
 import { formatDate } from '@/util/dateTimeFormatUtils.js'
+import  { getCurrentInstance } from 'vue'
+
+const { proxy } = getCurrentInstance()
 
 const router = useRouter()
 
@@ -115,27 +117,33 @@ const queryInfo = reactive({
   query: '',
   categoryId: null,
   pageNum: 1,
-  pageSize: 2
+  pageSize: 10
 })
+
+const search = () =>{
+  queryInfo.pageNum = 1;
+  queryInfo.pageSize= 10;
+  getData()
+}
 
 const blogList = ref([])
 const categoryList = ref([])
 const total = ref(0)
 
-const getBlogList = async () => {
+const getData = async () => {
   try {
-    const res = await blogs(queryInfo.query, queryInfo.categoryId, queryInfo.pageNum, queryInfo.pageSize)
+    const res = await getDataQuery(queryInfo.query, queryInfo.categoryId, queryInfo.pageNum, queryInfo.pageSize)
     console.log(res)
     if (res.code === 200) {
-      ElMessage.success(res.msg)
+      proxy.$msgSuccess(res.msg)
       blogList.value = res.data.blogs.list
       categoryList.value = res.data.categories
       total.value = res.data.blogs.total
     } else {
-      ElMessage.error(res.msg)
+      proxy.$msgError(res.msg)
     }
   } catch {
-    ElMessage.error("Yêu cầu thất bại")
+    proxy.$msgError("Yêu cầu thất bại")
   }
 }
 
@@ -149,12 +157,12 @@ const blogPublishedChanged = () => {
 
 const handleSizeChange = (newSize) => {
   queryInfo.pageSize = newSize
-  getBlogList()
+  getData()
 }
 
 const handleCurrentChange = (newPage) => {
   queryInfo.pageNum = newPage
-  getBlogList()
+  getData()
 }
 
 const goBlogEditPage = (id) => {
@@ -166,18 +174,18 @@ const handleDeleteBlogById = async (id) => {
     const res = await deleteBlogById(id)
     console.log(res)
     if (res.code === 200) {
-      ElMessage.success(res.msg)
-      await getBlogList()
+      proxy.$msgSuccess(res.msg)
+      await getData ()
     } else {
-      ElMessage.error(res.msg)
+      proxy.$msgError(res.msg)
     }
   } catch {
-    ElMessage.error("Thao tác thất bại")
+    proxy.$msgError("Thao tác thất bại")
   }
 }
 
 onMounted(() => {
-  getBlogList()
+  getData()
 })
 </script>
 
