@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.blogapi.dto.request.blog.BlogQueryRequest;
+import top.blogapi.dto.request.blog.BlogUpdatePublishedRequest;
+import top.blogapi.dto.request.blog.BlogUpdateRecommendRequest;
 import top.blogapi.dto.response.blog.BlogSummaryResponse;
 import top.blogapi.dto.response.category.CategoryResponse;
 import top.blogapi.dto.response.page.BlogListPageResponse;
@@ -42,27 +44,10 @@ public class BlogController {
     @GetMapping("/blogs")
     public Result<?> blogs(@ModelAttribute BlogQueryRequest blogQueryRequest) {
         System.out.println(blogQueryRequest);
-        try(Page<Object> page = PageHelper.startPage(blogQueryRequest.getPageNum(), blogQueryRequest.getPageSize(),
-                blogQueryRequest.getSortBy() + " " + blogQueryRequest.getSortOrder());) {
-
-            PageInfo<Blog> pageInfo =
-                    new PageInfo<>( blogService.getListByTitleOrCategory(blogQueryRequest.getQuery(),
-                            blogQueryRequest.getCategoryId()));
-
-            PageInfo<BlogSummaryResponse> pageInfoDto = pageInfo.convert(blogMapper::toBlogSummaryResponse);
-
-            List<CategoryResponse> categories = categoryService.getCategoryList();
-            BlogListPageResponse blogListPageResponse = new BlogListPageResponse(pageInfoDto,categories);
-
-            return Result.ok("Yêu cầu thành công",blogListPageResponse);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            return Result.error(e.getMessage());
-        }
+        return Result.ok("Yêu cầu thành công",blogService.getListByTitleOrCategory(blogQueryRequest));
     }
 
-    @DeleteMapping("/blogs/{id}")
+    @DeleteMapping("/blog/{id}")
     public Result<?> delete(@PathVariable Long id) {
         try{
             int r1 = blogService.deleteBlogTagByBlogId(id);
@@ -109,7 +94,7 @@ public class BlogController {
                 return Result.error("Tham số không chính xác");
             }
 
-            // Xử lý phân loại
+            // Xử lý thể loại(category)
             Object cate = blogMap.get("cate");
             if(cate == null)
                 return Result.error("Thể loại không được để trống");
@@ -176,4 +161,16 @@ public class BlogController {
             return Result.error();
         }
     }
+
+//    @PutMapping("/blog/recommend")
+//    public Result<?> updateBlogRecommend(@RequestBody BlogUpdateRecommendRequest blogUpdateRecommendRequest) {
+//        try{
+//
+//        }
+//    }
+//
+//    @PutMapping("/blog/published")
+//    public Result<?> updateBlogPublished(@RequestBody BlogUpdatePublishedRequest blogUpdatePublishedRequest) {
+//
+//    }
 }

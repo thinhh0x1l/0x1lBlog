@@ -23,5 +23,4 @@ public class BlogQueryRequest {
     String sortBy = "create_time";
     String sortOrder = "DESC";
 
-
 }

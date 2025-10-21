@@ -66,7 +66,7 @@
             </div>
 
             <!-- Nội dung Editor -->
-            <editor-content :editor="editor" style="padding: 16px; min-height: 400px; outline: none;" />
+            <editor-content :editor="editor" style="padding: 16px; min-height: 400px; outline: none; min-width: 500px" />
           </div>
         </el-form-item>
 

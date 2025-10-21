@@ -47,4 +47,10 @@ public interface BlogRepository {
 
     @Insert("INSERT INTO blog_tag (blog_id, tag_id) VALUES (#{blogId},#{tagId})")
     int saveBlogTag(Long blogId, Long tagId);
+
+    @Update("UPDATE blog SET published = #{published} WHERE id = ${id}")
+    int updateBlogPublishedById(@Param("id") Long id, @Param("published") boolean published);
+
+    @Update("UPDATE blog SET recommend = #{recommend} WHERE id = ${id}")
+    int updateBlogRecommendById(@Param("id")Long id, @Param("recommend") boolean recommend);
 }
