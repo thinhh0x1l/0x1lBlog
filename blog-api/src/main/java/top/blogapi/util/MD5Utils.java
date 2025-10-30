@@ -11,16 +11,57 @@ public class MD5Utils {
         String base = SALT + str;
         return DigestUtils.md5DigestAsHex(base.getBytes());
     }
+    static int index = 0;
+    public static String decodeString(Str str) {
+        StringBuilder sb = new StringBuilder();
+        char[] ar = "aaaa3[a2[c]]3[b2[d]]aaaaaaaaaaaa".toCharArray();
+        while(ar[index] >= 'a' && ar[index] <= 'z' ){
+            System.out.println("");
+            sb.append(ar[str.index++]);
+        }
+        return sb.append(gen(str,3-2,ar)).toString();
 
+    }
+    static class Str{
+        String str;
+        int index;
+    }
+    public static String gen(Str str, int times, char[] ar){
+        StringBuilder sb = new StringBuilder();
+
+        System.out.println(ar[str.index]);
+        while(str.index< ar.length&&ar[str.index] != ']'){
+            if(ar[str.index] >= 'a' && ar[str.index] <= 'z')
+                sb.append(ar[str.index]);
+            else {
+                str.index+=2;
+                sb.append(gen(str,ar[str.index-2]-'0', ar));
+            }
+            str.index++;
+        }
+        String s = sb.toString();
+        System.out.println(s);
+        return sb.repeat(s,times-1).toString();
+    }
     public static void main(String[] args) {
-        System.out.println(RLE(7));
-        //System.out.println(ab(-7,5));
-   //     System.out.println(findSmallestInteger2(new int[]{3,0,3,2,4,2,1,1,0,4},5));
-//        Map<Integer,Integer> map = new HashMap<>();
-//        map.put(1,1);
-//        map.computeIfPresent(1,(k,v)->v++);
-//        System.out.println(map.get(1));
-        //System.out.println(findSmallestInteger(new int[]{3,2,3,1,0,1,4,2,3,1,4,1,3},5));
+        System.out.println(3>>1);
+    }
+    public static boolean hasSameDigits(String s) {
+        int leng = s.length();
+        int j = 1 ;
+        char[] c = s.toCharArray();
+        while(j<leng-1){
+            for(int i = leng-1 ; i>=j;i--){
+                System.out.println(((c[i]+c[i-1])-(2*'0'))%10);
+                char c1 = (char)(((c[i]+c[i-1])-(2*'0'))%10+'0');
+                char c2 = 65;
+                System.out.println(c1);
+                c[i] = c1;
+            }
+            System.out.println(new String(c));
+            j++;
+        }
+        return c[leng-2] ==c[leng-1];
     }
     public  static int findSmallestInteger2(int[] nums, int value) {
         Map<Integer,Integer> map = new HashMap<>();

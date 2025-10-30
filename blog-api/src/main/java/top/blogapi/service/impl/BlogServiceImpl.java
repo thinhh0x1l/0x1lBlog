@@ -18,6 +18,7 @@ import top.blogapi.dto.response.blog.BlogSummaryResponse;
 import top.blogapi.dto.response.category.CategoryResponse;
 import top.blogapi.dto.response.page.BlogListPageResponse;
 import top.blogapi.entity.Blog;
+import top.blogapi.entity.Tag;
 import top.blogapi.exception.business_exception.domain_exception.BlogServiceException;
 import top.blogapi.mapper.BlogMapper;
 import top.blogapi.mapper.CategoryMapper;
@@ -77,7 +78,7 @@ public class BlogServiceImpl implements BlogService {
                     .build();
         if(request.getQuery() != null && request.getQuery().length() > 100)
             throw BlogServiceException.builder()
-                    .invalidQuery(request.getQuery())
+                    .invalidQuery(request.getQuery(),"Vướt quá độ dài tìm kiếm")
                     .context("length",100)
                     .context("actualLength",request.getQuery().length())
                     .build();
@@ -116,6 +117,25 @@ public class BlogServiceImpl implements BlogService {
 
     @Transactional
     @Override
+    public int updateBlog(Blog blog) {
+        blog.setUpdateTime(LocalDateTime.now());
+        return blogRepository.updateBlog(blog);
+    }
+
+    @Transactional
+    @Override
+    public Blog getBlogById(Long id) {
+        Blog blog = blogRepository.getBlogById(id)
+                .orElseThrow(() -> BlogServiceException.builder()
+                        .blogNotFound(id.toString())
+                        .build());
+        List<Tag> tags = blogRepository.findTagsByBlogId(id);
+        blog.setTags(tags);
+        return blog;
+    }
+
+    @Transactional
+    @Override
     public int saveBlogTag(Long blogId, Long tagId) {
         return blogRepository.saveBlogTag(blogId, tagId);
     }
@@ -123,16 +143,27 @@ public class BlogServiceImpl implements BlogService {
     @Transactional
     @Override
     public void updateBlogPublishedById(BlogUpdatePublishedRequest blogUpdatePublishedRequest) {
-         blogRepository.updateBlogPublishedById(blogUpdatePublishedRequest.getId(), blogUpdatePublishedRequest.isPublished());
+         int r = blogRepository.updateBlogPublishedById(blogUpdatePublishedRequest.getId(),
+                 blogUpdatePublishedRequest.isPublished());
+         if(r != 1)
+             throw BlogServiceException.builder()
+                     .dataRetrievalFailed("updateBlogRecommendById")
+                     .build();
     }
 
     @Transactional
     @Override
     public void updateBlogRecommendById(BlogUpdateRecommendRequest blogUpdateRecommendRequest) {
         int r  = blogRepository.updateBlogRecommendById(blogUpdateRecommendRequest.getId(), blogUpdateRecommendRequest.isRecommend());
-        if(r == 1)
-            return;
-        throw new RuntimeException("e");
+        if(r != 1)
+            throw BlogServiceException.builder()
+                    .dataRetrievalFailed("updateBlogRecommendById")
+                    .build();
+    }
+
+    @Override
+    public int countBlogByCategoryId(Long categoryId) {
+        return 0;
     }
 
 }

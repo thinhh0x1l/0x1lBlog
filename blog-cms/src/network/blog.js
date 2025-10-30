@@ -40,3 +40,42 @@ export function saveBlog(blog){
     })
 }
 
+export function updateBlogRecommendById(id, recommend){
+    return axios({
+        url: 'blog/recommend',
+        method: 'PUT',
+        data: {
+            id: id,
+            recommend: recommend
+        }
+    })
+}
+
+export function updateBlogPublishedById(id, published){
+    return axios({
+        url: 'blog/published',
+        method: 'PUT',
+        data: {
+            id: id,
+            published: published
+        }
+    })
+}
+export function getBlogById(id){
+    return axios({
+        url: `blog/${id}`,
+        method: "GET"
+
+    })
+}
+
+export function updateBlog(blog){
+    return axios({
+        url: 'blog',
+        method: "PUT",
+        data: {
+            blog
+        }
+    })
+}
+

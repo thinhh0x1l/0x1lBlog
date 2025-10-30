@@ -62,8 +62,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/admin/**").permitAll()
-                        .anyRequest().permitAll()
+
+                        .anyRequest().authenticated()
                 )
                 //filter JWT tùy chỉnh
                 .addFilterBefore(jwtLoginFilter, UsernamePasswordAuthenticationFilter.class)

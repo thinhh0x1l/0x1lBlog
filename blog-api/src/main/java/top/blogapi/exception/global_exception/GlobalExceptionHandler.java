@@ -20,13 +20,14 @@ public class GlobalExceptionHandler {
         log.warn("Domain Exception {}/{} - {}",
                 ex.getDomain(), ex.getErrorCode(), ex.getMessage());
         ErrorResponse error = ErrorResponse.builder()
+                .code(ex.getHttpStatus().value())
                 .errorCode(ex.getErrorCode())
                 .domain(ex.getDomain())
                 .path(request.getRequest().getRequestURI())
                 .context(ex.getContext())
                 .timestamp(LocalDateTime.now())
                 .entityId(ex.getEntityId())
-                .message(ex.getMessage())
+                .msg(ex.getMessage())
                 .build();
         return ResponseEntity.status(ex.getHttpStatus()).body(error);
     }

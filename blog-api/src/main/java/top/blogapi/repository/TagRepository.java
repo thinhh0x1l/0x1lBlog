@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import top.blogapi.entity.Tag;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 @Repository
@@ -17,5 +18,8 @@ public interface TagRepository {
     int saveTag(@Param("tag") Tag tag);
 
     @Select("SELECT t.id, t.name, t.color FROM tag t WHERE id = #{id}")
-    Tag getTagById(@Param("id") Long id);
+    Optional<Tag> getTagById(@Param("id") Long id);
+
+    @Select("SELECT t.id, t.name, t.color FROM tag t WHERE t.name LIKE #{name}")
+    Optional<Tag> getTagByName(String name);
 }

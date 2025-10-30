@@ -26,8 +26,25 @@ public class BlogServiceException extends DomainException {
                     .messageKey("blog.mapping_failed",new Object[]{entityType} );
         }
 
-        public BlogServiceExceptionBuilder invalidQuery(String query){
+        public BlogServiceExceptionBuilder invalidParameters(String msg, String ...operation){
+            this.domain("WRITE_BLOG");
+            return this.errorCode("BLOG_INVALID_PARAMETERS")
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .message(msg)
+                    .messageKey("blog.invalid_parameters",new Object[]{operation});
+        }
+
+        public BlogServiceExceptionBuilder blogTagException(String domain, HttpStatus httpStatus, String msg, String ...operations){
+            return this.domain(domain)
+                    .errorCode("BLOG_TAG_EXCEPTION")
+                    .httpStatus(httpStatus)
+                    .message(msg)
+                    .messageKey(domain.toLowerCase()+".blog_tag_exception", new Object[]{operations});
+        }
+
+        public BlogServiceExceptionBuilder invalidQuery(String query, String msg){
             return this.errorCode("BLOG_INVALID_QUERY")
+                    .message(msg)
                     .httpStatus(HttpStatus.BAD_REQUEST)
                     .messageKey("blog.invalid_query", new Object[]{query} );
         }
@@ -46,6 +63,20 @@ public class BlogServiceException extends DomainException {
                     .messageKey("blog.unauthorized_access", new Object[]{blogId, userId} );
         }
 
+        public BlogServiceExceptionBuilder createBlogFailed(String domain, HttpStatus httpStatus, String msg, String ...operations){
+            return this.domain(domain)
+                    .errorCode("CREATE_BLOG_FAILED")
+                    .httpStatus(httpStatus)
+                    .message(msg)
+                    .messageKey(domain.toLowerCase()+".create_blog_failed", new Object[]{operations});
+        }
+        public BlogServiceExceptionBuilder updateBlogFailed(String domain, HttpStatus httpStatus, String msg, String ...operations){
+            return this.domain(domain)
+                    .errorCode("UPDATE_BLOG_FAILED")
+                    .httpStatus(httpStatus)
+                    .message(msg)
+                    .messageKey(domain.toLowerCase()+".update_blog_failed", new Object[]{operations});
+        }
 
         @Override
         protected BlogServiceExceptionBuilder self() {
@@ -53,10 +84,7 @@ public class BlogServiceException extends DomainException {
         }
 
         @Override
-        public BlogServiceException
-
-
-        build() {
+        public BlogServiceException build() {
             return new BlogServiceException(this);
         }
     }

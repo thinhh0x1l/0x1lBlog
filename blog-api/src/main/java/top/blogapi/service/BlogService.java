@@ -8,6 +8,7 @@ import top.blogapi.dto.response.page.BlogListPageResponse;
 import top.blogapi.entity.Blog;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BlogService {
     BlogListPageResponse getListByTitleOrCategory(BlogQueryRequest blogQueryRequest);
@@ -18,9 +19,15 @@ public interface BlogService {
 
     int saveBlog(Blog blog);
 
+    int updateBlog(Blog blog);
+
+    Blog getBlogById(Long id);
+
     int saveBlogTag(Long blogId, Long tagId);
 
     void updateBlogPublishedById(BlogUpdatePublishedRequest blogUpdatePublishedRequest);
 
     void updateBlogRecommendById(BlogUpdateRecommendRequest blogUpdateRecommendRequest);
+
+    int countBlogByCategoryId(Long categoryId);
 }

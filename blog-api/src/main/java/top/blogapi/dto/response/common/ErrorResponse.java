@@ -17,12 +17,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Builder
 public class ErrorResponse {
+    Integer code;
     String errorCode;
-    String message;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" +
-            "" +
-            "" +
-            "")
+    String msg;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime timestamp;
     String path;
     @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -1,14 +1,10 @@
 <template>
   <div>
     <!--Thanh điều hướng breadcrumb-->
-    <el-breadcrumb :separator-icon="ArrowRight">
-      <el-breadcrumb-item :to="{ path: '/home' }">Trang chủ</el-breadcrumb-item>
-      <el-breadcrumb-item>Quản lý blog</el-breadcrumb-item>
-      <el-breadcrumb-item>Viết bài</el-breadcrumb-item>
-    </el-breadcrumb>
+    <Breadcrumb parent-title="Quản lý Blog"></Breadcrumb>
 
     <el-card>
-      <el-form :model="form" :rules="formRules" ref="formRef">
+      <el-form :model="form" :rules="formRules" ref="formRef" label-position="top">
         <el-form-item prop="title">
           <el-input v-model="form.title" placeholder="Vui lòng nhập tiêu đề"
                     style="min-width: 500px">
@@ -31,7 +27,8 @@
           </el-input>
         </el-form-item>
 
-        <el-form-item prop="content">
+        <el-form-item prop="content"
+                    >
           <!-- TipTap Editor - CSS tối giản -->
           <div style="border: 1px solid #DCDFE6; border-radius: 4px; background: white;">
             <!-- Thanh công cụ đơn giản -->
@@ -123,7 +120,27 @@
           />
         </el-form-item>
 
-        <el-form-item prop="description">
+        <el-form-item label="Thời gian đọc (tùy chọn)" prop="readTime">
+<!--          v-model = :value(truyền dynamic data từ js) + @input(lắng nghe sự kiện input thay đổi)-->
+          <el-input
+              v-model="form.readTime"
+              placeholder="Vui lòng nhập thời gian đọc. Mặc định Math.round(words/200)"
+              type="number"
+              style="width: 50%"
+          />
+        </el-form-item>
+
+        <el-form-item label="Lượt xem (tùy chọn)" prop="views">
+          <el-input
+            v-model="form.views"
+            placeholder="Vui lòng nhập số lượt xem. Mặc đinh là 0"
+            type="number"
+            style="width: 50%"
+          />
+
+        </el-form-item>
+
+        <el-form-item label="Mô tả bài viết" prop="description">
           <el-input
               v-model="form.description"
               type="textarea"
@@ -147,6 +164,7 @@
       </el-form>
     </el-card>
   </div>
+
 </template>
 
 <script setup>
@@ -154,13 +172,16 @@ import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { getCategoryAndTag, saveBlog } from '@/network/blog'
+import { useRouter , useRoute} from 'vue-router'
+import { getCategoryAndTag, saveBlog , getBlogById , updateBlog} from '@/network/blog'
 import { ArrowRight } from "@element-plus/icons-vue";
 import { getCurrentInstance} from "vue";
+import {watch} from "vue";
+import Breadcrumb from "@/components/Breadcrumb.vue";
 
 const { proxy } = getCurrentInstance()
 
+const route = useRoute()
 const router = useRouter()
 const formRef = ref()
 
@@ -175,6 +196,8 @@ const form = reactive({
   content: '',
   cate: null,
   tagList: [],
+  readTime: null,
+  views: 0,
   firstPicture: '',
   words: null,
   description: '',
@@ -184,6 +207,13 @@ const form = reactive({
   commentEnabled: false,
   published: false
 })
+watch(() => form.content, (newContent) => {
+  if (editor.value && newContent !== editor.value.getHTML()) {
+    console.log('🔄 Updating editor with new content:', newContent)
+    editor.value.commands.setContent(newContent, false)
+  }
+})
+
 
 const formRules = {
   title: [{ required: true, message: 'Vui lòng nhập tiêu đề', trigger: 'change' }],
@@ -203,6 +233,7 @@ const editor = useEditor({
   ],
   onUpdate: ({ editor }) => {
     form.content = editor.getHTML() // Tự động cập nhật nội dung form
+    form.words = editor.getText().trim().length
   },
 })
 
@@ -212,6 +243,24 @@ const addImage = () => {
   if (url) {
     editor.value.chain().focus().setImage({ src: url }).run()
   }
+}
+
+const getBlog = async (id) => {
+  try{
+    const res = await getBlogById(id);
+    if (res.code === 200) {
+      computeCategoryAndTag(res.data)
+      Object.assign(form,res.data)
+    }
+  }catch (e){
+
+  }
+}
+
+const computeCategoryAndTag = (blog) => {
+  blog.cate = blog.category.id;
+  blog.tagList = []
+  blog.tags.forEach( tag => blog.tagList.push(tag.id) )
 }
 
 const getData = async () => {
@@ -236,10 +285,15 @@ const submit = async (published) => {
     form.published = published
 
     console.log('Dữ liệu gửi:', form)
-
-    const res = await saveBlog(form)
+    let res
+    if(route.params.id){
+      res = await updateBlog(form);
+    }else{
+      res = await saveBlog(form)
+    }
     if (res.code === 200) {
       await router.push('/blogs')
+      console.log(res.data)
       proxy.$msgSuccess(res.msg)
     } else
       proxy.$msgError(res.msg)
@@ -256,6 +310,9 @@ const submit = async (published) => {
 
 onMounted(() => {
   getData()
+  if(route.params.id)
+    getBlog(route.params.id)
+
 })
 
 onUnmounted(() => {

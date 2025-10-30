@@ -3,7 +3,8 @@ import Login from "@/view/Login.vue"
 import Home from "@/view/Home.vue";
 import Welcome from "@/view/Welcome.vue";
 import BlogList from "@/view/blog/BlogList.vue";
-import AddBlog from "@/view/blog/AddBlog.vue";
+import WriteBlog from "@/view/blog/WriteBlog.vue";
+import { useAppStore } from '@/store/index.js'
 
 const routes = [
     {
@@ -30,10 +31,17 @@ const routes = [
                 }
             },
             {
-                path: '/write',
-                component: AddBlog,
+                path: '/blogs/write',
+                component: WriteBlog,
                 meta: {
                     title: 'Viết Blog'
+                }
+            },
+            {
+                path: '/blogs/edit/:id',
+                component: WriteBlog,
+                meta: {
+                    title: 'Chỉnh sửa Blog'
                 }
             },
             {
@@ -46,6 +54,7 @@ const routes = [
         ]
     }
 ]
+
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,7 +72,8 @@ router.beforeEach((to, from, next) => {
     if (to.meta.title) {
         document.title = to.meta.title
     }
-
+    const store = useAppStore()
+    store.saveNavState(to.path)
     next()
 })
 

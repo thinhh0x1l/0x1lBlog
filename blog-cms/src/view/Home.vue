@@ -28,7 +28,7 @@
           :collapse="isCollapse"
           :collapse-transition="false"
           :router="true"
-          :default-active="activePath"
+          :default-active="store.activePath"
         >
           <!-- First Level Menu -->
           <el-sub-menu
@@ -46,7 +46,7 @@
               v-for="subItem in item.children"
               :key="subItem.id"
               :index="subItem.path"
-              @click="saveNavState(subItem.path)"
+              @click="store.saveNavState(subItem.path)"
             >
               <template #title>
                 <i :class="iconsObj[subItem.id]"></i>
@@ -60,7 +60,7 @@
 
       <!-- Right Content Area -->
       <el-main>
-        <router-view/>
+        <router-view :key="route.fullPath"/>
       </el-main>
 
     </el-container>
@@ -69,19 +69,20 @@
 
 <script setup>
 import { ref, onMounted} from "vue";
-import {useRouter} from "vue-router";
-import { ElMessage } from "element-plus";
+import {useRouter ,useRoute } from "vue-router";
 import { getCurrentInstance } from "vue";
+import { useAppStore } from '@/store/index.js'
 
+const store = useAppStore()
 
 const { proxy } = getCurrentInstance()
 
 //Router instance
+const route = useRoute()
 const router = useRouter()
 
 //Reactive data
 const isCollapse = ref(false)
-const activePath = ref('')
 const defaultOpeneds = ref(['1','2','3','4'])
 
 const menuList = [
@@ -93,7 +94,7 @@ const menuList = [
         id: 11,
         title: 'Viết Blog',
         children: [],
-        path: '/write'
+        path: '/blogs/write'
       },
       {
         id: 12,
@@ -183,24 +184,19 @@ const iconsObj = {
 
 // Lifecycle
 onMounted(() => {
-  activePath.value = window.sessionStorage.getItem('activePath') || ''
 })
 
 // Các phương thức
 const logout = () => {
   window.sessionStorage.clear()
   router.push('/login')
-  proxy.msgSuccess('Đăng xuất thành công')
+  proxy.$msgSuccess('Đăng xuất thành công')
 }
 
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value
 }
 
-const saveNavState = (path) => {
-  activePath.value = path
-  window.sessionStorage.setItem('activePath',path)
-}
 
 </script>
 

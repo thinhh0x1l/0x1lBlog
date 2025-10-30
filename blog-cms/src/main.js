@@ -2,7 +2,9 @@ import { createApp} from "vue";
 import App from "@/App.vue";
 import router from "@/router/index.js";
 import './assets/css/base.css'
+import { createPinia } from "pinia";
 
+const pinia = createPinia()
 // Element Plus (thay cho Element UI)
 import ElementPlus, {ElMessage} from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -13,6 +15,7 @@ const app = createApp(App)
 
 // sử dụng plugins
 app.use(router)
+app.use(pinia)
 app.use(ElementPlus)
 
 const showMessage = (type,msg) =>{

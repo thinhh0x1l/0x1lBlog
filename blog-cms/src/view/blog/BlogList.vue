@@ -1,12 +1,7 @@
 <template>
   <div>
     <!-- Breadcrumb Navigation -->
-    <el-breadcrumb :separator-icon="ArrowRight">
-      <el-breadcrumb-item :to="{ path: '/home' }">Trang chủ</el-breadcrumb-item>
-      <el-breadcrumb-item>Quản lý Blog</el-breadcrumb-item>
-      <el-breadcrumb-item>Danh sách Blog</el-breadcrumb-item>
-    </el-breadcrumb>
-
+    <Breadcrumb parent-title="Quản lý Blog"></Breadcrumb>
     <el-card>
       <!-- Search -->
       <el-row>
@@ -103,15 +98,19 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { ArrowRight, Search, Edit, Delete } from '@element-plus/icons-vue'
-import {getDataQuery, deleteBlogById ,getCategoryAndTag, saveBlog} from '@/network/blog.js'
+import { useRouter , useRoute } from 'vue-router'
+import { Search, Edit, Delete } from '@element-plus/icons-vue'
+import {getDataQuery, deleteBlogById ,getCategoryAndTag,
+  saveBlog, updateBlogRecommendById, updateBlogPublishedById}
+  from '@/network/blog.js'
 import { formatDate } from '@/util/dateTimeFormatUtils.js'
 import  { getCurrentInstance } from 'vue'
+import Breadcrumb from "@/components/Breadcrumb.vue";
 
 const { proxy } = getCurrentInstance()
 
 const router = useRouter()
+const route = useRoute()
 
 const queryInfo = reactive({
   query: '',
@@ -133,7 +132,7 @@ const total = ref(0)
 const getData = async () => {
   try {
     const res = await getDataQuery(queryInfo.query, queryInfo.categoryId, queryInfo.pageNum, queryInfo.pageSize)
-    console.log(res)
+
     if (res.code === 200) {
       proxy.$msgSuccess(res.msg)
       blogList.value = res.data.blogs.list
@@ -142,17 +141,34 @@ const getData = async () => {
     } else {
       proxy.$msgError(res.msg)
     }
-  } catch {
-    proxy.$msgError("Yêu cầu thất bại")
+  } catch(error){
+    proxy.$msgError(error.response.data.msg)
+    console.log(error.response.data)
   }
 }
 
-const blogRecommendChanged = () => {
-
+const blogRecommendChanged = async (dataRow) => {
+  try{
+    const res = await updateBlogRecommendById(dataRow.id,dataRow.recommend)
+    if(res.code === 200)
+      proxy.$msgSuccess(res.msg)
+    else
+      proxy.$msgError(res.msg)
+  }catch (e){
+    proxy.$msgError(res.msg)
+  }
 }
 
-const blogPublishedChanged = () => {
-
+const blogPublishedChanged = async (dataRow) => {
+  try{
+    const res = await updateBlogPublishedById(dataRow.id,dataRow.published)
+    if(res.code === 200)
+      proxy.$msgSuccess(res.msg)
+    else
+      proxy.$msgError(res.msg)
+  }catch (e){
+    proxy.$msgError(res.msg)
+  }
 }
 
 const handleSizeChange = (newSize) => {
