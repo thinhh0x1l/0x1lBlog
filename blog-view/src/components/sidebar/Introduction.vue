@@ -1,10 +1,10 @@
-<template>
+  <template>
   <div >
     <div class="m-box">
       <div class="card">
         <div >
           <Image
-              :src="introduction.avatar"
+              :src="'https://github.com/thinhh0x1l/0x1lBlog/blob/main/blog-view/src/assets/img/avatar.jpg'"
               alt="Avatar"
               image-style="width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover;"
               preview
