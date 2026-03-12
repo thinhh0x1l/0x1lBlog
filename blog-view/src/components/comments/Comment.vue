@@ -11,7 +11,7 @@
           <div class="comment-item">
             <Avatar
                 :shape="'circle'"
-                :image="'https://github.com/thinhh0x1l/0x1lBlog/blob/main/blog-view/src/assets/img/comment-avatar/'+cm.avatar"
+                :image="'https://raw.githubusercontent.com/thinhh0x1l/0x1lBlog/refs/heads/main/blog-view/src/assets/img/comment-avatar/'+cm.avatar"
                 :size="'large'"
             />
             <div class="comment"  :ref="el => setItemRef(el,cm.id)">
