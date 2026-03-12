@@ -21,6 +21,6 @@ app .use(router)
     .component('font-awesome-icon', FontAwesomeIcon)
     .use(VueLazyLoad, {
         loading: "/img/loading.gif",
-        error: "/img/error.png"n
+        error: "/img/error.png"
     })
     .mount('#app')

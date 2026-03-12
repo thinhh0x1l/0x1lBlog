@@ -33,9 +33,9 @@ export interface PageInfo<T = any> {
     hasPreviousPage: boolean; // Có trang trước không
     hasNextPage: boolean;     // Có trang sau không
 }
-
+const api = import.meta.env.VITE_API_URL
 export const request: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:8090/',
+    baseURL: api,
     timeout: 10000,
     withCredentials: true
 })

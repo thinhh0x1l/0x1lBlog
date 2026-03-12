@@ -2,8 +2,9 @@ import axios from "axios";
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
+const api = import.meta.env.VITE_API_URL
 const request = axios.create({
-    baseURL: 'http://localhost:8090/',
+    baseURL: api,
     timeout: 10000,
     withCredentials: true
 })
