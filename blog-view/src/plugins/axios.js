@@ -3,7 +3,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
 const request = axios.create({
-    baseURL: 'http://localhost:8090/',
+    baseURL: 'https://danuta-epirogenic-reportedly.ngrok-free.dev/',
     timeout: 10000,
     withCredentials: true
 })
