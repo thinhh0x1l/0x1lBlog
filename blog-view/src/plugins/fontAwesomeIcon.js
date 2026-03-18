@@ -21,7 +21,17 @@ import {
     faLocationDot,
     faFaceLaughSquint,
     faCommentDots,
+    faHeart as fasHeart,
+    faCircleArrowRight,
+    faCircleArrowLeft,
+    faBook,
+    faBookOpen,
+
 } from '@fortawesome/free-solid-svg-icons'
+
+import {
+    faHeart as farHeart
+} from '@fortawesome/free-regular-svg-icons'
 library.add(
     faHome,
     faTags,
@@ -43,6 +53,11 @@ library.add(
     faLocationDot,
     faFaceLaughSquint,
     faCommentDots,
+    farHeart, fasHeart,
+    faCircleArrowRight,
+    faCircleArrowLeft,
+    faBook,
+    faBookOpen,
 )
 
 export default FontAwesomeIcon

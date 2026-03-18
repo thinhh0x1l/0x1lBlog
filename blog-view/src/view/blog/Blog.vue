@@ -49,7 +49,6 @@
             <!-- Mô tả bài viết -->
             <div class="typo m-padded-tb-small px-3 blog-content
             line-numbers match-braces rainbow-braces"
-                 v-lazy-container="{ selector: 'img' }"
                  v-html="blog.content"></div>
             <!-- Divider -->
             <div class="col-12">

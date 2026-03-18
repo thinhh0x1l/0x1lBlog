@@ -101,7 +101,6 @@ function hashString(str) {
 function generateToc() {
   if (!headings.length) return
   const items = headings.map((heading, index) => {
-    console.log(heading.tagName)
     if (!heading.id)
       heading.id ||= `h-${hashString(heading.innerText+index)}`
     return {
@@ -254,8 +253,6 @@ function refreshToc() {
     headings = Array.from(document.querySelectorAll(selector))
     generateToc()
     if (headings.length) {
-      console.log(headings)
-
       initObserver()
       updateActiveHeading()
       window.addEventListener(

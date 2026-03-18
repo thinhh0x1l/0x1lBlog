@@ -18,9 +18,9 @@ app .use(router)
     .use(pinia)
     .use(PrismPlugin)
     .use(PrimeVuePlugin)
-    .component('font-awesome-icon', FontAwesomeIcon)
+    .component('FontAwesomeIcon', FontAwesomeIcon)
     .use(VueLazyLoad, {
         loading: "/img/loading.gif",
-        error: "/img/error.png"n
+        error: "/img/error.png"
     })
     .mount('#app')

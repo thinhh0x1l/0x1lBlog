@@ -11,6 +11,7 @@
               <div class="sticky-sidebar">
                 <Introduction
                     v-show="$route.name!=='blog'"
+                    v-if="!showIntro"
                 />
                 <div class="toc-wrapper">
                   <Toc
@@ -23,7 +24,10 @@
                 </div>
               </div>
             </div>
-            <div class="flex-1 min-w-0 main-content" style="width: 62.5% !important;">
+            <div class="flex-1 min-w-0 main-content"
+                 :class="{'overlay':showIntro}"
+                 style="width: 62.5% !important"
+            >
               <router-view/>
             </div>
 
@@ -41,8 +45,47 @@
       </button>
     </div>
 
+    <font-awesome-icon
+
+      :icon="['fa',showIntro?'circle-arrow-left':'circle-arrow-right']"
+      style="color: rgb(43, 47, 51); z-index: 40; top:300px; width: auto; height:  30px"
+      class="md:hidden fixed left-4 px-3 py-2"
+      @click="showIntro = !showIntro"
+    />
+    <div
+        v-if="showIntro"
+        class="fixed text-white px-3 "
+        style="z-index: 10; top: 75px;"
+    >
+      <div style=" width: 40%">
+        <Introduction />
+      </div>
+    </div>
+    <font-awesome-icon
+        v-show="showE"
+        :icon="['fa',showToc?'book-open':'book']"
+        style="color: rgb(43, 47, 51); z-index: 40; top:400px; width: auto; height: 30px"
+        class="md:hidden fixed left-4 px-3 py-2"
+        @click="showToc = !showToc;"
+    />
+    <div
+        v-show="showToc"
+        class="fixed text-white px-3 "
+        style="z-index: 10; top: 400px;"
+    >
+      <div class="toc-wrapper">
+        <Toc
+            ref="tocComponent"
+            :contentSelector="'.blog-content'"
+            headingSelector="h1, h2, h3"
+            :scrollOffset="80"
+            v-show="showToc"
+        />
+      </div>
+    </div>
     <Footer :siteInfo="siteInfo" :badges="badges" :newBlogList="newBlogList" :hitokoto="hitokoto"/>
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -61,6 +104,7 @@ import type {ApiResponse} from "@/plugins/axios2";
 import type {Tag} from "@/types/tagType";
 import Toc from "@/components/sidebar/Toc.vue";
 import {useBlogDetailStore} from "@/store/blogDetailStore";
+import {useWindowSize} from "@vueuse/core";
 
 const tags = ref<Tag[]>([])
 const loading = ref(false)
@@ -78,6 +122,17 @@ const badges = ref([])
 const newBlogList = ref([])
 const hitokoto = ref<Record<string, any>>({})
 const blogName = computed(() => siteInfo.value?.blogName || 'Thinh0x1l\'')
+
+const showIntro = ref(false)
+const showToc= ref(true)
+const { width } = useWindowSize()
+
+watch(() => width.value, (w) => {
+  if(w > 768){
+    showIntro.value = false
+    showToc.value = false
+  }
+})
 
 // Functions
 const getHitokotoData = async () => {
@@ -252,7 +307,17 @@ onMounted(() => {
   top: 68px;
   height: 100%;
 }
+.overlay {
+  position: relative;
+}
 
+.overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4); /* mức độ tối */
+  pointer-events: none;
+}
 /*.sticky-sidebar {
   position: sticky;n dev
   top: 10px;

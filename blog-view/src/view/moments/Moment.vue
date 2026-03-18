@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="ui top attached segment" style="text-align: center">
-      <h2 class="m-text-500">我的动态</h2>
+      <h2 class="m-text-500">Hoạt động của tôi</h2>
     </div>
     <div class="ui attached segment m-padding-bottom-large">
       <div class="moments">
         <div class="moment" v-for="(moment, index) in momentList" :key="index">
           <div class="avatar">
-            <img :src="userAvatar">
+            <img :src="userAvatar" loading="lazy">
           </div>
           <div class="ui card">
             <div class="content m-top">
@@ -15,12 +15,12 @@
               <span class="right floated">{{ formatDate(moment.createTime) }}</span>
             </div>
             <div class="content typo" :class="{'privacy': !moment.published}"
-                 v-lazy-container="{selector: 'img'}"
-                 v-viewer
-                 v-html="moment.content"></div> //Unrecognized Vue directive
+                 v-html="moment.content"></div>
+
             <div class="extra content">
               <a class="left floated" @click="handleLike(moment.id)">
-                <i class="heart icon" :class="isLiked(moment.id) ? 'like-color' : 'outline'"></i>
+                <font-awesome-icon :icon="[(isLiked(moment.id)?'fas':'far'),'heart']"
+                                   style="color: rgb(255, 0, 30);" />
                 {{ moment.likes }}
               </a>
             </div>
@@ -43,13 +43,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import {ref, reactive, computed, onMounted, nextTick} from 'vue'
 
 
 
 // PrimeVue components
 import Paginator from 'primevue/paginator'
 import {useAppStore} from "@/store/index.ts";
+import mediumZoom from "medium-zoom"
 
 // Store
 const store = useAppStore()
@@ -113,16 +114,16 @@ const fetchMoments = async () => {
 // Tạo dữ liệu mẫu
 const generateMockMoments = () => {
   const contents = [
-    '<p>Hôm nay thật là một ngày đẹp trời! 🌞</p><img src="https://picsum.photos/400/300?random=1" alt="sunny day">',
-    '<p>Vừa đọc xong cuốn sách "Nhà giả kim" - thực sự rất hay!</p><img src="https://picsum.photos/400/300?random=2" alt="book">',
-    '<p>Check-in tại quán cà phê mới mở ☕️</p><img src="https://picsum.photos/400/300?random=3" alt="coffee">',
-    '<p>Chia sẻ một vài bức ảnh du lịch Đà Lạt 🏔️</p><img src="https://picsum.photos/400/300?random=4" alt="dalat">',
-    '<p>Coding cả đêm để hoàn thành project 🖥️</p><img src="https://picsum.photos/400/300?random=5" alt="coding">',
-    '<p>Món ăn ngon cuối tuần 🍜</p><img src="https://picsum.photos/400/300?random=6" alt="food">',
-    '<p>Gym time! 💪</p><img src="https://picsum.photos/400/300?random=7" alt="gym">',
-    '<p>Mua sắm cuối tuần 🛍️</p><img src="https://picsum.photos/400/300?random=8" alt="shopping">',
-    '<p>Học tiếng Nhật mỗi ngày 📚</p><img src="https://picsum.photos/400/300?random=9" alt="study">',
-    '<p>Gặp gỡ bạn bè sau giờ làm 🍻</p><img src="https://picsum.photos/400/300?random=10" alt="friends">'
+    '<p>Hôm nay thật là một ngày đẹp trời! 🌞</p><img class="medium-zoom-image" src="https://picsum.photos/400/300?random=1" alt="sunny day" loading="lazy">',
+    '<p>Vừa đọc xong cuốn sách "Nhà giả kim" - thực sự rất hay!</p><img  class="medium-zoom-image" loading="lazy" src="https://picsum.photos/400/300?random=2" alt="book">',
+    '<p>Check-in tại quán cà phê mới mở ☕️</p><img  class="medium-zoom-image" loading="lazy" src="https://picsum.photos/400/300?random=3" alt="coffee">',
+    '<p>Chia sẻ một vài bức ảnh du lịch Đà Lạt 🏔️</p><img class="medium-zoom-image"  loading="lazy" src="https://picsum.photos/400/300?random=4" alt="dalat">',
+    '<p>Coding cả đêm để hoàn thành project 🖥️</p><img class="medium-zoom-image"  loading="lazy" src="https://picsum.photos/400/300?random=5" alt="coding">',
+    '<p>Món ăn ngon cuối tuần 🍜</p><img  class="medium-zoom-image" loading="lazy" src="https://picsum.photos/400/300?random=6" alt="food">',
+    '<p>Gym time! 💪</p><img loading="lazy"  class="medium-zoom-image" src="https://picsum.photos/400/300?random=7" alt="gym">',
+    '<p>Mua sắm cuối tuần 🛍️</p><img loading="lazy" class="medium-zoom-image"  src="https://picsum.photos/400/300?random=8" alt="shopping">',
+    '<p>Học tiếng Nhật mỗi ngày 📚</p><img loading="lazy" class="medium-zoom-image"  src="https://picsum.photos/400/300?random=9" alt="study">',
+    '<p>Gặp gỡ bạn bè sau giờ làm 🍻</p><img loading="lazy" class="medium-zoom-image"  src="https://picsum.photos/400/300?random=10" alt="friends">'
   ]
 
   return Array.from({ length: 25 }, (_, i) => ({
@@ -134,9 +135,18 @@ const generateMockMoments = () => {
   })).sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
 }
 
+let zoom
+const initZoom = () => {
+  zoom = mediumZoom(".typo img", {
+    margin: 24,
+    background: "#000"
+  })
+}
 // Lifecycle
-onMounted(() => {
-  fetchMoments()
+onMounted(async () => {
+  await fetchMoments()
+  await nextTick()
+  initZoom()
 })
 </script>
 

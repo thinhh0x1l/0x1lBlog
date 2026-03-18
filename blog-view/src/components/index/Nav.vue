@@ -36,9 +36,9 @@
             <font-awesome-icon icon="archive" class="mr-2 pi" />Lưu trữ
           </router-link>
             <router-link :class="[mobileMenuOpen? 'm-mobile-show':'m-mobile-hide',
-                $route.name==='moment'?'active':'']"
+                $route.name==='moments'?'active':'']"
                 class=" nav-line  no-underline t-m-bold
-                 transition-colors transition-duration-200 p-3" to="">
+                 transition-colors transition-duration-200 p-3" to="/moments">
               <font-awesome-icon icon="comment-dots" class="mr-2" />Khoảng khắc
             </router-link>
             <router-link :class="[mobileMenuOpen? 'm-mobile-show':'m-mobile-hide',
