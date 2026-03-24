@@ -37,6 +37,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -194,7 +195,11 @@ public class BlogOrchestrator {
     public BlogDetail getBlogByIdAndIsPublished(Long id){
         BlogDetail blogDetail =  blogService.getBlogByIdAndIsPublished(id);
         if(blogDetail.getMusicId() != null){
-            blogDetail.setMusicInfo(getCompleteSongData(blogDetail.getMusicId()));
+            try {
+                blogDetail.setMusicInfo(getCompleteSongData(blogDetail.getMusicId()));
+            } catch (Exception e){
+                blogDetail.setMusicInfo(null);
+            }
         }
         return blogDetail;
     }
@@ -203,10 +208,12 @@ public class BlogOrchestrator {
     private BlogDetail.MusicInfo getCompleteSongData(String songId) {
         try {
             CompletableFuture<Map<String, String>> infoFuture = CompletableFuture
-                    .supplyAsync(() -> mp3Service.getSongInfo(songId), executorService);
+                    .supplyAsync(() -> mp3Service.getSongInfo(songId), executorService)
+                    .orTimeout(3, TimeUnit.SECONDS);
 
             CompletableFuture<String> streamingFuture = CompletableFuture
-                    .supplyAsync(() -> mp3Service.getSongStreaming(songId), executorService);
+                    .supplyAsync(() -> mp3Service.getSongStreaming(songId), executorService)
+                    .orTimeout(3, TimeUnit.SECONDS);
 
             CompletableFuture<String> lyricFuture = CompletableFuture
                     .supplyAsync(() -> {
@@ -215,19 +222,22 @@ public class BlogOrchestrator {
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
-                    }, executorService);
+                    }, executorService)
+                    .orTimeout(3, TimeUnit.SECONDS);
 
             CompletableFuture.allOf(infoFuture, streamingFuture, lyricFuture).join();
-            BlogDetail.MusicInfo musicInfo = new BlogDetail.MusicInfo(
-                    infoFuture.get().get("title"),
-                    lyricFuture.get(),
-                    infoFuture.get().get("name"),
-                    streamingFuture.get(),
-                    "#46718b",
-                    infoFuture.get().get("thumbnail")
+            var info = infoFuture.join();
+            var lyric = lyricFuture.join();
+            var streaming = streamingFuture.join();
 
+            return new BlogDetail.MusicInfo(
+                    info.getOrDefault("title", "Unknown"),
+                    lyric,
+                    info.getOrDefault("name", "Unknown"),
+                    streaming,
+                    "#46718b",
+                    info.getOrDefault("thumbnail", "")
             );
-            return musicInfo;
         } catch (Exception e) {
             throw new RuntimeException("Lấy dữ liệu bài hát thất bại", e);
         }
