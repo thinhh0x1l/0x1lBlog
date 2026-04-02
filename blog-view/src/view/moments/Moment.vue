@@ -42,8 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, computed, onMounted, nextTick} from 'vue'
-
+import {ref, reactive, computed, onMounted, nextTick, watch} from 'vue'
 import Paginator, {type PageState} from 'primevue/paginator'
 import {useAppStore} from "@/store";
 import mediumZoom from "medium-zoom"
@@ -60,23 +59,34 @@ const momentList = ref<Moment[]>([])
 const pageNum = ref(1)
 const pageSize = ref(5)
 const totalRecords = ref(0)
-const likedMoments = ref(new Set())
+const likedMoments = ref(new Set(JSON.parse(localStorage.getItem('likedMomentIds')||'[]')))
 
 const userAvatar = computed(() => store.introduction?.avatar || 'https://via.placeholder.com/45')
 const userName = computed(() => store.introduction?.name || 'Thjnk')
 
+
 const handleLike = (momentId: number) => {
-  const moment = momentList.value.find(m => m.id === momentId)
-  if (moment) {
-    if (likedMoments.value.has(momentId)) {
-      likedMoments.value.delete(momentId)
-      moment.likes--
-    } else {
-      likedMoments.value.add(momentId)
-      moment.likes++
-    }
+  const moment = momentMap.value.get(momentId)
+  if (!moment) return
+  const newSet = new Set(likedMoments.value)
+  if (newSet.has(momentId)) {
+    newSet.delete(momentId)
+    moment.likes = Math.max(0, moment.likes - 1)
+  } else {
+    newSet.add(momentId)
+    moment.likes++
   }
+  likedMoments.value = newSet
+  localStorage.setItem(
+      'likedMomentIds',
+      JSON.stringify([...newSet])
+  )
 }
+const momentMap = computed(() => {
+  const map = new Map<number, Moment>()
+  momentList.value.forEach(m => map.set(m.id, m))
+  return map;
+})
 
 const isLiked = (momentId: number) => {
   return likedMoments.value.has(momentId)
