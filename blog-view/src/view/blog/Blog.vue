@@ -181,7 +181,7 @@ const fetchBlog = async () => {
     } else {
     }
   } catch (error) {
-
+    console.log(error)
   }
 }
 

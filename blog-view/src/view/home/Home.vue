@@ -21,7 +21,6 @@ const fetchBlogList = async (pageNum) => {
     const res = await getBlogList(pageNum);
     if(res.code === 200){
       toast.success(res.msg)
-      console.log(res.data)
       blogList.value = res.data.list
       totalPage.value = res.data.totalPage
     }

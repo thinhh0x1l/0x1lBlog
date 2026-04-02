@@ -28,13 +28,12 @@
         </div>
       </div>
 
-      <!-- PrimeVue Paginator -->
       <div class="pagination-container">
         <Paginator
-            :first="(pageNum - 1) * pageSize"
             :rows="pageSize"
             :totalRecords="totalRecords"
             @page="handlePageChange"
+            :always-show="false"
             template="PrevPageLink PageLinks NextPageLink"
         />
       </div>
@@ -42,42 +41,31 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {ref, reactive, computed, onMounted, nextTick} from 'vue'
 
-
-
-// PrimeVue components
-import Paginator from 'primevue/paginator'
-import {useAppStore} from "@/store/index.ts";
+import Paginator, {type PageState} from 'primevue/paginator'
+import {useAppStore} from "@/store";
 import mediumZoom from "medium-zoom"
+import {formatDate} from "@/util/dateTimeFormatUtils.js";
+import type {Moment} from "@/types/momentType";
+import {useScrollToTop} from "@/util/ScrollToTop.js";
+import {getMomentListByPageNum} from "@/api/moment";
+import type {ApiResponse, PageInfo} from "@/plugins/axios2";
+const {scrollToTop} = useScrollToTop()
 
-// Store
 const store = useAppStore()
 
-// State
-const momentList = ref([])
+const momentList = ref<Moment[]>([])
 const pageNum = ref(1)
-const pageSize = ref(10)
+const pageSize = ref(5)
 const totalRecords = ref(0)
 const likedMoments = ref(new Set())
 
-// Computed
 const userAvatar = computed(() => store.introduction?.avatar || 'https://via.placeholder.com/45')
-const userName = computed(() => store.introduction?.name || 'Người dùng')
-const totalPage = computed(() => Math.ceil(totalRecords.value / pageSize.value))
+const userName = computed(() => store.introduction?.name || 'Thjnk')
 
-// Methods
-const formatDate = (date) => {
-  if (!date) return ''
-  try {
-
-  } catch (error) {
-    return 'không xác định'
-  }
-}
-
-const handleLike = (momentId) => {
+const handleLike = (momentId: number) => {
   const moment = momentList.value.find(m => m.id === momentId)
   if (moment) {
     if (likedMoments.value.has(momentId)) {
@@ -90,52 +78,28 @@ const handleLike = (momentId) => {
   }
 }
 
-const isLiked = (momentId) => {
+const isLiked = (momentId: number) => {
   return likedMoments.value.has(momentId)
 }
 
-const handlePageChange = (event) => {
-  pageNum.value = Math.floor(event.first / event.rows) + 1
+const handlePageChange = (event: PageState) => {
+  pageNum.value = event.page+1
   fetchMoments()
 }
 
-// Fetch moments (mock data)
 const fetchMoments = async () => {
-  // Giả lập API call
-  const mockData = generateMockMoments()
-
-  // Phân trang mock data
-  const start = (pageNum.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  momentList.value = mockData.slice(start, end)
-  totalRecords.value = mockData.length
+  scrollToTop()
+ try{
+   const res: ApiResponse<PageInfo<Moment>> = await getMomentListByPageNum(pageNum.value)
+   if(res.code === 200){
+     momentList.value = res.data.list;
+     totalRecords.value = res.data.total
+   }
+ }catch (error){}
 }
 
-// Tạo dữ liệu mẫu
-const generateMockMoments = () => {
-  const contents = [
-    '<p>Hôm nay thật là một ngày đẹp trời! 🌞</p><img class="medium-zoom-image" src="https://picsum.photos/400/300?random=1" alt="sunny day" loading="lazy">',
-    '<p>Vừa đọc xong cuốn sách "Nhà giả kim" - thực sự rất hay!</p><img  class="medium-zoom-image" loading="lazy" src="https://picsum.photos/400/300?random=2" alt="book">',
-    '<p>Check-in tại quán cà phê mới mở ☕️</p><img  class="medium-zoom-image" loading="lazy" src="https://picsum.photos/400/300?random=3" alt="coffee">',
-    '<p>Chia sẻ một vài bức ảnh du lịch Đà Lạt 🏔️</p><img class="medium-zoom-image"  loading="lazy" src="https://picsum.photos/400/300?random=4" alt="dalat">',
-    '<p>Coding cả đêm để hoàn thành project 🖥️</p><img class="medium-zoom-image"  loading="lazy" src="https://picsum.photos/400/300?random=5" alt="coding">',
-    '<p>Món ăn ngon cuối tuần 🍜</p><img  class="medium-zoom-image" loading="lazy" src="https://picsum.photos/400/300?random=6" alt="food">',
-    '<p>Gym time! 💪</p><img loading="lazy"  class="medium-zoom-image" src="https://picsum.photos/400/300?random=7" alt="gym">',
-    '<p>Mua sắm cuối tuần 🛍️</p><img loading="lazy" class="medium-zoom-image"  src="https://picsum.photos/400/300?random=8" alt="shopping">',
-    '<p>Học tiếng Nhật mỗi ngày 📚</p><img loading="lazy" class="medium-zoom-image"  src="https://picsum.photos/400/300?random=9" alt="study">',
-    '<p>Gặp gỡ bạn bè sau giờ làm 🍻</p><img loading="lazy" class="medium-zoom-image"  src="https://picsum.photos/400/300?random=10" alt="friends">'
-  ]
 
-  return Array.from({ length: 25 }, (_, i) => ({
-    id: i + 1,
-    content: contents[i % contents.length],
-    createTime: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-    published: Math.random() > 0.2, // 80% published
-    likes: Math.floor(Math.random() * 50)
-  })).sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
-}
-
-let zoom
+let zoom;
 const initZoom = () => {
   zoom = mediumZoom(".typo img", {
     margin: 24,

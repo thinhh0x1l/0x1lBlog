@@ -75,7 +75,6 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
 import {formatDate} from "@/util/dateTimeFormatUtils.js";
 import Tag from '@/components/blogList/Tag.vue'
 import Ribbon from "@/components/blogList/Ribbon.vue";

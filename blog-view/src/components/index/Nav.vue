@@ -123,7 +123,6 @@ const getCategoryList = async () => {
   try{
     const res: ApiResponse<Category[]> = await fGetCategoryList();
     if(res.code === 200){
-      console.log('success')
       categoryList.value = res.data
     }
 

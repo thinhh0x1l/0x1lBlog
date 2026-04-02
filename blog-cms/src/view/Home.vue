@@ -110,18 +110,24 @@ const menuList = [
       },
       {
         id: 13,
+        title: 'Quản lý khoảng khắc',
+        children: [],
+        path: '/moments'
+      },
+      {
+        id: 14,
         title: 'Quản lý thể loại',
         children: [],
         path: '/categories'
       },
       {
-        id: 14,
+        id: 15,
         title: 'Quản lý Tags',
         children: [],
         path: '/tags'
       },
       {
-        id: 15,
+        id: 16,
         title: 'Quản lý bình luận',
         children: [],
         path: '/comments'

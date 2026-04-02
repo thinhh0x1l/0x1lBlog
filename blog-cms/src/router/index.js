@@ -11,6 +11,7 @@ import CommentList from "@/view/comment/CommentList.vue";
 import Site from "@/view/site/SiteSetting.vue";
 import SiteSetting from "@/view/site/SiteSetting.vue";
 import TsTest from "@/view/TsTest.vue";
+import Moments from "@/view/moment/Moments.vue";
 
 const routes = [
     {
@@ -59,6 +60,11 @@ const routes = [
                 meta: {
                     title: 'Quản lý Blog'
                 }
+            },
+            {
+                path: '/moments',
+                component: Moments,
+                meta: {title: 'Quản lý khoảng khắc'}
             },
             {
                 path: '/categories',

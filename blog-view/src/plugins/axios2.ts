@@ -35,7 +35,7 @@ export interface PageInfo<T = any> {
 }
 
 export const request: AxiosInstance = axios.create({
-    baseURL: 'https://danuta-epirogenic-reportedly.ngrok-free.dev/',
+    baseURL: 'http://localhost:8090/',
     timeout: 10000,
     withCredentials: true
 })

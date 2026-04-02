@@ -20,6 +20,7 @@
                       headingSelector="h1, h2, h3"
                       :scrollOffset="80"
                       v-show="showE"
+                      v-if="showPlatform"
                   />
                 </div>
               </div>
@@ -69,6 +70,7 @@
         @click="showToc = !showToc;"
     />
     <div
+        v-if="!showPlatform"
         v-show="showToc"
         class="fixed text-white px-3 "
         style="z-index: 10; top: 400px;"
@@ -130,7 +132,10 @@ const { width } = useWindowSize()
 watch(() => width.value, (w) => {
   if(w > 768){
     showIntro.value = false
-    showToc.value = false
+    showPlatform.value = true
+  }else{
+    showPlatform.value = false
+    showToc.value = true
   }
 })
 
@@ -180,7 +185,6 @@ const fetchTags = async () => {
     const response: ApiResponse<Tag[]> = await getTags()
     if(response.code === 200){
       tags.value = response.data ?? []
-      console.log(tags.value)
     }
   }catch (err: any){
   }finally {
@@ -189,7 +193,8 @@ const fetchTags = async () => {
 }
 
 const tocComponent = ref<InstanceType<typeof Toc>|null>(null)
-  const showE = ref(false)
+const showE = ref(window.innerWidth>768)
+const showPlatform = ref(window.innerWidth>768)// 1:pc, 0: mobile
 watch(
     () => isBlogRenderCompleted.value,
     async (ready) => {
