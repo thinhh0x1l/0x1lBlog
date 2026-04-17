@@ -38,6 +38,11 @@ export const useCommentStore = defineStore('comment',() => {
         blogId: commentQuery.value.blogId,
         parentCommentId: null
     });
+    watch(infoUser, (val) => {
+        commentForm.value.nickname = val.nickname
+        commentForm.value.email = val.email
+        commentForm.value.website = val.website
+    }, { immediate: true })
     watch(() =>
         [commentForm.value.nickname,
             commentForm.value.website,
@@ -156,7 +161,7 @@ export const useCommentStore = defineStore('comment',() => {
                 toast.success(res.msg);
 
                 setParentCommentId(-1);
-                setCommentFormEmpty();
+                resetFormComment()
                 await getCommentList();
             } else {
                 toast.error(res.msg);
@@ -167,12 +172,12 @@ export const useCommentStore = defineStore('comment',() => {
     };
 
     function setStorage<T>(key: string, value: T): void {
-        sessionStorage.setItem(key, JSON.stringify(value))
+        localStorage.setItem(key, JSON.stringify(value))
     }
 
     function getStorage<T>(key: string, defaultValue: T): T {
         try {
-            const stored = sessionStorage.getItem(key);
+            const stored = localStorage.getItem(key);
             return stored? JSON.parse(stored): defaultValue;
         }catch {
             return defaultValue;

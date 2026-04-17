@@ -8,6 +8,7 @@ import '@/util/dateTimeFormatUtils.js'
 import '@/assets/css/base.css'
 import '@/assets/css/badge.css'
 import '@/assets/css/typo.css'
+import '@/assets/css/bat.css'
 import {PrismPlugin} from '@/plugins/prism/prism.js'
 import PrimeVuePlugin from "@/plugins/primevueConfig/primePluginVue.js";
 import FontAwesomeIcon from "@/plugins/fontAwesomeIcon.js";

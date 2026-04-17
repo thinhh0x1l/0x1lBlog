@@ -12,6 +12,7 @@ import Site from "@/view/site/SiteSetting.vue";
 import SiteSetting from "@/view/site/SiteSetting.vue";
 import TsTest from "@/view/TsTest.vue";
 import Moments from "@/view/moment/Moments.vue";
+import WriteMoment from "@/view/moment/WriteMoment.vue";
 
 const routes = [
     {
@@ -59,6 +60,20 @@ const routes = [
                 component: BlogList,
                 meta: {
                     title: 'Quản lý Blog'
+                }
+            },
+            {
+                path: '/moments/write',
+                component: WriteMoment,
+                meta: {
+                    title: 'Viết Moment'
+                }
+            },
+            {
+                path: '/moments/edit/:id',
+                component: WriteMoment,
+                meta: {
+                    title: 'Chỉnh sửa Moment'
                 }
             },
             {

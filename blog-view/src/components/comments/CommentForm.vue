@@ -10,10 +10,11 @@
              :class="{'textarea-custom' : threadRoot}"
              v-model="commentForm.content"
              name="content"
+             ref="textareaRef"
          ></Textarea>
       </div>
       <div class="flex justify-content-between mx-3">
-        <font-awesome-icon icon="face-laugh-squint"  />
+        <EmojiPicker @select="insertEmoji" />
         <div class="align-items-center flex gap-2">
           <span>Thông báo phản hồi</span>
           <ToggleSwitch v-model="commentForm.notice"/>
@@ -27,9 +28,9 @@
 </template>
 <script setup lang="ts">
 import {computed, ref, watch} from "vue";
-
 import {useCommentStore} from "@/store/commentStore";
 import {storeToRefs} from "pinia";
+import EmojiPicker from "@/components/comments/EmojiPicker.vue";
 
 const commentStore = useCommentStore()
 const emit = defineEmits<{
@@ -37,7 +38,26 @@ const emit = defineEmits<{
 }>()
 function onSubmit(){ emit("submit")}
 const {threadRoot, parentNickname, commentForm} = storeToRefs(commentStore)
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
+const insertEmoji = (emoji: any) => {
+  const textarea = textareaRef.value
+  if(textarea){
+    commentForm.value.content = commentForm.value.content+ emoji.native
+
+  // const start = textarea.selectionStart
+  // const end = textarea.selectionEnd
+  //
+  // commentForm.value.content =
+  //     commentForm.value.content.slice(0, start) +
+  //     emoji +
+  //     commentForm.value.content.slice(end)
+  //
+  // textarea.focus()
+  // const cursor = start + emoji.length
+  // textarea.setSelectionRange(cursor, cursor)
+  }
+}
 const nicknameReply = ref<string>('')
 watch(() => parentNickname.value , (newName,oldValue) =>{
   if(newName)

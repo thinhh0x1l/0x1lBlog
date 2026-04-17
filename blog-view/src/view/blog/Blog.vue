@@ -111,8 +111,6 @@ import {useScrollToTop} from "@/util/ScrollToTop.js";
 
 import mediumZoom from "medium-zoom"
 let zoom
-
-
 const {scrollToTop} = useScrollToTop()
 const store = useAppStore()
 const blogDetail = useBlogDetailStore()
@@ -171,6 +169,7 @@ const fetchBlog = async () => {
     const response = await getBlogById(blogId.value)
     if (response.code === 200) {
       blog.value = response.data
+      console.log(response.data)
       await nextTick();
       playerOptions.value.audio = response.data.musicInfo
       initPlayer();
@@ -197,7 +196,6 @@ watch(() => route.fullPath,
 
 onBeforeRouteLeave(() => {
   isBlogRenderCompleted.value = false
-  console.log('aaa')
 })
 
 onBeforeRouteUpdate(async (to, from) => {

@@ -20,8 +20,10 @@
         <el-table-column label="Thao tác" width="200">
           <template #default="scope">
             <el-button type="primary" :icon="Edit" size="small" @click="goMomentEditPage(scope.row.id)">Sửa</el-button>
-            <el-popconfirm title="Xác nhận xóa?" :icon="Delete" icon-color="red" @confirm="deleteMomentById(scope.row.id)">
-              <el-button size="small" type="danger" :icon="Delete" slot="reference">Xóa</el-button>
+            <el-popconfirm title="Xác nhận xóa?" :icon="Delete" icon-color="red" @confirm="deleteMomentId(scope.row.id)" confirm-button-text="Xóa" cancel-button-text="Hủy">
+            <template #reference>
+              <el-button size="small" type="danger" :icon="Delete">Xóa</el-button>
+            </template>
             </el-popconfirm>
           </template>
         </el-table-column>
@@ -32,7 +34,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           v-model:current-page="queryInfo.pageNum"
-          :page-sizes="[5, 10, 15, 20]"
+          :page-sizes="[5, 10, 20, 50]"
           :page-size="queryInfo.pageSize"
           :total="total"
           layout="total, sizes, prev, pager, next, jumper"
@@ -48,15 +50,16 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import Breadcrumb from "@/components/Breadcrumb.vue"
-import { getMomentListByQuery, updatePublished } from "@/api/moment"
+import {deleteMomentById, getMomentListByQuery, updatePublished} from "@/api/moment"
 import {formatDate} from "@/util/dateTimeFormatUtils.js";
 import type {Moment} from "@/types/momentType";
+import type {ApiResponse} from "@/plugins/axios2";
 
 const router = useRouter()
 
 const queryInfo = reactive({
   pageNum: 1,
-  pageSize: 5
+  pageSize: 10
 })
 const momentList = ref<Moment[]>([])
 const total = ref(0)
@@ -113,14 +116,20 @@ const momentPublishedChanged = (row: { id: number; published: boolean }) => {
   })
 }
 
-const goMomentEditPage = (id) => {
-  router.push(`/moment/edit/${id}`)
+const goMomentEditPage = (id: number) => {
+  router.push(`/moments/edit/${id}`)
 }
 
-// Xóa bài viết
-const deleteMomentById = (id) => {
-  // TODO: Gọi API xóa
-  console.log('Xóa id:', id)
+const deleteMomentId = async (id: number) => {
+  try {
+    const res: ApiResponse<void> = await deleteMomentById(id);
+    if(res.code ===200){
+      msgSuccess(res.msg);
+      momentList.value = momentList.value.filter(m => m.id !== id);
+    }
+  }catch (error){
+
+  }
 }
 
 onMounted(() => {

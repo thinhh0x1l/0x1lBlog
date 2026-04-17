@@ -124,6 +124,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="queryInfo.pageNum"
+          :page-size="queryInfo.pageSize"
+          :page-sizes="[5, 10, 20, 50]"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          background/>
     </el-card>
 
     <el-dialog
@@ -209,12 +218,20 @@ const submitEditComment = async () => {
   }
 }
 
-
+const handleSizeChange = (newSize) =>{
+  queryInfo.pageSize = newSize
+  getCommentList()
+}
+const handleCurrentChange = (newPage) => {
+  queryInfo.pageNum = newPage
+  getCommentList()
+}
 const getCommentList = async () => {
   try {
     const res = await getCommentListByQuery(queryInfo)
     if (res.code === 200) {
       console.log(res.msg)
+      console.log( res.data)
       commentList.value = res.data.list
       total.value = res.data.total
     } else {

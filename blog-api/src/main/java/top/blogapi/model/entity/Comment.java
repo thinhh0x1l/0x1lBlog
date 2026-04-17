@@ -30,5 +30,4 @@ public class Comment {
     BlogIdAndTitle blog; // Bài viết mà bình luận này thuộc về
     Long parentCommentId; // Bình luận cha (nếu là trả lời)
     List<Comment> replyComments = new ArrayList<>(); // Danh sách các bình luận trả lời bình luận này
-
 }

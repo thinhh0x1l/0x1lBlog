@@ -7,9 +7,10 @@
 
 <script setup>
 import BlogList from "@/components/blogList/BlogList.vue";
-import {onMounted, ref} from 'vue'
+import {nextTick, onMounted, ref} from 'vue'
 import {getBlogList} from "@/api/home.js";
 import {useToast} from "@/plugins/primevueConfig/primePluginVue.js";
+import mediumZoom from "medium-zoom";
 
 const toast = useToast()
 
@@ -29,8 +30,18 @@ const fetchBlogList = async (pageNum) => {
     toast.error(error.response.data.message)
   }
 }
-onMounted(() => {
-  fetchBlogList()
+
+let zoom
+const initZoom = () => {
+  zoom = mediumZoom(".typo img", {
+    margin: 24,
+    background: "#000"
+  })
+}
+onMounted( async () => {
+  await nextTick()
+  await fetchBlogList()
+  initZoom()
 })
 </script>
 

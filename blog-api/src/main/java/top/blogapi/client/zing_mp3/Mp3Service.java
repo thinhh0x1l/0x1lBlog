@@ -38,6 +38,12 @@ public class Mp3Service {
         );
     }
 
+    public void reLoadRestClient(){
+        zingMp3Client.loadRestClient();
+        zingMp3Client.setForceRefresh(true);
+        System.out.println("ReLoadMpe3");
+    }
+
     public String getSongStreaming(String songId) {
         return zingMp3Client.getSongStreaming(songId).at("/data/128").asText();
     }

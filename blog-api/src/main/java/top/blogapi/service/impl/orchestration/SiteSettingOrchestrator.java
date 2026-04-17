@@ -111,23 +111,31 @@ public class SiteSettingOrchestrator {
 
         return map;
     }
-
-    @PostConstruct
-    private void configMp3Setting(){
+    public Map<String, Map<String, Object>> loadConfig() {
         Map<String, Map<String, Object>> map = new HashMap<>();
-        siteSettingService.getMp3Setting(TYPE_MP3.getType()).forEach((siteSetting) -> {
-            try {
-                JsonNode jsonNode = objectMapper.readTree(siteSetting.getValue());
-                Map<String, Object> nodeMap = objectMapper.convertValue(jsonNode, Map.class);
-                map.put(siteSetting.getNameEn(),nodeMap);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
+
+        siteSettingService.getMp3Setting(TYPE_MP3.getType())
+                .forEach(siteSetting -> {
+                    try {
+                        JsonNode jsonNode = objectMapper.readTree(siteSetting.getValue());
+                        Map<String, Object> nodeMap = objectMapper.convertValue(jsonNode, Map.class);
+                        map.put(siteSetting.getNameEn(), nodeMap);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
         System.out.println(map);
+        return map;
+    }
+    @PostConstruct
+    private void init() {
+        Map<String, Map<String, Object>> map = loadConfig();
         mp3Service.setConfigFromDb(map);
     }
-
+    public void reloadConfig() {
+        Map<String, Map<String, Object>> map = loadConfig();
+        mp3Service.setConfigFromDb(map);
+    }
     /// Xử lý từ Field trong Introduction
     private void processIntroField(SiteSetting siteSetting, Introduction intro,
                                    List<Favorite> favorites, List<String> rollTexts){

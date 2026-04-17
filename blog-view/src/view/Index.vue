@@ -35,7 +35,10 @@
             <div class="hidden md:block flex-none" style="width: 18.75% !important;">
               <Tags :tag-list="tags"/>
             </div>
+
+            <div class="bat"></div>
           </div>
+
         </div>
       </div>
       <button

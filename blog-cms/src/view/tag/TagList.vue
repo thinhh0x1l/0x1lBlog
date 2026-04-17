@@ -50,9 +50,9 @@
           @current-change="handleCurrentChange"
           :current-page="queryInfo.pageNum"
           :page-size="queryInfo.pageSize"
-          :page-sizes="[5,10,15,20]"
+          :page-sizes="[5, 10, 20, 50]"
           :total="total"
-          layout="total, sizes, prev, paper, next, jumper"
+          layout="total, sizes, prev, pager, next, jumper"
           background/>
     </el-card>
 
@@ -151,6 +151,7 @@ const fetchData = async () => {
     if(res.code === 200){
       console.log(res.data)
       total.value = res.data.tags.total
+      console.log(total.value)
       tagList.value = res.data.tags.list
     }else
       proxy.$msgError(res.msg)

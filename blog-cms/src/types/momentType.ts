@@ -1,5 +1,5 @@
 export interface Moment {
-    id: number;
+    id: number|null;
     content: string;
     createTime: string;
     likes: number

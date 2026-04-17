@@ -99,13 +99,13 @@ public class CommentOrchestrator {
     }
 
     public void saveComment(SaveCommentReq req, HttpServletRequest request) throws Exception {
-        if(StringUtils.isEmpty(req.getContent(), req.getEmail(), req.getWebsite(), req.getNickname())
-                || req.getNickname().length() > 15 || req.getContent().length() > 250){
+        if(StringUtils.isEmpty(req.getContent(), req.getEmail(), req.getNickname())
+                || req.getNickname().length() > 15 || req.getContent().length() > 250 || req.getWebsite().length() > 100){
             throw new AppException(ErrorCode.INVALID_INPUT,"Dữ liệu không đúng");
         }
         Comment comment = new Comment();
         BlogIdAndTitle blogIdAndTitle = new BlogIdAndTitle(req.getBlogId(),"");
-        String nicknameMd5 = MD5Utils.getMD5(req.getNickname());
+        String nicknameMd5 = MD5Utils.getMD5(req.getEmail());
         char m = nicknameMd5.charAt(nicknameMd5.length()-1);
         int num = m % 6 + 1;
 
@@ -119,6 +119,11 @@ public class CommentOrchestrator {
         comment.setParentCommentId(req.getParentCommentId());
         comment.setBlog(blogIdAndTitle);
         comment.setNotice(req.isNotice());
+        String ip = IpAddressUtils.getIpAddress(request);
+        if(!IpAddressUtils.isLocalhost(ip)){
+            System.out.println(ip);
+            comment.setIp(ip);
+        }
         comment.setAdminComment(false);
         comment.setPublished(true);
         comment.setContent(req.getContent().trim());

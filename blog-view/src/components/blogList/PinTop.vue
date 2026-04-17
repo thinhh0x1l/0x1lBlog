@@ -8,7 +8,7 @@
   width: 75px;
   height: 75px;
   overflow: hidden;
-  z-index: 10;
+  z-index: 0;
 }
 
 .badge-triangle {

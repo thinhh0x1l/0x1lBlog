@@ -2,6 +2,7 @@ package top.blogapi.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.maxmind.geoip2.model.CityResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,6 +18,7 @@ import top.blogapi.model.entity.Comment;
 import top.blogapi.model.vo.CommentTree;
 import top.blogapi.repository.CommentRepository;
 import top.blogapi.service.CommentService;
+import top.blogapi.util.IpAddressUtils;
 import top.blogapi.util.StringUtils;
 
 import java.util.*;
@@ -28,13 +30,29 @@ import java.util.*;
 public class CommentServiceImpl implements CommentService {
     CommentRepository commentRepository;
     CommentMapper commentMapper;
+    GeoIpService geoIpService;
 
     @Override
     @Transactional(readOnly = true)
-    public List<Comment> getListByPageAndParentCommentId(Integer page, Long parentCommentId, Long blogId) {
+    public List<Comment> getListByPageAndParentCommentId(Integer page, Long parentCommentId, Long blogId) throws Exception {
         List<Comment> comments = commentRepository.getListByPageAndParentCommentId(page, parentCommentId, blogId);
 
         for (Comment c: comments) {
+            if(!StringUtils.isEmpty(c.getIp()) && IpAddressUtils.isValidIp(c.getIp())){
+                try{
+                    if(IpAddressUtils.isLocalhost(c.getIp())){
+                        c.setIp("Local");
+                    }else{
+                        CityResponse city = geoIpService.getCity(c.getIp());
+                        c.setIp(city.country().name()+" / "+city.mostSpecificSubdivision().name());
+                    }
+
+                }catch (Exception e){
+                    log.error(String.valueOf(e.getCause()));
+                    System.out.println(e.getMessage());
+                    System.out.println(c.getId()    );
+                }
+            }
             c.setReplyComments(commentRepository.getListByPageAndParentCommentId(page, c.getId(), blogId));
         }
         return comments;

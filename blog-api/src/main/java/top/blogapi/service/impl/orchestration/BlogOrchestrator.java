@@ -48,12 +48,11 @@ public class BlogOrchestrator {
     BlogService blogService;
     CategoryService categoryService;
     TagService tagService;
-    SiteSettingService siteSettingService;
     Mp3Service mp3Service;
     ExecutorService executorService = Executors.newFixedThreadPool(4);
     BlogMapper blogMapper;
     CategoryMapper categoryMapper;
-
+    SiteSettingOrchestrator siteSettingOrchestrator;
 
     public BlogListPageResponse getListByTitleOrCategory(BlogQueryRequest blogQueryRequest) {
         validateBlogQuery(blogQueryRequest);
@@ -196,8 +195,9 @@ public class BlogOrchestrator {
         BlogDetail blogDetail =  blogService.getBlogByIdAndIsPublished(id);
         if(blogDetail.getMusicId() != null){
             try {
-                blogDetail.setMusicInfo(getCompleteSongData(blogDetail.getMusicId()));
+                blogDetail.setMusicInfo(getCompleteSongData(blogDetail.getMusicId(),2));
             } catch (Exception e){
+                log.error("Error load music info for songId={}", blogDetail.getMusicId(), e);
                 blogDetail.setMusicInfo(null);
             }
         }
@@ -205,7 +205,11 @@ public class BlogOrchestrator {
     }
 
 
-    private BlogDetail.MusicInfo getCompleteSongData(String songId) {
+    private BlogDetail.MusicInfo getCompleteSongData(String songId, int retry) {
+        if (retry <= 0) {
+            System.out.println("Hết retry");
+            throw new AppException(ErrorCode.INTERNAL_ERROR,"Lấy dữ liệu bài hát thất bại");
+        }
         try {
             CompletableFuture<Map<String, String>> infoFuture = CompletableFuture
                     .supplyAsync(() -> mp3Service.getSongInfo(songId), executorService)
@@ -239,7 +243,14 @@ public class BlogOrchestrator {
                     info.getOrDefault("thumbnail", "")
             );
         } catch (Exception e) {
-            throw new RuntimeException("Lấy dữ liệu bài hát thất bại", e);
+            System.out.println(e.getCause().toString());
+            System.out.println(e.getMessage());
+            System.out.println("[BlogOrchestrator-getCompleteSongData()]: ");
+            try {
+                mp3Service.reLoadRestClient();
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {}
+            return getCompleteSongData(songId, retry - 1);
         }
     }
 }

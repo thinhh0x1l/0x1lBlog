@@ -85,6 +85,14 @@
           </el-select>
         </el-form-item>
 
+        <el-form-item label="Id Mp3" prop="musicId">
+          <el-input
+              v-model="form.musicId"
+              placeholder="Thêm nhạc"
+              type="text"
+              style="width: 50%;"
+          />
+        </el-form-item>
         <el-form-item label="Số từ" prop="words">
           <el-input
               v-model="form.words"
@@ -163,7 +171,8 @@ const form = reactive({
   top: false,
   recommend: false,
   commentEnabled: false,
-  published: false
+  published: false,
+  musicId: ''
 })
 
 const formRules = {
@@ -180,6 +189,7 @@ const getBlog = async (id) => {
     if (res.code === 200) {
       computeCategoryAndTag(res.data)
       Object.assign(form, res.data)
+      console.log(res.data)
     }
   } catch (e) {
     console.error('Lỗi khi lấy blog:', e)

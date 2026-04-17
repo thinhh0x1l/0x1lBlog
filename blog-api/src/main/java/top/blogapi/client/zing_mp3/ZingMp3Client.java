@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
@@ -19,18 +21,23 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Slf4j
 public class ZingMp3Client {
+    @Setter
+    boolean forceRefresh;
     String version;
     String secretKey;
     String apiKey;
     RestClient restClient;
     String userAgent;
+    Map<String, Object> mp3k, mp3h;
     final ObjectMapper objectMapper;
     final Map<String, String> cookieCache = new ConcurrentHashMap<>();
     boolean configured = false;
 
     public ZingMp3Client(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+        this.forceRefresh = false;
     }
 
 
@@ -38,8 +45,7 @@ public class ZingMp3Client {
         if (configMap == null) {
             throw new IllegalArgumentException("Config map không được null");
         }
-
-        Map<String, Object> mp3k = configMap.get("mp3-k");
+        mp3k = configMap.get("mp3-k");
         if (mp3k == null) {
             throw new IllegalArgumentException("Thiếu config 'mp3-k'");
         }
@@ -48,7 +54,15 @@ public class ZingMp3Client {
         this.secretKey = getRequiredValue(mp3k, "SECRET_KEY");
         this.version = getRequiredValue(mp3k, "VERSION");
 
-        Map<String, Object> mp3h = configMap.get("mp3-h");
+        mp3h = configMap.get("mp3-h");
+
+        loadRestClient();
+
+        cookieCache.clear();
+        configured = true;
+    }
+
+    public void loadRestClient(){
         if (mp3h != null && !mp3h.isEmpty()) {
             userAgent=mp3h.get("User-Agent").toString();
             this.restClient = createRestClient(mp3h);
@@ -56,10 +70,7 @@ public class ZingMp3Client {
             throw new IllegalArgumentException("Thiếu config 'mp3-h' cho headers");
         }
 
-        cookieCache.clear();
-        configured = true;
     }
-
 
     private String getRequiredValue(Map<String, Object> map, String key) {
         Object value = map.get(key);
@@ -114,6 +125,9 @@ public class ZingMp3Client {
     private JsonNode callZingApi(String apiType, String songId) {
         try {
             String cookies = getCookies();
+            // zmp3_app_version.1=11713;
+            // zmp3_rqid=MHwxNC4xODYdUngMTI4LjI5fHYxLjE3LjEzfDE3NzYwMTM0OTmUsICzMTE;
+            System.out.println(cookies);
             String ctime = String.valueOf(System.currentTimeMillis() / 1000);
             String hashInput = "ctime=" + ctime + "id=" + songId + "version=" + version;
             String hash256 = getSHA256(hashInput);
@@ -140,18 +154,32 @@ public class ZingMp3Client {
                     .retrieve()
                     .body(String.class);
 
-            return objectMapper.readTree(response);
+            JsonNode json = objectMapper.readTree(response);
+
+            if (json.has("err") && json.get("err").asInt() != 0) {
+                log.error("json log {}",json);
+                throw new RuntimeException("Zing API bị chặn: " + json.toString());
+            }
+
+            return json;
 
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new RuntimeException("Gọi ZingMP3 API thất bại: " + apiType, e);
         }
     }
 
     private String getCookies() {
+        if (forceRefresh) {
+            cookieCache.remove("zing_cookies");
+            forceRefresh = false;
+            log.info("remove zing_cookies");
+        }
         return cookieCache.computeIfAbsent("zing_cookies", key -> {
             try {
                 Document doc = Jsoup.connect("https://zingmp3.vn")
                         .userAgent(userAgent)
+//                        .header("Connection", "keep-alive")
                         .timeout(10000)
                         .get();
 

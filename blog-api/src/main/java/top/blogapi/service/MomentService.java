@@ -13,4 +13,12 @@ public interface MomentService {
     void addLikeByMomentId(Long momentId);
 
     void updateMomentPublishedById(Long momentId, Boolean published);
+
+    Moment getMomentById(Long id);
+
+    void deleteMomentById(Long id);
+
+    int saveMoment(Moment moment);
+
+    int updateMoment(Moment moment);
 }

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface CommentService {
-    List<Comment> getListByPageAndParentCommentId(Integer page, Long parentCommentId, Long blogId);
+    List<Comment>getListByPageAndParentCommentId(Integer page, Long parentCommentId, Long blogId) throws Exception;
 
     void updateCommentPublishedById(Long id, boolean published);
 

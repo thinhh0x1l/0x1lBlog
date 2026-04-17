@@ -1,5 +1,6 @@
 package top.blogapi.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -34,7 +36,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 ex.getContext()
         );
-
+        log.error("Exception xảy ra", ex);
         return ResponseEntity.status(error.getHttpStatus()).body(response);
     }
 
@@ -62,7 +64,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 details
         );
-
+        log.error("Exception xảy ra", ex);
         return ResponseEntity.status(ErrorCode.INVALID_INPUT.getHttpStatus()).body(response);
     }
 
@@ -80,7 +82,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 Map.of("error", ex.getClass().getSimpleName())
         );
-
+        log.error("Exception xảy ra", ex);
         return ResponseEntity.status(ErrorCode.INTERNAL_ERROR.getHttpStatus()).body(response);
     }
 }

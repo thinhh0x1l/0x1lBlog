@@ -170,7 +170,7 @@ onMounted(async () => {
   position: absolute !important;
   content: '' !important;
   background-image: none !important;
-  z-index: 2 !important;
+  //z-index: 2 !important;
   width: 12px !important;
   height: 12px !important;
   transition: background .1s ease !important;
