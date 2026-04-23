@@ -44,7 +44,7 @@
             <router-link :class="[mobileMenuOpen? 'm-mobile-show':'m-mobile-hide',
                $route.name==='about'?'active':'']"
                 class=" nav-line no-underline t-m-bold
-                transition-colors transition-duration-200 p-3" to="">
+                transition-colors transition-duration-200 p-3" to="/about">
               <font-awesome-icon icon="info-circle" class="mr-2" />Về tôi
             </router-link>
 

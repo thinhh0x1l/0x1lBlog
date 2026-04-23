@@ -161,7 +161,7 @@ footer {
   );
   background-size: 400% 100%;
   color: transparent;
-
+  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
   animation: shimmer 3s ease-in-out infinite;
   font-weight: 700;
 }

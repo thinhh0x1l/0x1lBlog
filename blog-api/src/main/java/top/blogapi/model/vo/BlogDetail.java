@@ -2,6 +2,7 @@ package top.blogapi.model.vo;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import top.blogapi.dto.response._common.MusicInfo;
 import top.blogapi.model.entity.Category;
 import top.blogapi.model.entity.Tag;
 
@@ -30,16 +31,5 @@ public class BlogDetail {
     Category category;
     List<Tag> tags = new ArrayList<>();
     MusicInfo musicInfo;
-    @Data
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class MusicInfo{
-        String name; // tên bài hát
-        String lrc;  // lyric
-        String artist; // Tên ca sĩ
-        String url; // media
-        String theme;
-        String cover; // Ảnh bìa
-    }
+
 }

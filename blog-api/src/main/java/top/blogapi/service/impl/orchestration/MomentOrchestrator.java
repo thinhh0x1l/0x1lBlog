@@ -11,6 +11,7 @@ import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.Moment;
 import top.blogapi.service.MomentService;
+import top.blogapi.util.markdown.MarkdownUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,7 +28,9 @@ public class MomentOrchestrator {
     }
 
     public List<Moment> getMomentListByPublished() {
-        return momentService.getMomentListByPublished();
+        List<Moment> ms = momentService.getMomentListByPublished();
+        ms.forEach(m -> m.setContent(MarkdownUtils.markdownToHtmlExtensions(m.getContent())));
+        return ms;
     }
 
     public void addLikeByMomentId(Long momentId) {

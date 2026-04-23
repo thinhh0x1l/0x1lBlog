@@ -15,16 +15,10 @@ import {useRoute} from "vue-router";
 const route = useRoute()
 const commentStore = useCommentStore()
 
-const props = defineProps({
-  page: {
-    type: Number,
-    required: true,
-  },
-  blogId: {
-    type: Number,
-    required: true,
-  }
-})
+const props = defineProps<{
+  page: number
+  blogId: number|null
+}>()
 const init =  () => {
   commentStore.setCommentQueryPage(props.page)
   commentStore.setCommentQueryBlogId(props.blogId)

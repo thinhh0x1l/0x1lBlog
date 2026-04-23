@@ -7,6 +7,7 @@ import Archives from "@/view/archives/Archives.vue";
 import Blog from "@/view/blog/Blog.vue";
 import Tag from "@/view/tag/Tag.vue";
 import Moment from "@/view/moments/Moment.vue";
+import About from "@/view/about/About.vue";
 
 const routes = [
     {
@@ -65,6 +66,14 @@ const routes = [
                 component: Moment,
                 meta: {
                     title: 'Khoảng khắc'
+                }
+            },
+            {
+                path: '/about',
+                name: 'about',
+                component: About,
+                meta: {
+                    title: 'Về tôi'
                 }
             },
         ]

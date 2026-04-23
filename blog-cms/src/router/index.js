@@ -8,7 +8,6 @@ import { useAppStore } from '@/store/index.js'
 import CategoryList from "@/view/category/CategoryList.vue";
 import TagList from "@/view/tag/TagList.vue";
 import CommentList from "@/view/comment/CommentList.vue";
-import Site from "@/view/site/SiteSetting.vue";
 import SiteSetting from "@/view/site/SiteSetting.vue";
 import TsTest from "@/view/TsTest.vue";
 import Moments from "@/view/moment/Moments.vue";
