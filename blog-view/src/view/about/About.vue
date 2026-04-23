@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import APlayer from "aplayer"
+import APlayer from 'aplayer'
 import 'aplayer/dist/APlayer.min.css'
 import {ref, onMounted, nextTick, onUnmounted} from 'vue'
 import { fGetAboutList } from "@/api/about"
