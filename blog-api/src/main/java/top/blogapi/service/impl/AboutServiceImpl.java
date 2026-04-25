@@ -27,4 +27,9 @@ public class AboutServiceImpl implements AboutService {
     public List<About> getAboutInfo() {
         return aboutRepository.getList();
     }
+
+    @Override
+    public int updateAbout(List<About> list) {
+        return aboutRepository.updateAbout(list);
+    }
 }

@@ -7,6 +7,15 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     /**
+     *  400 - BAD REQUEST
+     * */
+    ABOUT_UPDATE_PARTIAL("ABOUT_UPDATE_PARTIAL", HttpStatus.BAD_REQUEST,"Update thiếu row"),
+
+    INVALID_INPUT("INVALID_INPUT", HttpStatus.BAD_REQUEST, "Dữ liệu không đúng"),
+
+    CONTENT_REQUIRED("CONTENT_REQUIRED", HttpStatus.BAD_REQUEST, "Nội dung cần phải được điền"),
+
+    /**
      *  404 - NOT FOUND
      * */
 
@@ -25,10 +34,6 @@ public enum ErrorCode {
     SITE_SETTINGS_NOT_FOUND("SITE_SETTINGS_NOT_FOUND", HttpStatus.NOT_FOUND, "SiteSetting not found"),
 
     MOMENT_NOT_FOUND("MOMENT_NOT_FOUND", HttpStatus.NOT_FOUND,"Moment not found"),
-
-    INVALID_INPUT("INVALID_INPUT", HttpStatus.BAD_REQUEST, "Dữ liệu không đúng"),
-
-    CONTENT_REQUIRED("CONTENT_REQUIRED", HttpStatus.BAD_REQUEST, "Nội dung cần phải được điền"),
 
     UNAUTHORIZED("UNAUTHORIZED", HttpStatus.UNAUTHORIZED, "Bạn cần phải đăng nhập"),
     DATA_CONFLICT("DATA_CONFLICT", HttpStatus.CONFLICT, "Xung đột dữ liệu"),

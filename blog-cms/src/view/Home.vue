@@ -64,7 +64,13 @@
         </el-menu>
       </el-aside>
 
-      <!-- Right Content Area -->
+<!--      <el-main :class="isCollapse?'m-el-main-width-64':'m-el-main-width-190'">-->
+<!--        <router-view v-slot="{ Component }">-->
+<!--          <keep-alive include="WriteBlog,WriteMoment">-->
+<!--            <component :is="Component" />-->
+<!--          </keep-alive>-->
+<!--        </router-view>-->
+<!--      </el-main>-->
       <el-main :class="isCollapse?'m-el-main-width-64':'m-el-main-width-190'">
         <router-view :key="route.fullPath"/>
       </el-main>
@@ -155,6 +161,12 @@ const menuList = [
         title: 'Quản lý trang Web',
         children: [],
         path: '/siteSettings'
+      },
+      {
+        id: 23,
+        title: 'Quản lý Giới thiệu',
+        children: [],
+        path: '/about'
       }
     ]
   },

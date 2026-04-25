@@ -12,6 +12,7 @@ import SiteSetting from "@/view/site/SiteSetting.vue";
 import TsTest from "@/view/TsTest.vue";
 import Moments from "@/view/moment/Moments.vue";
 import WriteMoment from "@/view/moment/WriteMoment.vue";
+import About from "@/view/about/About.vue";
 
 const routes = [
     {
@@ -106,6 +107,13 @@ const routes = [
                 component: SiteSetting,
                 meta: {
                     title: 'Quản lý trang Web'
+                }
+            },
+            {
+                path: '/about',
+                component: About,
+                meta: {
+                    title: 'Quản lý About'
                 }
             }
         ]

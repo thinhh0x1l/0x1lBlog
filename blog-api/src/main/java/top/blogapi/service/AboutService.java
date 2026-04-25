@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface AboutService {
     List<About> getAboutInfo();
+
+    int updateAbout(List<About> list);
 }
