@@ -103,11 +103,12 @@ public class CommentOrchestrator {
     }
 
     public void saveComment(SaveCommentReq req, HttpServletRequest request) throws Exception {
-        if(StringUtils.isEmpty(req.getContent(), req.getEmail(), req.getNickname())
-                || req.getNickname().length() > 15 || req.getContent().length() > 250 || req.getWebsite().length() > 100){
-            throw new AppException(ErrorCode.INVALID_INPUT,"Dữ liệu không đúng");
-        }
         String jwtToken = request.getHeader("Authorization");
+        if(StringUtils.isEmpty(jwtToken))
+            if(StringUtils.isEmpty(req.getContent(), req.getEmail(), req.getNickname())
+                    || req.getNickname().length() > 15 || req.getContent().length() > 250 || req.getWebsite().length() > 100){
+                throw new AppException(ErrorCode.INVALID_INPUT,"Dữ liệu không đúng");
+            }
         Comment comment = new Comment();
 
         if(jwtUtils.judgeTokenIsExist(jwtToken)){
@@ -143,7 +144,6 @@ public class CommentOrchestrator {
     }
     private void setAdminComment(Comment comment, HttpServletRequest request, String jwtToken) {
         Claims claims = jwtUtils.getTokenContent(jwtToken);
-        System.out.println(claims.getSubject());
         User admin = (User) userService.loadUserByUsername(claims.getSubject());
         comment.setAdminComment(true);
         comment.setAvatar(admin.getAvatar());

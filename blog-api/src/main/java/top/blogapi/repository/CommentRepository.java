@@ -147,7 +147,7 @@ public interface CommentRepository {
             INNER JOIN  comment_tree ct
             ON c.parent_comment_id = ct.id
         )
-        SELECT * FROM comment_tree
+        SELECT * FROM comment_tree ORDER BY id
     </script>
 """)
     @Results({
