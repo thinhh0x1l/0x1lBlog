@@ -9,3 +9,12 @@ export function getBlogById(id){
         }
     })
 }
+
+
+export function increaseView(id){
+    return axios({
+        url:'blog/increase-view',
+        method: 'POST',
+        params : {id}
+    })
+}

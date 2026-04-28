@@ -87,7 +87,6 @@ const getData = async () => {
       about.value = res.data
       await nextTick();
       playerOptions.value.audio = res.data.musicInfo
-      console.log(about.value)
       initPlayer();
     } else {
       msgError(res.msg)

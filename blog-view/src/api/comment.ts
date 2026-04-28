@@ -12,10 +12,13 @@ export function getCommentListByQuery(query: any):Promise<ApiResponse<CommentByB
     })
 }
 
-export function submitComment(req: SaveCommentReq):Promise<ApiResponse<null>>{
+export function submitComment(req: SaveCommentReq, token: string):Promise<ApiResponse<null>>{
     return axios({
         url: 'comment',
         method: 'POST',
+        headers: {
+            "Authorization": token
+        },
         data: req,
     })
 }

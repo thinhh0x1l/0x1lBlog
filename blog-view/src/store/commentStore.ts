@@ -24,8 +24,8 @@ export const useCommentStore = defineStore('comment',() => {
     }))
 
     const commentQuery = ref<CommentQuery>({
-        page: 0,
-        blogId: null,
+        page: 0, // 0: blog thông thường, 1: blog giới thiệu bản thân
+        blogId: null, // !=null blog thông thường, == null giới thiệu về bản thân
         pageNum: 1,
         pageSize: 5
     });
@@ -36,6 +36,7 @@ export const useCommentStore = defineStore('comment',() => {
         website: infoUser.value.website,
         notice: true,
         blogId: commentQuery.value.blogId,
+        page: commentQuery.value.page,
         parentCommentId: null
     });
     watch(infoUser, (val) => {
@@ -50,7 +51,7 @@ export const useCommentStore = defineStore('comment',() => {
         ],([nickname, website, email]) => {
         setInfoUser({nickname,website,email} as InfoUser)
     })
-    const totalPages = ref<number>(0)
+    const totalPages     = ref<number>(0)
     const commentStats = ref<CommentStats>({
         totalComments: 0,
         uniqueCommenters:0
@@ -59,7 +60,13 @@ export const useCommentStore = defineStore('comment',() => {
     const parentNickname = ref<string>('')
     const comments = ref<CommentNode[]>([])
 
+    const clearCommentData = (): void => {
+        totalPages.value = 0
+        commentStats.value = {totalComments: 0,
+                             uniqueCommenters:0}
+        comments.value = []
 
+    }
     // Comment actions
     const getCommentList = async () => {
         try {
@@ -76,9 +83,13 @@ export const useCommentStore = defineStore('comment',() => {
         }
     };
 
+    const getToken=  (): string =>{
+        return sessionStorage.getItem('token') || ''
+    }
     const postComment = async () =>{
         try {
-            const res: ApiResponse<null> = await submitComment(commentForm.value)
+            console.log(commentForm.value)
+            const res: ApiResponse<null> = await submitComment(commentForm.value, getToken())
             if(res.code === 200){
                 toast.success(res.msg)
                 await getCommentList()
@@ -92,6 +103,7 @@ export const useCommentStore = defineStore('comment',() => {
 
     const setCommentQueryPage = (page: number) => {
         commentQuery.value.page = page;
+        commentForm.value.page = page;
     };
 
     const setCommentQueryBlogId = (blogId: number | null) => {
@@ -141,6 +153,7 @@ export const useCommentStore = defineStore('comment',() => {
             website: '',
             notice: true,
             blogId: null,
+            page: 0,
             parentCommentId: null
         };
     };
@@ -154,8 +167,7 @@ export const useCommentStore = defineStore('comment',() => {
                 parentCommentId: commentForm.value.parentCommentId
             });
 
-            const res: any = await submitComment(form);
-            console.log(res);
+            const res: any = await submitComment(form,getToken());
 
             if (res.code === 200) {
                 toast.success(res.msg);
@@ -208,6 +220,7 @@ export const useCommentStore = defineStore('comment',() => {
         commentForm,
         getCommentList,
         setFieldFromComment,
+        clearCommentData,
         resetFormComment,
         setInfoUser,
         postComment,

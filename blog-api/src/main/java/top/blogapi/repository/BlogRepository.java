@@ -263,4 +263,9 @@ public interface BlogRepository {
             @Result(property = "category.id", column = "category_id"),
     })
     List<Blog> getRandomBlogListByLimitNumAndIsPublished(int limitNum);
+
+    @Update("""
+    UPDATE blog SET views = views + 1 WHERE id = #{blogId}
+""")
+    void updateView (Long blogId);
 }

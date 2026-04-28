@@ -186,5 +186,10 @@ public class BlogServiceImpl implements BlogService {
         return blogRepository.getCommentEnabledByBlogId(blogId);
     }
 
+    @Override
+    public void updateViewByBlogId(Long id) {
+        blogRepository.updateView(id);
+    }
+
 
 }

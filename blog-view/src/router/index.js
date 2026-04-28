@@ -8,6 +8,7 @@ import Blog from "@/view/blog/Blog.vue";
 import Tag from "@/view/tag/Tag.vue";
 import Moment from "@/view/moments/Moment.vue";
 import About from "@/view/about/About.vue";
+import Login from "@/view/login/Login.vue";
 
 const routes = [
     {
@@ -15,6 +16,13 @@ const routes = [
         component: GridL,
         meta:{
             title: 'GridL'
+        }
+    },
+    {
+        path: '/login',
+        component: Login,
+        meta:{
+            title: 'Đăng nhập'
         }
     },
     {

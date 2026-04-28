@@ -169,7 +169,7 @@ public class IpAddressUtils {
              DatabaseReader reader = new DatabaseReader.Builder(inputStream).build()
 
             ){
-            String ip = "1.54.59.59";
+            String ip = "14.186.93.15";
 
             InetAddress ipAddress = InetAddress.getByName(ip);
             CityResponse response = reader.city(ipAddress);

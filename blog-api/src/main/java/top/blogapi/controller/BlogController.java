@@ -3,10 +3,7 @@ package top.blogapi.controller;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import top.blogapi.model.vo.Result;
 import top.blogapi.service.impl.orchestration.BlogOrchestrator;
 
@@ -21,5 +18,10 @@ public class BlogController {
     @GetMapping("/blog")
     public Result<?> getBlog(@RequestParam Long id){
         return Result.ok("Yêu cầu thành công", blogOrchestrator.getBlogByIdAndIsPublished(id));
+    }
+    @PostMapping("/blog/increase-view")
+    public Result<?> increaseView(@RequestParam Long id){
+        blogOrchestrator.updateViewByBlogId(id);
+        return Result.ok("Yêu cầu thành công");
     }
 }

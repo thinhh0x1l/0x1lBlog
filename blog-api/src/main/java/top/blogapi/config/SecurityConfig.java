@@ -33,23 +33,7 @@ import java.util.List;
 public class SecurityConfig {
     UserServiceImpl userService;
     MyAuthenticationEntryPoint myAuthenticationEntryPoint;
-    ObjectMapper objectMapper;
 
-
-    //SecretKey cho jwt
-    @Bean
-    public SecretKey secretKey(){
-        return Jwts.SIG.HS512.key().build();
-    }
-    @Bean
-    public JwtFilter jwtFilter() {
-        return new JwtFilter(secretKey(), objectMapper);
-    }
-    @Bean
-    public JwtLoginFilter jwtLoginFilter(AuthenticationManager authenticationManager) {
-        long EXPIRE_TIME = 3600 * 6;
-        return new JwtLoginFilter("/admin/login",authenticationManager,secretKey(),objectMapper, EXPIRE_TIME);
-    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtLoginFilter jwtLoginFilter,
@@ -62,8 +46,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-
-                        .requestMatchers("/admin/**").authenticated()
+                        .requestMatchers("/admin/login").permitAll()
                         .anyRequest().permitAll()
                 )
                 //filter JWT tùy chỉnh

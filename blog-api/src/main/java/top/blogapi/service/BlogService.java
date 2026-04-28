@@ -50,4 +50,6 @@ public interface BlogService {
     BlogDetail getBlogByIdAndIsPublished(Long id);
 
     Boolean getCommentEnabledByBlogId(Long blogId);
+
+    void updateViewByBlogId(Long id);
 }

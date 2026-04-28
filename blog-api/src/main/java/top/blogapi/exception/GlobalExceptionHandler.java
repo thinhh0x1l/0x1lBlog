@@ -1,12 +1,15 @@
 package top.blogapi.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.servlet.http.HttpServletRequest;
+import top.blogapi.model.vo.Result;
 import top.blogapi.util.StringUtils;
 
 
@@ -68,6 +71,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ErrorCode.INVALID_INPUT.getHttpStatus()).body(response);
     }
 
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> usernameNotFoundExceptionHandler(HttpServletRequest request,
+                                                                             UsernameNotFoundException e) {
+        log.error("Request URL : {}, Exception : {}", request.getRequestURL(), e.getMessage());
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.UNAUTHORIZED.toString(),
+                e.getMessage(),
+                HttpStatus.UNAUTHORIZED.value(),
+                request.getRequestURI(),
+                UUID.randomUUID().toString(),
+                LocalDateTime.now(),
+                Map.of()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleUnknownException(
             Exception ex,
@@ -85,4 +105,6 @@ public class GlobalExceptionHandler {
         log.error("Exception xảy ra", ex);
         return ResponseEntity.status(ErrorCode.INTERNAL_ERROR.getHttpStatus()).body(response);
     }
+
+
 }

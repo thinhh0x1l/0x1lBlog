@@ -98,7 +98,7 @@ import APlayer from 'aplayer'
 import 'aplayer/dist/APlayer.min.css'
 import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
 import Tag from '@/components/blogList/Tag.vue'
-import { getBlogById } from '@/api/blog'
+import { getBlogById , increaseView} from '@/api/blog'
 import { formatDate } from "@/util/dateTimeFormatUtils.js"
 import {onBeforeRouteLeave, onBeforeRouteUpdate, useRoute} from "vue-router"
 import { useAppStore } from "@/store/index.ts"
@@ -193,7 +193,11 @@ watch(() => route.fullPath,
         scrollToTop()
     },{immediate:true}
 )
-
+watch(() => route.fullPath,
+     () => {
+       handleIncreaseView()
+    },{immediate:true}
+)
 onBeforeRouteLeave(() => {
   isBlogRenderCompleted.value = false
 })
@@ -208,6 +212,12 @@ function clearPlayer() {
     playerInstance.destroy()
     playerInstance = null
   }
+}
+
+function handleIncreaseView(){
+  try{
+    const res = increaseView(blogId.value)
+  }catch (e){}
 }
 
 const initZoom = () => {

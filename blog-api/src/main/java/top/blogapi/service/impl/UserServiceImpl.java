@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username)  {
         User user = userRepository.findByUserName(username);
         if (user == null) {
-            throw new AppException(ErrorCode.USER_NOT_FOUND,"Người dùng không tồn tại!");
+            throw new UsernameNotFoundException("Người đùng không tồn tại");
         }
         return user;
     }

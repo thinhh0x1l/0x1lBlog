@@ -3,7 +3,6 @@ package top.blogapi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,36 +13,30 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import top.blogapi.exception.ApiErrorResponse;
-import top.blogapi.model.vo.Result;
-
-import javax.crypto.SecretKey;
+import top.blogapi.util.JwtUtils;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
 
 public class JwtFilter extends OncePerRequestFilter {
-    private final SecretKey secretKey;
     private final ObjectMapper objectMapper;
-
-    public JwtFilter(SecretKey secretKey, ObjectMapper objectMapper) {
-        this.secretKey = secretKey;
+    private final JwtUtils jwtUtils;
+    public JwtFilter(ObjectMapper objectMapper, JwtUtils jwtUtils) {
         this.objectMapper = objectMapper;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
+
         String authHeader = request.getHeader("Authorization");
 
         if(authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwtToken = authHeader.substring(7);
             try{
-                Claims claims = Jwts.parser()
-                        .verifyWith(secretKey)
-                        .build()
-                        .parseSignedClaims(jwtToken)
-                        .getPayload();
+                Claims claims = jwtUtils.getTokenContent(jwtToken);
                 String username = claims.getSubject();
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(username, null, null);

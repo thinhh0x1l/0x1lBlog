@@ -6,6 +6,7 @@ export interface SaveCommentReq{
     email: string,
     notice: boolean,
     blogId: number | null,
+    page: number // 0-1
     website?: string,
     parentCommentId: number | null
 }

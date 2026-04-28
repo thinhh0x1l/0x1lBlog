@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import top.blogapi.exception.ApiErrorResponse;
 import top.blogapi.model.vo.Result;
 import top.blogapi.model.entity.User;
+import top.blogapi.util.JwtUtils;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
@@ -23,23 +24,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
-
-    private final SecretKey secretKey;
+    private final JwtUtils jwtUtils;
     private final ObjectMapper objectMapper;
-    private final long expireTime;
     public JwtLoginFilter(String loginUrl,
                           AuthenticationManager authenticationManager,
-                          SecretKey secretKey,
-                          ObjectMapper objectMapper,
-                          long expireTime) {
+                          ObjectMapper objectMapper, JwtUtils jwtUtils) {
         super(authenticationManager);
-
+        this.jwtUtils = jwtUtils;
         setFilterProcessesUrl(loginUrl);
-
-        this.secretKey = secretKey;
         this.objectMapper = objectMapper;
-        this.expireTime = expireTime;
-
         setAuthenticationSuccessHandler(this::onAuthenticationSuccess);
         setAuthenticationFailureHandler(this::onAuthenticationFailure);
     }
@@ -75,11 +68,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
                                          HttpServletResponse response,
                                          Authentication authentication) throws IOException, java.io.IOException {
 
-        String jwtToken = Jwts.builder()
-                .subject(authentication.getName())
-                .expiration(Date.from(Instant.now().plusSeconds(expireTime)))
-                .signWith(secretKey)
-                .compact();
+        String jwtToken = jwtUtils.generateToken(authentication.getName());
 
         System.out.println(jwtToken);
         User user = (User) authentication.getPrincipal();

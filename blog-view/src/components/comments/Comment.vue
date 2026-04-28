@@ -11,7 +11,7 @@
           <div class="comment-item">
             <Avatar
                 :shape="'circle'"
-                :image="'/src/assets/img/comment-avatar/'+cm.avatar"
+                :image="cm.adminComment ? cm.avatar : `/img/comment-avatar/${cm.avatar}`"
                 :size="'large'"
             />
             <div class="comment"  :ref="el => setItemRef(el,cm.id)">
@@ -40,7 +40,7 @@
                 <Avatar
                     class="avt-l"
                     :shape="'circle'"
-                    :image="'/src/assets/img/comment-avatar/'+replyCm.avatar"
+                    :image="replyCm.adminComment ? replyCm.avatar : `/img/comment-avatar/${replyCm.avatar}`"
                     :size="'normal'"
                 />
                 <div class="comment" :ref="el => setItemRef(el,replyCm.id)">
@@ -112,6 +112,10 @@ const formValidateMessage = ref<Record<string, string>>({
   email:'',
 })
 const handleSubmit = async () => {
+  if(sessionStorage.getItem('token')){
+    await commentStore.postComment()
+    return;
+  }
   const { valid, firstErrorKey } = commentStore.validateAll()
   formValidateMessage.value = {}
   if (!valid && firstErrorKey) {
