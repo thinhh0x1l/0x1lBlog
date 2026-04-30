@@ -39,6 +39,7 @@ import Popover from 'primevue/popover'
 import ToggleSwitch  from 'primevue/toggleswitch'
 import Form from '@primevue/forms/form';
 import FormField from '@primevue/forms/formfield';
+import AutoComplete from 'primevue/autocomplete';
 import {SimplePreset} from "@/plugins/primevueConfig/primeThemeConfig.js";
 
 
@@ -87,6 +88,7 @@ const PrimeVuePlugin = {
             'Form': Form,
             'Accordion': Accordion,
             'FormField': FormField,
+            'AutoComplete': AutoComplete,
         }
 
         Object.entries(components).forEach(([name, component]) => {

@@ -24,15 +24,12 @@ import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.*;
 import top.blogapi.mapper.BlogMapper;
 import top.blogapi.mapper.CategoryMapper;
-import top.blogapi.model.vo.ArchiveBlog;
-import top.blogapi.model.vo.BlogDetail;
-import top.blogapi.model.vo.BlogInfo;
+import top.blogapi.model.vo.*;
 import top.blogapi.service.BlogService;
 import top.blogapi.service.CategoryService;
 import top.blogapi.service.SiteSettingService;
 import top.blogapi.service.TagService;
 import top.blogapi.util.StringUtils;
-import top.blogapi.model.vo.BlogIdAndTitle;
 import top.blogapi.util.markdown.MarkdownUtils;
 
 import java.util.*;
@@ -208,6 +205,23 @@ public class BlogOrchestrator {
     @Async
     public void updateViewByBlogId(Long id){
         blogService.updateViewByBlogId(id);
+    }
+
+    public List<SearchBlog> searchBlogs(String search){
+        if (StringUtils.isEmpty(search) || StringUtils.hasSpecialChar(search) || search.trim().length() > 20) {
+            throw new AppException(ErrorCode.INVALID_INPUT,("Nội dung tìm kiếm không hợp lệ"));
+        }
+        List<SearchBlog> searchBlogs = blogService.searchBlogs(search);
+        for (SearchBlog searchBlog : searchBlogs) {
+            String content = searchBlog.getContent();
+            int contentLength = content.length();
+            int index = content.indexOf(search) - 10;
+            index = Math.max(index, 0);
+            int end = index + 21;//Trả về 21 ký tự, căn giữa chuỗi từ khóa
+            end = Math.min(end, contentLength - 1);
+            searchBlog.setContent(content.substring(index, end));
+        }
+        return searchBlogs;
     }
 
 }

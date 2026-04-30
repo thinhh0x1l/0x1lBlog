@@ -52,13 +52,31 @@
                >
             <div >
               <div class="m-search">
-                <input
-                    type="text"
+                <div class="card flex justify-center">
+                  <AutoComplete
+                      v-model="queryString"
+                      :suggestions="suggestions"
+                      @complete="debounceSearch"
+                      optionLabel="title"
+                      placeholder="Search..."
+                      :forceSelection="false"
+                      :loading="loading"
+                      @item-select="handleSelect"
+                  >
+                    <template #option="slotProps">
+                      <div v-if="slotProps.option.loading" class="p-2 text-center">
+                        <i class="pi pi-spin pi-spinner mr-2"></i>
+                        Đang tìm kiếm...
+                      </div>
 
-                    placeholder="Search..."
-                    class="search-input"
+                      <div v-else>
+                         <div class="title" >{{ slotProps.option.title }}</div>
+                        <span class="content">{{ slotProps.option.content }}</span>
+                      </div>
+                    </template>
+                  </AutoComplete>
+                </div>
 
-                />
                 <font-awesome-icon icon="search" class="search icon t-m-bold"></font-awesome-icon>
 
                 <!-- Suggestions dropdown -->
@@ -84,7 +102,8 @@ import {useRouter} from "vue-router";
 import type {Category} from "@/types/categoryType.ts";
 import type {ApiResponse} from "@/plugins/axios2";
 import {fGetCategoryList} from "@/api/category";
-
+import {fSearchBlog} from "@/api/blog";
+import type { AutoCompleteCompleteEvent } from 'primevue/autocomplete';
 
 const router = useRouter()
 const menu = ref()
@@ -130,7 +149,57 @@ const getCategoryList = async () => {
     console.log('error')
   }
 }
+const queryString = ref<string>('')
+const suggestions = ref<any>([])
+let timer: any = null
 
+const debounceSearch = (event: AutoCompleteCompleteEvent) => {
+  clearTimeout(timer)
+  const query = event.query
+  if (
+      !query ||
+      query.trim() === '' ||
+      /[%_\[#*]/.test(query) ||
+      query.trim().length > 20
+  ) {
+    suggestions.value = [] // thay callback([])
+    return
+  }
+  loading.value = true
+  suggestions.value = [{ title: 'Đang tìm kiếm...', loading: true }]
+  timer = setTimeout(() => {
+    search(event)
+  }, 500) // nên 300–500ms
+}
+
+const loading = ref(false)
+const search = async (event: AutoCompleteCompleteEvent) => {
+  const query = event.query
+  try {
+    const res: any = await fSearchBlog(query)
+    if (res.code / 100 === 2) {
+      let data = res.data
+      if (!data.length) {
+        data = [{ title: 'Không tìm thấy kết quả phù hợp' }]
+      }
+      suggestions.value = data // thay callback
+      console.log(suggestions.value)
+    }
+  } catch (e) {
+    suggestions.value = []
+  }finally {
+    loading.value = false
+  }
+}
+
+const handleSelect = (event: any) => {
+  const blog = event.value
+  if (blog?.loading) return
+  if (blog?.id) {
+    queryString.value = ''
+    router.push(`/blog/${blog.id}`)
+  }
+}
 onMounted(() => {
   getCategoryList()
 })
@@ -309,7 +378,23 @@ onMounted(() => {
   background: #023d67 !important;
   color: #93c5fd!important;
 }
-
+.title {
+  line-height: normal !important;
+  padding: 8px 10px !important;
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+.m-search-item {
+  min-width: 350px !important;
+}
+.content {
+  line-height: normal !important;
+  padding: 8px 10px !important;
+  text-overflow: ellipsis !important;
+  font-size: 12px !important;
+  color: rgba(0, 0, 0, .70) !important;
+}
 .m-search.loading .search.icon::after {
   content: "";
   position: absolute;

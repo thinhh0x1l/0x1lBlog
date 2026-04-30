@@ -24,4 +24,9 @@ public class BlogController {
         blogOrchestrator.updateViewByBlogId(id);
         return Result.ok("Yêu cầu thành công");
     }
+
+    @GetMapping("/search-blog")
+    public Result<?> searchBlog(@RequestParam("query") String search){
+        return Result.ok("Yêu cầu thành công",blogOrchestrator.searchBlogs(search));
+    }
 }

@@ -17,12 +17,9 @@ import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.Blog;
 import top.blogapi.model.entity.Tag;
-import top.blogapi.model.vo.ArchiveBlog;
-import top.blogapi.model.vo.BlogDetail;
-import top.blogapi.model.vo.BlogInfo;
+import top.blogapi.model.vo.*;
 import top.blogapi.repository.BlogRepository;
 import top.blogapi.service.BlogService;
-import top.blogapi.model.vo.BlogIdAndTitle;
 import top.blogapi.util.markdown.MarkdownUtils;
 
 import java.time.LocalDateTime;
@@ -189,6 +186,11 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void updateViewByBlogId(Long id) {
         blogRepository.updateView(id);
+    }
+
+    @Override
+    public List<SearchBlog> searchBlogs(String search) {
+        return blogRepository.searchBlogs(search);
     }
 
 

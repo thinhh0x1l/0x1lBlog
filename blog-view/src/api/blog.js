@@ -18,3 +18,13 @@ export function increaseView(id){
         params : {id}
     })
 }
+
+export function fSearchBlog(query){
+    return axios({
+        url: 'search-blog',
+        method: 'GET',
+        params: {
+            query
+        }
+    })
+}

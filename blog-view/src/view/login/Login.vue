@@ -114,7 +114,7 @@ const handleLogin = async () => {
         life: 3000
       })
 
-      window.sessionStorage.setItem('token', res.data.token)
+      window.sessionStorage.setItem('adminToken', res.data.token)
       await router.push('/home')
     } else {
       toast.add({

@@ -1,9 +1,11 @@
 package top.blogapi.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -39,7 +41,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 ex.getContext()
         );
-        log.error("Exception xảy ra", ex);
+        log.error("Request URL : {}, Exception : {}", request.getRequestURL(), ex.getMessage());
         return ResponseEntity.status(error.getHttpStatus()).body(response);
     }
 
@@ -53,8 +55,8 @@ public class GlobalExceptionHandler {
                 .getFieldErrors()
                 .stream()
                 .collect(Collectors.toMap(
-                        err -> err.getField(),
-                        err -> err.getDefaultMessage(),
+                        FieldError::getField,
+                        DefaultMessageSourceResolvable::getDefaultMessage,
                         (oldVal, newVal) -> oldVal
                 ));
 
@@ -67,7 +69,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 details
         );
-        log.error("Exception xảy ra", ex);
+        log.error("Request URL : {}, Exception : {}", request.getRequestURL(), ex.getMessage());
         return ResponseEntity.status(ErrorCode.INVALID_INPUT.getHttpStatus()).body(response);
     }
 
@@ -102,7 +104,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 Map.of("error", ex.getClass().getSimpleName())
         );
-        log.error("Exception xảy ra", ex);
+        log.error("Request URL : {}, Exception : {}", request.getRequestURL(), ex.getMessage());
         return ResponseEntity.status(ErrorCode.INTERNAL_ERROR.getHttpStatus()).body(response);
     }
 

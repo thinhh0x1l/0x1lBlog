@@ -79,6 +79,8 @@ import {storeToRefs} from "pinia";
 import CommentInfoUser from "@/components/comments/CommentInfoUser.vue";
 import {useAppStore} from "@/store";
 
+import {toast} from "@/plugins/primevueConfig/primePluginVue";
+
 const commentStore = useCommentStore()
 const store = useAppStore()
 
@@ -112,8 +114,11 @@ const formValidateMessage = ref<Record<string, string>>({
   email:'',
 })
 const handleSubmit = async () => {
-  if(sessionStorage.getItem('token')){
-    await commentStore.postComment()
+  if(sessionStorage.getItem('adminToken')){
+    if(commentForm.value.content==='' || commentForm.value.content.length >250)
+      toast.warn('Nội dung bình luận không hợp lê!')
+    else
+      await commentStore.postComment()
     return;
   }
   const { valid, firstErrorKey } = commentStore.validateAll()
@@ -121,6 +126,7 @@ const handleSubmit = async () => {
   if (!valid && firstErrorKey) {
     formValidateMessage.value[firstErrorKey[0]] = firstErrorKey[1]
     infoRef.value?.scrollToField(firstErrorKey[0] as any)
+    console.log('aaa')
     return
   }
   await commentStore.postComment()

@@ -169,7 +169,6 @@ const fetchBlog = async () => {
     const response = await getBlogById(blogId.value)
     if (response.code === 200) {
       blog.value = response.data
-      console.log(response.data)
       await nextTick();
       playerOptions.value.audio = response.data.musicInfo
       initPlayer();

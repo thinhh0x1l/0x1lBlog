@@ -84,7 +84,7 @@ export const useCommentStore = defineStore('comment',() => {
     };
 
     const getToken=  (): string =>{
-        return sessionStorage.getItem('token') || ''
+        return sessionStorage.getItem('adminToken') || ''
     }
     const postComment = async () =>{
         try {

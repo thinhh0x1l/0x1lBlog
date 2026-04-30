@@ -5,10 +5,7 @@ import top.blogapi.dto.request.blog.BlogQueryRequest;
 import top.blogapi.dto.request.blog.BlogUpdatePublishedRequest;
 import top.blogapi.dto.request.blog.BlogUpdateRecommendRequest;
 import top.blogapi.model.entity.Blog;
-import top.blogapi.model.vo.ArchiveBlog;
-import top.blogapi.model.vo.BlogDetail;
-import top.blogapi.model.vo.BlogIdAndTitle;
-import top.blogapi.model.vo.BlogInfo;
+import top.blogapi.model.vo.*;
 
 import java.util.List;
 
@@ -52,4 +49,6 @@ public interface BlogService {
     Boolean getCommentEnabledByBlogId(Long blogId);
 
     void updateViewByBlogId(Long id);
+
+    List<SearchBlog> searchBlogs(String search);
 }

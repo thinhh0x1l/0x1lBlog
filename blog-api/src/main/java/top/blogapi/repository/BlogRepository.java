@@ -1,13 +1,11 @@
 package top.blogapi.repository;
 
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Result;
 import org.springframework.stereotype.Repository;
 import top.blogapi.model.entity.Blog;
 import top.blogapi.model.entity.Tag;
-import top.blogapi.model.vo.ArchiveBlog;
-import top.blogapi.model.vo.BlogDetail;
-import top.blogapi.model.vo.BlogIdAndTitle;
-import top.blogapi.model.vo.BlogInfo;
+import top.blogapi.model.vo.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -268,4 +266,9 @@ public interface BlogRepository {
     UPDATE blog SET views = views + 1 WHERE id = #{blogId}
 """)
     void updateView (Long blogId);
+
+    @Select("""
+    SELECT id, title, content FROM blog WHERE title LIKE CONCAT('%',#{search},'%') AND is_published = TRUE
+""")
+    List<SearchBlog> searchBlogs(String search);
 }
