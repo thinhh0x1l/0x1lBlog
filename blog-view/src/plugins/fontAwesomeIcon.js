@@ -26,6 +26,7 @@ import {
     faCircleArrowLeft,
     faBook,
     faBookOpen,
+    faFont,
 
 } from '@fortawesome/free-solid-svg-icons'
 
@@ -58,6 +59,7 @@ library.add(
     faCircleArrowLeft,
     faBook,
     faBookOpen,
+    faFont,
 )
 
 export default FontAwesomeIcon

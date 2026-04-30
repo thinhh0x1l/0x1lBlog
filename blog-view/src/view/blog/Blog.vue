@@ -37,6 +37,13 @@
                 <font-awesome-icon icon="clock" class="mr-2" />
                 <span>Thời gian đọc ≈ {{ blog.readTime }} phút</span>
               </div>
+              <a
+                  class="flex align-items-center m-common-black"
+                  @click.prevent="bigFontSize=!bigFontSize"
+                  v-tooltip.top="'Nhấp chuột để thay đổi kích thước phông chữ'"
+              >
+                <font-awesome-icon icon="font" class="mr-2"/>
+              </a>
             </div>
           </div>
 
@@ -49,6 +56,7 @@
             <!-- Mô tả bài viết -->
             <div class="typo m-padded-tb-small px-3 blog-content
             line-numbers match-braces rainbow-braces"
+                 :class="{'m-big-fontsize':bigFontSize}"
                  v-html="blog.content"></div>
             <!-- Divider -->
             <div class="col-12">
@@ -119,6 +127,7 @@ const route = useRoute()
 const { author } = storeToRefs(store)
 const { isBlogRenderCompleted } = storeToRefs(blogDetail)
 
+const bigFontSize = ref(false)
 const blogId = computed(() => parseInt(route.params.id))
 const blog = ref({})
 const playerRef = ref(null)

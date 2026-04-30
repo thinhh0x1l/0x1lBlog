@@ -8,7 +8,7 @@ import { inject } from 'vue'
 import 'primeicons/primeicons.css' // Chỉ cần 1 lần
 import 'primeflex/themes/primeone-light.css'
 import 'primeflex/primeflex.css'
-
+import Tooltip from 'primevue/tooltip'
 // Import PrimeVue components
 import Textarea from 'primevue/textarea'
 import FloatLabel from 'primevue/floatlabel'
@@ -57,7 +57,7 @@ const PrimeVuePlugin = {
         })
         app.use(ToastService)
         app.use(ConfirmationService)
-
+        app.directive('tooltip', Tooltip)
         const components = {
             'Button': Button,
             'InputText': InputText,

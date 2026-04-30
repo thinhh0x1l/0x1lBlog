@@ -302,7 +302,13 @@ footer {
 .m-common-black i {
   margin-right: 3px !important;
 }
+.m-common-black * * {
+  vertical-align: middle !important;
+}
 
+.m-big-fontsize p, .m-big-fontsize ul, .m-big-fontsize ol {
+  font-size: 17px !important;
+}
 
 /*-----------------------Button--------------------------*/
 .color-btn {
