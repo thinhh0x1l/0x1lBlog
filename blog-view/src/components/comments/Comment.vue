@@ -2,7 +2,7 @@
     <h3 class="dividing">Comments | Tổng {{ commentStats.totalComments }} bình luận</h3>
     <CommentInfoUser ref="infoRef" :form-validate-message="formValidateMessage"/>
     <CommentForm v-if="!replyCmId"
-                 @submit="handleSubmit"/>
+                 @submit="throttledSubmit"/>
     <div class="comments-list">
       <div v-for="cm in comments"
            :key="cm.id"
@@ -80,6 +80,9 @@ import CommentInfoUser from "@/components/comments/CommentInfoUser.vue";
 import {useAppStore} from "@/store";
 
 import {toast} from "@/plugins/primevueConfig/primePluginVue";
+import {throttle} from "lodash-es";
+
+
 
 const commentStore = useCommentStore()
 const store = useAppStore()
@@ -130,8 +133,10 @@ const handleSubmit = async () => {
     return
   }
   await commentStore.postComment()
-
 }
+
+const throttledSubmit = throttle(handleSubmit, 10000)
+
 const setItemRef= (el: any, index: number) =>{
   if(el&&!commentRefs.value[index])
     commentRefs.value[index]=el
