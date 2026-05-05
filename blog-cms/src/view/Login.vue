@@ -111,6 +111,7 @@ const handleLogin = async () => {
 
       // Store token
       sessionStorage.setItem('token', res.data.token)
+      sessionStorage.setItem('user', JSON.stringify(res.data.user))
 
       // Navigate to dashboard
       await router.push('/home')

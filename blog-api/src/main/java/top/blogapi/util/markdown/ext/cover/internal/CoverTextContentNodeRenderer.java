@@ -4,7 +4,7 @@ import org.commonmark.node.Node;
 import org.commonmark.renderer.text.TextContentNodeRendererContext;
 import org.commonmark.renderer.text.TextContentWriter;
 
-public class CoverTextContentNodeRenderer extends CoverNodeRenderer {
+public class CoverTextContentNodeRenderer extends AbstractCoverNodeRenderer {
 
     private final TextContentWriter text;
     private final TextContentNodeRendererContext context;

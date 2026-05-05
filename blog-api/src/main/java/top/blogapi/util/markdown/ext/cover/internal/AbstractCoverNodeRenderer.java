@@ -6,7 +6,7 @@ import top.blogapi.util.markdown.ext.cover.Cover;
 
 import java.util.Set;
 
-abstract class CoverNodeRenderer implements NodeRenderer {
+abstract class AbstractCoverNodeRenderer implements NodeRenderer {
     @Override
     public Set<Class<? extends Node>> getNodeTypes() {
         return Set.of(Cover.class);

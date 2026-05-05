@@ -6,7 +6,19 @@
         <span><img src="/img/logo.svg" alt="Logo" height="60">
            Hệ thống quản lý Blog</span>
       </div>
-      <el-button type="info" @click="logout">Đăng xuất</el-button>
+
+      <el-dropdown>
+        <div class="avatar-wrapper">
+          <img :src="user.avatar" class="user-avatar">
+        </div>
+
+        <template #dropdown>
+          <el-dropdown-menu class="el-dropdown-link1  ">
+            <el-dropdown-item>
+              <el-button type="info" @click="logout">Đăng xuất</el-button></el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </el-header>
 
     <!-- Main Content -->
@@ -80,7 +92,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted} from "vue";
+import {ref, onMounted, reactive} from "vue";
 import {useRouter ,useRoute } from "vue-router";
 import { getCurrentInstance } from "vue";
 import { useAppStore } from '@/store/index.js'
@@ -230,10 +242,13 @@ const iconsObj = {
   '33': Document,
 }
 
+const user = ref({})
 const toast = useToast()
 // Lifecycle
 onMounted(() => {
-
+  if(!sessionStorage.getItem('user'))
+    router.push('/login')
+  user.value = JSON.parse(sessionStorage.getItem('user'))||null
 })
 
 // Các phương thức
@@ -317,4 +332,19 @@ const toggleCollapse = () => {
 .toggle-button:hover {
   background-color: #5a6074;
 }
+
+.el-dropdown-link1 {
+  cursor: pointer;
+  color: #368FD3;
+  background: #368FD3;
+  display: flex;
+  align-items: center;
+}
+.user-avatar {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
 </style>
