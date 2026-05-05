@@ -1,8 +1,6 @@
 package top.blogapi.service.impl.orchestration;
 
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +8,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.client.zing_mp3.Mp3Service;
@@ -29,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static top.blogapi.model.TypeSetting.*;
 
+@Slf4j
 @Service
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -68,7 +67,7 @@ public class SiteSettingOrchestrator {
         Map<String, Object> result = new HashMap<>();
         for(SiteSetting info : siteInfos){
             if("copyright".equals(info.getNameEn()))
-                result.put(info.getNameEn(), JSON.parseObject(info.getValue(), Copyright.class));
+                result.put(info.getNameEn(), objectMapper.convertValue(info.getValue(), Copyright.class));
             else
                 result.put(info.getNameEn(), info.getValue());
         }
@@ -78,7 +77,7 @@ public class SiteSettingOrchestrator {
     /// Xử lý Badge (type 2)
     private List<Badge> processBadges(List<SiteSetting> badgeSettings){
         return badgeSettings.stream()
-                .map(setting -> JSON.parseObject(setting.getValue(), Badge.class))
+                .map(setting -> objectMapper.convertValue(setting.getValue(), Badge.class))
                 .collect(Collectors.toList());
     }
 
@@ -149,7 +148,7 @@ public class SiteSettingOrchestrator {
             case "facebook" -> intro.setFacebook(value);
             case "leetCode" -> intro.setLeetCode(value);
             case "instagram" -> intro.setInstagram(value);
-            case "favorite" -> favorites.add(JSON.parseObject(value, Favorite.class));
+            case "favorite" -> favorites.add(objectMapper.convertValue(value, Favorite.class));
             case "rollText" -> rollTexts.addAll(extractRollTexts(value));
         }
     }
@@ -167,12 +166,11 @@ public class SiteSettingOrchestrator {
     public void updateAll(Map<String, Object> map){
         List<LinkedHashMap> siteSettings = (List<LinkedHashMap>) map.get("settings");
         List<Integer> deleteIds = (List<Integer>) map.get("deleteIds");
-        System.out.println(deleteIds);
+        log.info("Các id được xóa {}",deleteIds);
         for(Integer id : deleteIds)
             siteSettingService.deleteSettingById(Long.parseLong( id+""));
         for (LinkedHashMap s : siteSettings){
-            JSONObject siteSettingJsonObject  = new JSONObject(s);
-            SiteSetting siteSetting = siteSettingJsonObject .toJavaObject(SiteSetting.class);
+            SiteSetting siteSetting = objectMapper.convertValue(s,SiteSetting.class);
             if(siteSetting.getId() != null)
                 siteSettingService.updateSiteSetting(siteSetting);
             else

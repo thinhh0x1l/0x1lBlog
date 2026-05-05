@@ -22,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryOrchestrator {
     CategoryService categoryService;
-    BlogService blogService;
 
     CategoryMapper categoryMapper;
 

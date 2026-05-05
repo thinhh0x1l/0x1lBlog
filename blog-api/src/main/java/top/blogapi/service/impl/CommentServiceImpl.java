@@ -49,8 +49,6 @@ public class CommentServiceImpl implements CommentService {
 
                 }catch (Exception e){
                     log.error(String.valueOf(e.getCause()));
-                    System.out.println(e.getMessage());
-                    System.out.println(c.getId()    );
                 }
             }
             c.setReplyComments(commentRepository.getListByPageAndParentCommentId(page, c.getId(), blogId));

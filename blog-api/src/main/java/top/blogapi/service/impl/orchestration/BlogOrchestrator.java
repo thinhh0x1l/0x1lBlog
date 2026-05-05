@@ -1,7 +1,7 @@
 package top.blogapi.service.impl.orchestration;
 
 
-import com.alibaba.fastjson2.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -12,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.blogapi.client.zing_mp3.Mp3Service;
 import top.blogapi.client.zing_mp3.MusicService;
+import top.blogapi.config.RedisKeyConfig;
 import top.blogapi.dto.request.blog.BlogQueryRequest;
 import top.blogapi.dto.response.blog.ArchiveBlogResponse;
 import top.blogapi.dto.response.blog.BlogSummaryResponse;
@@ -27,16 +27,12 @@ import top.blogapi.mapper.CategoryMapper;
 import top.blogapi.model.vo.*;
 import top.blogapi.service.BlogService;
 import top.blogapi.service.CategoryService;
-import top.blogapi.service.SiteSettingService;
 import top.blogapi.service.TagService;
+import top.blogapi.service.impl.RedisServiceImpl;
 import top.blogapi.util.StringUtils;
 import top.blogapi.util.markdown.MarkdownUtils;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -50,7 +46,8 @@ public class BlogOrchestrator {
     MusicService musicService;
     BlogMapper blogMapper;
     CategoryMapper categoryMapper;
-    SiteSettingOrchestrator siteSettingOrchestrator;
+    ObjectMapper objectMapper;
+    RedisServiceImpl redisService;
 
     public BlogListPageResponse getListByTitleOrCategory(BlogQueryRequest blogQueryRequest) {
         validateBlogQuery(blogQueryRequest);
@@ -74,8 +71,7 @@ public class BlogOrchestrator {
 
     public String getResult(Map<String, Object> map, String type) {
         Map<String, Object> blogMap = (Map<String, Object>) map.get("blog");
-        JSONObject blogJsonObject = new JSONObject(blogMap);
-        Blog blog = blogJsonObject.toJavaObject(Blog.class);
+        Blog blog = objectMapper.convertValue(blogMap,Blog.class);
         System.out.println(blog);
         // Xác minh các thuộc tính
         if (StringUtils.isEmpty(
@@ -151,13 +147,25 @@ public class BlogOrchestrator {
         return blogService.getIdAndTitleList();
     }
 
-    public List<BlogInfo> getBlogInfoListByIsPublished(){
-        List<BlogInfo> blogInfos = blogService.getBlogInfoListByIsPublished();
-        blogInfos.forEach(blogInfo -> {
+    public PageResult<BlogInfo> getBlogInfoListByIsPublished(Integer pageNum){
+        String redisHash = RedisKeyConfig.HOME_BLOG_INFO_LIST;
+
+        PageResult<BlogInfo> redisResult = redisService.getPageResultByHash(redisHash,pageNum);
+        if(redisResult != null) return redisResult;
+
+        String orderBy = "is_top desc, create_time desc";
+        PageHelper.startPage(pageNum,5, orderBy);
+        PageInfo<BlogInfo> pageInfo = new PageInfo<>(blogService.getBlogInfoListByIsPublished());
+        pageInfo.getList().forEach(blogInfo -> {
             blogInfo.setTags(tagService.getTagListByBlogId(blogInfo.getId()));
             blogInfo.setDescription(MarkdownUtils.markdownToHtmlExtensions(blogInfo.getDescription()));
         });
-        return blogInfos;
+        if(pageInfo.getList().isEmpty())
+            return null;
+        log.error("Database");
+        PageResult<BlogInfo> pageResult = new PageResult<>(pageInfo.getPages(),pageInfo.getList());
+        redisService.setPageResultToHash(redisHash,pageNum,pageResult);
+        return pageResult;
     }
 
     public void updateBlogTopById(Long blogId, Boolean top){
@@ -166,8 +174,7 @@ public class BlogOrchestrator {
 
     public List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend(){
         try(Page<Object> page1 = PageHelper.startPage(1, 3)) {
-            List<BlogIdAndTitle> blogIdAndTitles = blogService.getIdAndTitleListByIsPublishedAndIsRecommend();
-            return blogIdAndTitles;
+            return blogService.getIdAndTitleListByIsPublishedAndIsRecommend();
         }catch (Exception e){
             e.printStackTrace();
         }

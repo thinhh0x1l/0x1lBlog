@@ -25,14 +25,10 @@ public class HomeController {
     SiteSettingOrchestrator siteSettingOrchestrator;
 
     @GetMapping("/blogs")
-    public  Result blogs(@RequestParam(defaultValue = "1") Integer pageNum) {
+    public  Result<?> blogs(@RequestParam(defaultValue = "1") Integer pageNum) {
         try {
-            String orderBy = "is_top desc, create_time desc";
-            int pageSize = 5;
-            PageHelper.startPage(pageNum, pageSize, orderBy);
-            PageInfo<BlogInfo> pageInfo = new PageInfo<>(blogOrchestrator.getBlogInfoListByIsPublished());
-            PageResult<BlogInfo> pageResult = new PageResult<>(pageInfo.getPages(),pageInfo.getList());
-            return Result.ok("Yêu cầu thành công", pageResult);
+
+            return Result.ok("Yêu cầu thành công", blogOrchestrator.getBlogInfoListByIsPublished(pageNum));
         } catch (Exception e) {
             e.printStackTrace();
             return Result.error();
