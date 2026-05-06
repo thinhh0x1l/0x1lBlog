@@ -3,6 +3,7 @@ package top.blogapi.model.vo;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+@AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter

@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class Copyright {
     String title;
     String siteName;

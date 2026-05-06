@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.client.zing_mp3.Mp3Service;
+import top.blogapi.exception.AppException;
+import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.TypeSetting;
 import top.blogapi.model.entity.SiteSetting;
 import top.blogapi.model.vo.Badge;
@@ -63,11 +65,15 @@ public class SiteSettingOrchestrator {
 
 
     /// Xử lý thông tin site (type 1)
-    private Map<String, Object> processSiteInfo(List<SiteSetting> siteInfos){
+    private Map<String, Object> processSiteInfo(List<SiteSetting> siteInfos)  {
         Map<String, Object> result = new HashMap<>();
         for(SiteSetting info : siteInfos){
             if("copyright".equals(info.getNameEn()))
-                result.put(info.getNameEn(), objectMapper.convertValue(info.getValue(), Copyright.class));
+                try {
+                    result.put(info.getNameEn(), objectMapper.readValue(info.getValue(), Copyright.class));
+                }catch (JsonProcessingException ex){
+                    log.warn("Lỗi parse info: {}", info.getValue());
+                }
             else
                 result.put(info.getNameEn(), info.getValue());
         }
@@ -77,7 +83,14 @@ public class SiteSettingOrchestrator {
     /// Xử lý Badge (type 2)
     private List<Badge> processBadges(List<SiteSetting> badgeSettings){
         return badgeSettings.stream()
-                .map(setting -> objectMapper.convertValue(setting.getValue(), Badge.class))
+                .map(setting -> {
+                    try {
+                        return objectMapper.readValue(setting.getValue(), Badge.class);
+                    } catch (JsonProcessingException e) {
+                        log.warn("Lỗi parse Badge: {}", setting.getValue());
+                    }
+                    return null;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -140,6 +153,17 @@ public class SiteSettingOrchestrator {
                                    List<Favorite> favorites, List<String> rollTexts){
         String nameEn = siteSetting.getNameEn();
         String value = siteSetting.getValue();
+        Favorite favorite = null;
+        if(nameEn.equals("favorite")){
+            try {
+                favorite = objectMapper.readValue(value, Favorite.class);
+            }catch (JsonProcessingException ex){
+                log.warn("Lỗi parse Favorite: {}", value);
+                nameEn = "";
+            }
+        }
+
+
         switch (nameEn){
             case "avatar" -> intro.setAvatar(value);
             case "name" -> intro.setName(value);
@@ -148,7 +172,7 @@ public class SiteSettingOrchestrator {
             case "facebook" -> intro.setFacebook(value);
             case "leetCode" -> intro.setLeetCode(value);
             case "instagram" -> intro.setInstagram(value);
-            case "favorite" -> favorites.add(objectMapper.convertValue(value, Favorite.class));
+            case "favorite" -> favorites.add(favorite);
             case "rollText" -> rollTexts.addAll(extractRollTexts(value));
         }
     }

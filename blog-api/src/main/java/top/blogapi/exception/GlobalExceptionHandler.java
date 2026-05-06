@@ -16,6 +16,7 @@ import top.blogapi.util.StringUtils;
 
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,7 +31,8 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
         ErrorCode error = ex.getErrorCode();
-
+        Map<String, Object> details = new HashMap<>(ex.getContext());
+        details.put("messageCause",ex.getCause().getMessage() );
         ApiErrorResponse response = new ApiErrorResponse(
                 error.getCode(),
                 ex.getMessage(),
@@ -39,7 +41,7 @@ public class GlobalExceptionHandler {
                 StringUtils.isEmpty(request.getHeader("X-Trace-Id"))
                         ?UUID.randomUUID().toString():request.getHeader("X-Trace-Id"),
                 LocalDateTime.now(),
-                ex.getContext()
+                details
         );
         log.error("Request URL : {}, Exception : {}", request.getRequestURL(), ex.getMessage());
         return ResponseEntity.status(error.getHttpStatus()).body(response);
@@ -69,14 +71,14 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 details
         );
-        log.error("Request URL : {}, Exception : {}", request.getRequestURL(), ex.getMessage());
+        log.error("Request URL : {}", request.getRequestURL(), ex);
         return ResponseEntity.status(ErrorCode.INVALID_INPUT.getHttpStatus()).body(response);
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> usernameNotFoundExceptionHandler(HttpServletRequest request,
                                                                              UsernameNotFoundException e) {
-        log.error("Request URL : {}, Exception : {}", request.getRequestURL(), e.getMessage());
+        log.error("Request URL : {}", request.getRequestURL(), e);
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.UNAUTHORIZED.toString(),
                 e.getMessage(),
@@ -102,9 +104,11 @@ public class GlobalExceptionHandler {
                 request.getRequestURI(),
                 UUID.randomUUID().toString(),
                 LocalDateTime.now(),
-                Map.of("error", ex.getClass().getSimpleName())
+                Map.of(
+                        "error", ex.getClass().getSimpleName(),
+                        "messageCause", ex.getCause() != null ? ex.getCause().getMessage() : "null")
         );
-        log.error("Request URL : {}, Exception : {}", request.getRequestURL(), ex.getMessage());
+        log.error("Request URL : {}", request.getRequestURL(), ex);
         return ResponseEntity.status(ErrorCode.INTERNAL_ERROR.getHttpStatus()).body(response);
     }
 

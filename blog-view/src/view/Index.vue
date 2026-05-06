@@ -4,6 +4,7 @@
 
     <div class="main">
       <div class="py-6">
+
         <div class="container mx-auto" style="max-width: 1450px;">
           <div class="flex flex-row flex-nowrap ">
 
@@ -29,7 +30,11 @@
                  :class="{'overlay':showIntro}"
                  style="width: 62.5% !important"
             >
-              <router-view/>
+              <router-view v-slot="{ Component }">
+                <keep-alive :include="['Home']">
+                  <component :is="Component" />
+                </keep-alive>
+              </router-view>
             </div>
 
             <div class="hidden md:block flex-none" style="width: 18.75% !important;">

@@ -5,12 +5,15 @@
 </template>
 
 
-<script setup>
+<script setup >
 import BlogList from "@/components/blogList/BlogList.vue";
-import {nextTick, onMounted, ref} from 'vue'
+import {nextTick, onActivated, onBeforeUpdate, onMounted, ref} from 'vue'
 import {getBlogList} from "@/api/home.js";
 import {useToast} from "@/plugins/primevueConfig/primePluginVue.js";
 import mediumZoom from "medium-zoom";
+import {onBeforeRouteLeave, onBeforeRouteUpdate, useRoute} from "vue-router";
+
+const route = useRoute()
 
 const toast = useToast()
 
@@ -19,6 +22,7 @@ const totalPage = ref(0)
 
 const fetchBlogList = async (pageNum) => {
   try {
+    console.log(12323)
     const res = await getBlogList(pageNum);
     if(res.code === 200){
       toast.success(res.msg)
@@ -30,7 +34,9 @@ const fetchBlogList = async (pageNum) => {
     toast.error(error.response.data.message)
   }
 }
+onActivated(() => {
 
+})
 let zoom
 const initZoom = () => {
   zoom = mediumZoom(".typo img", {
