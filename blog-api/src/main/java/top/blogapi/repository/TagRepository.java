@@ -22,7 +22,7 @@ public interface TagRepository {
     @Select("SELECT t.id, t.name, t.color FROM tag t WHERE id = #{id}")
     Optional<Tag> getTagById(@Param("id") Long id);
 
-    @Select("SELECT t.id, t.name, t.color FROM tag t WHERE t.name LIKE #{name}")
+    @Select("SELECT t.id, t.name, t.color FROM tag t WHERE t.name = #{name}")
     Optional<Tag> getTagByName(String name);
 
     @Select("SELECT * FROM tag WHERE name = #{name}")
@@ -44,14 +44,13 @@ public interface TagRepository {
         WITH blog_tags AS (
             SELECT
                 bt.blog_id,
-                GROUP_CONCAT(t.id) AS allTagIds,
                 GROUP_CONCAT(t.name) AS allTagNames,
                 GROUP_CONCAT(t.color) AS allTagColors
             FROM tag t
             JOIN blog_tag bt
             ON t.id = bt.tag_id
             GROUP BY bt.blog_id
-            HAVING SUM(CASE WHEN bt.tag_id = #{tagId} THEN 1 ELSE 0 END) > 0
+            HAVING SUM(CASE WHEN t.name = #{tagName} THEN 1 ELSE 0 END) > 0
         )
         SELECT
             b.id,
@@ -64,7 +63,6 @@ public interface TagRepository {
             b.is_top,
             c.id AS category_id,
             c.name AS category_name,
-            bt.allTagIds,
             bt.allTagNames,
             bt.allTagColors
         FROM blog b
@@ -77,5 +75,5 @@ public interface TagRepository {
             @Result(property = "category.id", column = "category_id"),
             @Result(property = "category.name", column = "category_name")
     })
-    List<BlogTagsInfo> getBlogInfoListByTagIdAndIsPublished(Long tagId);
+    List<BlogTagsInfo> getBlogInfoListByTagIdAndIsPublished(String tagName);
 }

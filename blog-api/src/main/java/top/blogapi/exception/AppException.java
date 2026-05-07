@@ -2,6 +2,7 @@ package top.blogapi.exception;
 
 import lombok.Getter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -26,5 +27,15 @@ public class AppException extends RuntimeException {
         super(customMessage);
         this.errorCode = errorCode;
         this.context = context == null ? Map.of() : Map.copyOf(context);
+    }
+    public AppException addContext(String key, Object value) {
+        Map<String, Object> newContext =
+                new HashMap<>(this.context);
+        newContext.put(key, value);
+        return new AppException(
+                this.errorCode,
+                getMessage(),
+                newContext
+        );
     }
 }

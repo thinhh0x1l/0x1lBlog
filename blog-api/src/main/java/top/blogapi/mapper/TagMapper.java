@@ -4,10 +4,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
-import top.blogapi.dto.response.tag.TagIdGetBlogsResponse;
+import top.blogapi.dto.response.tag.TagSlugGetBlogsResponse;
 import top.blogapi.dto.response.tag.TagResponse;
 import top.blogapi.model.entity.Tag;
 import top.blogapi.model.vo.BlogTagsInfo;
+import top.blogapi.util.SlugUtils;
 import top.blogapi.util.StringUtils;
 import top.blogapi.util.markdown.MarkdownUtils;
 
@@ -23,13 +24,13 @@ public interface TagMapper {
     })
     TagResponse tagToTagResponse(Tag tag);
 
-    TagIdGetBlogsResponse.Tag toTagIdGetBlogsResponse_Tag(Tag tag);
+    TagSlugGetBlogsResponse.Tag toTagIdGetBlogsResponse_Tag(Tag tag, String slug);
 
-    List<TagIdGetBlogsResponse.BlogInfo> toTagIdGetBlogInfoList(List<BlogTagsInfo> blogTagsInfos);
+    List<TagSlugGetBlogsResponse.BlogInfo> toTagIdGetBlogInfoList(List<BlogTagsInfo> blogTagsInfos);
 
     @Mapping(target = "tags", source = ".", qualifiedByName = "convertTagToList")
     @Mapping(target = "description", source = "description", qualifiedByName = "convertMarkdownToHtml")
-    TagIdGetBlogsResponse.BlogInfo toTagIdGetBlogsResponse (BlogTagsInfo blogTagsInfo);
+    TagSlugGetBlogsResponse.BlogInfo toTagIdGetBlogsResponse (BlogTagsInfo blogTagsInfo);
 
     @Named("convertMarkdownToHtml")
     default String convertMarkdownToHtml(String description) {
@@ -39,18 +40,17 @@ public interface TagMapper {
     }
 
     @Named("convertTagToList")
-    default List<TagIdGetBlogsResponse.Tag> convertToTagList(BlogTagsInfo source){
-        if (source.getAllTagIds() == null || source.getAllTagIds().isEmpty())
+    default List<TagSlugGetBlogsResponse.Tag> convertToTagList(BlogTagsInfo source){
+        if (source.getAllTagNames() == null || source.getAllTagNames().isEmpty())
             return List.of();
 
-        String[] ids = source.getAllTagIds().split(",");
         String[] names = source.getAllTagNames().split(",");
         String[] colors = source.getAllTagColors().split(",");
 
-        List<TagIdGetBlogsResponse.Tag> tags = new ArrayList<>();
-        for (int i = 0; i < ids.length; i++) {
-            TagIdGetBlogsResponse.Tag tag = new TagIdGetBlogsResponse.Tag();
-            tag.setId(Long.parseLong(ids[i].trim()));
+        List<TagSlugGetBlogsResponse.Tag> tags = new ArrayList<>();
+        for (int i = 0; i < names.length; i++) {
+            TagSlugGetBlogsResponse.Tag tag = new TagSlugGetBlogsResponse.Tag();
+            tag.setSlug(SlugUtils.convertSpaceToHyphen(names[i]));
             tag.setName(names[i].trim());
             tag.setColor(colors[i].trim());
             tags.add(tag);

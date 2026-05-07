@@ -2,8 +2,8 @@
   <div class="tag-container">
     <router-link
         v-for="tag in listTag"
-        :key="tag.id"
-        :to="`/tag/${tag.id}`"
+        :key="tag.slug"
+        :to="`/tag/${tag.slug}`"
         class="no-underline label tag m-text-500"
         :style="{
         background: `linear-gradient(

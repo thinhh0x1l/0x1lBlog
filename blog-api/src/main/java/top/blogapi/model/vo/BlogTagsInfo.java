@@ -24,7 +24,6 @@ public class BlogTagsInfo {
     Integer words;          // Số từ trong bài viết
     Integer readTime;       // Thời gian đọc (phút)
     Boolean top;
-    String allTagIds;
     String allTagNames;
     String allTagColors;
     Category category;      // Danh mục bài viết

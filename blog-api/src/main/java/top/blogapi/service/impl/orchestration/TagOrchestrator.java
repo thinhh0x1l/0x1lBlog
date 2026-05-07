@@ -12,12 +12,13 @@ import top.blogapi.dto.request.tag.CreateTagRequest;
 import top.blogapi.dto.request.tag.TagQueryRequest;
 import top.blogapi.dto.request.tag.UpdateTagRequest;
 import top.blogapi.dto.response._page.TagListPageResponse;
-import top.blogapi.dto.response.tag.TagIdGetBlogsResponse;
+import top.blogapi.dto.response.tag.TagSlugGetBlogsResponse;
 import top.blogapi.dto.response.tag.TagResponse;
 import top.blogapi.mapper.TagMapper;
 import top.blogapi.model.entity.Tag;
 import top.blogapi.model.vo.BlogTagsInfo;
 import top.blogapi.service.TagService;
+import top.blogapi.util.SlugUtils;
 
 import java.util.List;
 
@@ -35,8 +36,10 @@ public class TagOrchestrator {
         return new TagListPageResponse(pageInfo);
     }
 
-    public List<Tag> getTagList(){
-        return tagService.getTagList();
+    public List<TagSlugGetBlogsResponse.Tag> getTagSlugList(){
+        return tagService.getTagList().stream().map(t ->
+                tagMapper.toTagIdGetBlogsResponse_Tag(t,SlugUtils.convertSpaceToHyphen(t.getName()))
+        ).toList();
     }
 
     public void createTag(CreateTagRequest request){
@@ -51,15 +54,16 @@ public class TagOrchestrator {
         tagService.updateTag(request.getTagName(), request.getTagColor(), request.getId());
     }
 
-    @SuppressWarnings("resource")
-    public TagIdGetBlogsResponse tagIdGetBlogsResponse(Long tagId,Integer pageNum, Integer pageSize){
+
+    public TagSlugGetBlogsResponse tagIdGetBlogsResponse(String slug, Integer pageNum, Integer pageSize){
+        String tagName = SlugUtils.convertHyphenToSpace(slug);
         String orderBy = "is_top desc, create_time desc";
         PageHelper.startPage(pageNum,pageSize,orderBy);
         PageInfo<BlogTagsInfo>  blogTagsInfos =
-                new PageInfo<>(tagService.getBlogInfoListByTagIdAndIsPublished(tagId));
-        Tag tag = tagService.getTagById(tagId);
-        return new TagIdGetBlogsResponse(
-                tagMapper.toTagIdGetBlogsResponse_Tag(tag),
+                new PageInfo<>(tagService.getBlogInfoListByTagIdAndIsPublished(tagName));
+        Tag tag = tagService.getTagByName(tagName);
+        return new TagSlugGetBlogsResponse(
+                tagMapper.toTagIdGetBlogsResponse_Tag(tag,SlugUtils.convertSpaceToHyphen(tag.getName())),
                 blogTagsInfos.convert(tagMapper::toTagIdGetBlogsResponse)
         );
     }

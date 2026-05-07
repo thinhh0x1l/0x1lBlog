@@ -6,7 +6,12 @@ export interface Tag{
     name: string,
     color: string
 }
+export interface TagSlug{
+    slug: string,
+    name: string,
+    color: string
+}
 export interface TagIdGetBlogsResponse {
-    queryTag: Tag,
+    queryTag: TagSlug,
     blogInfos: PageInfo<BlogInfo>;
 }

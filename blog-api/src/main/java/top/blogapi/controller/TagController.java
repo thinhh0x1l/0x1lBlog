@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.blogapi.model.entity.Tag;
@@ -20,15 +21,14 @@ public class TagController {
 
     @GetMapping("/tags")
     public Result<?> tags(){
-        List<Tag> tags = tagOrchestrator.getTagList();
-        return Result.ok("Yêu cầu thành công", tags);
+        return Result.ok("Yêu cầu thành công", tagOrchestrator.getTagSlugList());
     }
 
-    @GetMapping("/tag")
-    public Result<?> tag(@RequestParam Long tagId,
+    @GetMapping("/tag/{slug}")
+    public Result<?> tag(@PathVariable String slug,
                       @RequestParam(defaultValue = "1") Integer pageNum,
                       @RequestParam(defaultValue = "5") Integer pageSize) {
         return Result.ok("Yêu cầu thành công",
-                tagOrchestrator.tagIdGetBlogsResponse(tagId,pageNum,pageSize));
+                tagOrchestrator.tagIdGetBlogsResponse(slug,pageNum,pageSize));
     }
 }

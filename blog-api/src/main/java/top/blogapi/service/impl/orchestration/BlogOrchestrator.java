@@ -29,6 +29,7 @@ import top.blogapi.service.BlogService;
 import top.blogapi.service.CategoryService;
 import top.blogapi.service.TagService;
 import top.blogapi.service.impl.RedisServiceImpl;
+import top.blogapi.util.SlugUtils;
 import top.blogapi.util.StringUtils;
 import top.blogapi.util.markdown.MarkdownUtils;
 
@@ -56,7 +57,9 @@ public class BlogOrchestrator {
                 blogService.getListByTitleOrCategory(blogQueryRequest).convert(blogMapper::toBlogSummaryResponse);
 
         List<CategoryResponse> categoryResponses =
-                categoryService.getCategoryList().stream().map(categoryMapper::toCategoryResponse).toList();
+                categoryService.getCategoryList().stream().map(c ->
+                        categoryMapper.toCategoryResponse(c, SlugUtils.convertSpaceToHyphen(c.getName()))
+                ).toList();
 
         return new BlogListPageResponse(pageInfoResponse, categoryResponses);
 

@@ -12,18 +12,18 @@
 import BlogList from "@/components/blogList/BlogList.vue";
 import { getBlogListByTagId} from "@/api/tags";
 import TagComponent from '@/components/blogList/Tag.vue'
-import type {Tag} from '@/types/tagType'
-import {computed, nextTick, onMounted, ref, watch} from "vue";
-import {onBeforeRouteLeave, useRoute} from "vue-router";
+import type { TagSlug} from '@/types/tagType'
+import {computed, ref, watch} from "vue";
+import { useRoute} from "vue-router";
 import type {ApiResponse} from "@/plugins/axios2";
 import type {BlogInfo} from "@/types/blogType";
 import type {TagIdGetBlogsResponse} from "@/types/tagType";
 const route = useRoute()
 
-const tags = ref<Tag[]>([])
+const tags = ref<TagSlug[]>([])
 const blogList = ref<BlogInfo[]>([])
 const totalPage = ref<number>(0)
-const tagId = computed<number>(() => parseInt(<string>route.params.id))
+const tagId = computed<string>(() => <string>route.params.id)
 
 const fetchBlogsByTagId = async (pageNum: number) => {
   try {

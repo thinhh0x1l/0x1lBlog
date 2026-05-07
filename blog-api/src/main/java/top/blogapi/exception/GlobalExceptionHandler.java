@@ -31,20 +31,29 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
         ErrorCode error = ex.getErrorCode();
-        Map<String, Object> details = new HashMap<>(ex.getContext());
-        details.put("messageCause",ex.getCause().getMessage() );
+
         ApiErrorResponse response = new ApiErrorResponse(
                 error.getCode(),
                 ex.getMessage(),
                 error.getHttpStatus().value(),
                 request.getRequestURI(),
                 StringUtils.isEmpty(request.getHeader("X-Trace-Id"))
-                        ?UUID.randomUUID().toString():request.getHeader("X-Trace-Id"),
+                        ? UUID.randomUUID().toString()
+                        : request.getHeader("X-Trace-Id"),
                 LocalDateTime.now(),
-                details
+                ex.getContext()
         );
-        log.error("Request URL : {}, Exception : {}", request.getRequestURL(), ex.getMessage());
-        return ResponseEntity.status(error.getHttpStatus()).body(response);
+
+        log.warn(
+                "Business exception. path={}, code={}, details={}",
+                request.getRequestURI(),
+                error.getCode(),
+                ex.getContext()
+        );
+
+        return ResponseEntity
+                .status(error.getHttpStatus())
+                .body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

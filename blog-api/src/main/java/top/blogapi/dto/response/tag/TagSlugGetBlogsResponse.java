@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TagIdGetBlogsResponse {
+public class TagSlugGetBlogsResponse {
     Tag queryTag;
     PageInfo<BlogInfo> blogInfos;
 
@@ -36,7 +36,7 @@ public class TagIdGetBlogsResponse {
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class Tag{
-        Long id;
+        String slug;
         String name;
         String color;
     }
