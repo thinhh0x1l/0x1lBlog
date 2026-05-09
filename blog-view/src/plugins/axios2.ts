@@ -21,17 +21,12 @@ export interface ApiErrorResponse {
     details?: Record<string, any>;
 }
 
-export interface PageInfo<T = any> {
+export interface PageResult<T = any> {
     pageNum: number;          // Trang hiện tại (bắt đầu từ 1)
     pageSize: number;         // Kích thước trang
-    size: number;             // Số phần tử trong trang hiện tại
-    startRow: number;         // Dòng bắt đầu
-    endRow: number;           // Dòng kết thúc
-    total: number;            // Tổng số phần tử
-    pages: number;            // Tổng số trang
-    list: T[];                // Danh sách dữ liệu
-    hasPreviousPage: boolean; // Có trang trước không
-    hasNextPage: boolean;     // Có trang sau không
+    totalElements: number;            // Tổng số phần tử
+    totalPages: number;            // Tổng số trang
+    items: T[];                // Danh sách dữ liệu
 }
 
 export const request: AxiosInstance = axios.create({

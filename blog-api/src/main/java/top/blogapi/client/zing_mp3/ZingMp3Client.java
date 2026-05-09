@@ -127,7 +127,6 @@ public class ZingMp3Client {
             String cookies = getCookies();
             // zmp3_app_version.1=11713;
             // zmp3_rqid=MHwxNC4xODYdUngMTI4LjI5fHYxLjE3LjEzfDE3NzYwMTM0OTmUsICzMTE;
-            System.out.println(cookies);
             String ctime = String.valueOf(System.currentTimeMillis() / 1000);
             String hashInput = "ctime=" + ctime + "id=" + songId + "version=" + version;
             String hash256 = getSHA256(hashInput);

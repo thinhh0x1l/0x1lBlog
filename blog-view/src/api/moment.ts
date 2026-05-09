@@ -1,7 +1,7 @@
-import {type ApiResponse, type PageInfo, request} from "@/plugins/axios2";
+import {type ApiResponse, type PageResult, request} from "@/plugins/axios2";
 import type {Moment} from "@/types/momentType";
 
-export function getMomentListByPageNum(pageNum: number): Promise<ApiResponse<PageInfo<Moment>>> {
+export function getMomentListByPageNum(pageNum: number): Promise<ApiResponse<PageResult<Moment>>> {
     return request({
         url: 'moments',
         method: 'GET',

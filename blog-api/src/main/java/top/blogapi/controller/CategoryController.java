@@ -22,7 +22,7 @@ public class CategoryController {
     @GetMapping("/category/{slug}")
     public Result<?> category(@PathVariable String slug,
                          @RequestParam(defaultValue = "1") Integer pageNum,
-                         @RequestParam(defaultValue = "5") Integer pageSize) {
+                         @RequestParam(defaultValue = "1") Integer pageSize) {
         return Result.ok("Yêu cầu thành công",
                 categoryOrchestrator.getBlogInfoListByCategoryNameAndIsPublished(slug,pageNum,pageSize));
     }

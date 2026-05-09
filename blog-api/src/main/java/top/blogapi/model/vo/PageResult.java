@@ -1,24 +1,34 @@
 package top.blogapi.model.vo;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.github.pagehelper.PageInfo;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
 
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PageResult<T> {
-    private Integer totalPage;
-    private List<T> list;
+    Integer pageNum;
+    Integer pageSize;
+    Integer totalPages;
+    Long totalElements;
+    List<T> items;
 
-    public PageResult(Integer totalPage, List<T> list) {
-        this.totalPage = totalPage;
-        this.list = list;
+    public static <T> PageResult<T> from(PageInfo<T> pageInfo) {
+
+        return new PageResult<>(
+                pageInfo.getPageNum(),
+                pageInfo.getPageSize(),
+                pageInfo.getPages(),
+                pageInfo.getTotal(),
+                pageInfo.getList()
+        );
     }
 }

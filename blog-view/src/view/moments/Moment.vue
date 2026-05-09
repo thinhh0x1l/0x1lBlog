@@ -50,7 +50,7 @@ import {formatDate} from "@/util/dateTimeFormatUtils.js";
 import type {Moment} from "@/types/momentType";
 import {useScrollToTop} from "@/util/ScrollToTop.js";
 import {getMomentListByPageNum} from "@/api/moment";
-import type {ApiResponse, PageInfo} from "@/plugins/axios2";
+import type {ApiResponse, PageResult} from "@/plugins/axios2";
 const {scrollToTop} = useScrollToTop()
 
 const store = useAppStore()
@@ -100,10 +100,10 @@ const handlePageChange = (event: PageState) => {
 const fetchMoments = async () => {
   scrollToTop()
  try{
-   const res: ApiResponse<PageInfo<Moment>> = await getMomentListByPageNum(pageNum.value)
+   const res: ApiResponse<PageResult<Moment>> = await getMomentListByPageNum(pageNum.value)
    if(res.code === 200){
-     momentList.value = res.data.list;
-     totalRecords.value = res.data.total
+     momentList.value = res.data.items;
+     totalRecords.value = res.data.totalElements
    }
  }catch (error){}
 }

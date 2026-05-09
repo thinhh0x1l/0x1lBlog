@@ -22,7 +22,7 @@ public class AboutResponse {
             case "title" -> title = value;
             case "musicId" -> musicId = value;
             case "content" -> content = value;
-            default -> commentEnabled = value;
+            case "commentEnabled" -> commentEnabled = value;
         }
     }
 }

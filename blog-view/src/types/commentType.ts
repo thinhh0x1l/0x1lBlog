@@ -1,4 +1,4 @@
-import type {PageInfo} from "@/plugins/axios2";
+import type {PageResult} from "@/plugins/axios2";
 
 export interface SaveCommentReq{
     content: string,
@@ -40,6 +40,6 @@ export interface CommentStats {
 
 // Main response
 export interface CommentByBlogIdResponse {
-    comments: PageInfo<CommentNode>
+    comments: PageResult<CommentNode>
     commentStats: CommentStats
 }

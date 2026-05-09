@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 import top.blogapi.dto.response.moment.MomentPublished;
+import top.blogapi.model.vo.PageResult;
 import top.blogapi.model.vo.Result;
 import top.blogapi.service.impl.orchestration.MomentOrchestrator;
 
@@ -24,7 +25,7 @@ public class MomentController {
         PageHelper.startPage(pageNum,5, orderBy);
         PageInfo<MomentPublished> momentPublishedPageInfo = new PageInfo<>(momentOrchestrator.getMomentListByPublished()).convert(m ->
             new MomentPublished(m.getId(),m.getContent(),m.getCreateTime(),m.getLikes()));
-        return Result.ok("Yêu cầu thành công", momentPublishedPageInfo);
+        return Result.ok("Yêu cầu thành công", PageResult.from(momentPublishedPageInfo));
     }
 
     @PutMapping("/moments/like")

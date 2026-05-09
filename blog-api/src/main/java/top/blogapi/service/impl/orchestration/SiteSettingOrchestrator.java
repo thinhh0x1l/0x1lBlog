@@ -2,6 +2,7 @@ package top.blogapi.service.impl.orchestration;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -12,14 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.client.zing_mp3.Mp3Service;
-import top.blogapi.exception.AppException;
-import top.blogapi.exception.ErrorCode;
+import top.blogapi.config.RedisKeyConfig;
 import top.blogapi.model.TypeSetting;
 import top.blogapi.model.entity.SiteSetting;
 import top.blogapi.model.vo.Badge;
 import top.blogapi.model.vo.Copyright;
 import top.blogapi.model.vo.Favorite;
 import top.blogapi.model.vo.Introduction;
+import top.blogapi.service.RedisService;
 import top.blogapi.service.SiteSettingService;
 
 import java.util.*;
@@ -36,8 +37,11 @@ import static top.blogapi.model.TypeSetting.*;
 @RequiredArgsConstructor
 public class SiteSettingOrchestrator {
     SiteSettingService siteSettingService;
-    ObjectMapper objectMapper;
+
     Mp3Service mp3Service;
+    RedisService redisService;
+
+    ObjectMapper objectMapper;
 
    public Map<String, List<SiteSetting>> getList(){
        return siteSettingService.getList().stream()
@@ -45,6 +49,12 @@ public class SiteSettingOrchestrator {
    }
 
    public Map<String, Object> getSiteInfo(){
+       String redisKey = RedisKeyConfig.SITE_INFO_MAP;
+
+       Map<String, Object> siteInfoMapFromRedis = redisService.getMapByValue(redisKey, new TypeReference<Map<String, Object>>() {   });
+       if (siteInfoMapFromRedis != null)
+           return siteInfoMapFromRedis;
+
        List<SiteSetting> siteSettings = siteSettingService.getList();
 
        // Phân nhóm theo type
@@ -55,11 +65,13 @@ public class SiteSettingOrchestrator {
        Map<String, Object> siteInfoMap = processSiteInfo(groupedByType.getOrDefault(TYPE_SITE_INFO.getType(), List.of()));
        List<Badge> badges = processBadges(groupedByType.getOrDefault(TypeSetting.TYPE_BADGE.getType(), List.of()));
        Introduction introduction = processIntroduction(groupedByType.getOrDefault(TYPE_INTRODUCTION.getType(), List.of()));
-      // processMp3 (groupedByType.getOrDefault(TYPE_MP3.getType(), List.of()));
+
        Map<String, Object> map = new HashMap<>();
        map.put("siteInfo", siteInfoMap);
        map.put("badges", badges);
        map.put("introduction", introduction);
+
+       redisService.saveMapToValue(redisKey, map);
        return map;
    }
 
@@ -107,22 +119,6 @@ public class SiteSettingOrchestrator {
         return introduction;
     }
 
-    private Map<String, Map<String, Object>> processMp3(List<SiteSetting> mp3Settings){
-        Map<String, Map<String, Object>> map = new HashMap<>();
-        mp3Settings.forEach((siteSetting) -> {
-            try {
-                JsonNode jsonNode = objectMapper.readTree(siteSetting.getValue());
-                Map<String, Object> nodeMap = objectMapper.convertValue(jsonNode, Map.class);
-                map.put(siteSetting.getNameEn(),nodeMap);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        System.out.println(map);
-        mp3Service.setConfigFromDb(map);
-
-        return map;
-    }
     public Map<String, Map<String, Object>> loadConfig() {
         Map<String, Map<String, Object>> map = new HashMap<>();
 
@@ -130,7 +126,7 @@ public class SiteSettingOrchestrator {
                 .forEach(siteSetting -> {
                     try {
                         JsonNode jsonNode = objectMapper.readTree(siteSetting.getValue());
-                        Map<String, Object> nodeMap = objectMapper.convertValue(jsonNode, Map.class);
+                        Map<String, Object> nodeMap = objectMapper.convertValue(jsonNode, new TypeReference<Map<String, Object>>() {});
                         map.put(siteSetting.getNameEn(), nodeMap);
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
@@ -139,6 +135,7 @@ public class SiteSettingOrchestrator {
         System.out.println(map);
         return map;
     }
+
     @PostConstruct
     private void init() {
         Map<String, Map<String, Object>> map = loadConfig();

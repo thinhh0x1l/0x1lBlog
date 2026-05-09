@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import top.blogapi.dto.response.blog.BlogInfo;
+import top.blogapi.model.vo.PageResult;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -15,5 +16,5 @@ import top.blogapi.dto.response.blog.BlogInfo;
 @AllArgsConstructor
 public class CategorySlugGetBlogsResponse {
     CategorySlug categorySlug;
-    PageInfo<BlogInfo> blogInfos;
+    PageResult<BlogInfo> blogInfos;
 }

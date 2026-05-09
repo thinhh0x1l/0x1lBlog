@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="tag-wrapper">
-      Bạn đang chọn ở phần <TagComponent :list-tag="tags"/> quay trở lại
+      Bạn đang chọn ở Tag <TagComponent :list-tag="tags"/> quay trở lại
        <router-link class="backhome" to="/home">{{` trang chủ`}}</router-link>
     </div>
-    <BlogList :getBlogList="fetchBlogsByTagId" :blogList="blogList" :totalPage="totalPage"/>
+    <BlogList :getBlogList="fetchBlogsByTagId" :page-info="pageInfo" :blog-list="blogList"/>
   </div>
 </template>
 
@@ -22,16 +22,28 @@ const route = useRoute()
 
 const tags = ref<TagSlug[]>([])
 const blogList = ref<BlogInfo[]>([])
-const totalPage = ref<number>(0)
 const tagId = computed<string>(() => <string>route.params.id)
+
+const pageInfo = ref({
+  pageNum: 0,
+  pageSize: 0,
+  totalPages: 0,
+  totalElements: 0,
+})
 
 const fetchBlogsByTagId = async (pageNum: number) => {
   try {
     const response: ApiResponse<TagIdGetBlogsResponse> =
         await getBlogListByTagId(tagId.value,pageNum, 2)
     if (response.code === 200){
-      blogList.value = response.data.blogInfos.list
-      totalPage.value = response.data.blogInfos.pages
+      console.log(response)
+      Object.assign(pageInfo.value, {
+        pageSize: response.data.blogInfos.pageSize,
+        pageNum: response.data.blogInfos.pageNum,
+        totalPages: response.data.blogInfos.totalPages,
+        totalElements: response.data.blogInfos.totalElements
+      });
+      blogList.value = response.data.blogInfos.items
       tags.value.push(response.data.queryTag)
     }
   }catch (err) {

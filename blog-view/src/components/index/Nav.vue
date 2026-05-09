@@ -170,7 +170,7 @@ const debounceSearch = (event: AutoCompleteCompleteEvent) => {
   suggestions.value = [{ title: 'Đang tìm kiếm...', loading: true }]
   timer = setTimeout(() => {
     search(event)
-  }, 500) // nên 300–500ms
+  }, 1000) // nên 300–500ms
 }
 
 const loading = ref(false)

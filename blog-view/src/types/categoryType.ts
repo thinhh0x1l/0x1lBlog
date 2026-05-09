@@ -1,4 +1,4 @@
-import type {PageInfo} from "@/plugins/axios2";
+import type {PageResult} from "@/plugins/axios2";
 import type {BlogInfo} from "@/types/blogType";
 
 export interface Category {
@@ -7,5 +7,5 @@ export interface Category {
 }
 export interface CategoryGetBlogsResponse {
     categorySlug: Category,
-    blogInfos: PageInfo<BlogInfo>;
+    blogInfos: PageResult<BlogInfo>;
 }

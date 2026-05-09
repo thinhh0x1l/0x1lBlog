@@ -1,6 +1,7 @@
 package top.blogapi.service.impl.orchestration;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -18,7 +19,6 @@ import top.blogapi.dto.request.blog.BlogQueryRequest;
 import top.blogapi.dto.response.blog.ArchiveBlogResponse;
 import top.blogapi.dto.response.blog.BlogInfo;
 import top.blogapi.dto.response.blog.BlogSummaryResponse;
-import top.blogapi.dto.response.category.CategoryResponse;
 import top.blogapi.dto.response._page.BlogListPageResponse;
 import top.blogapi.dto.response.category.CategorySlug;
 import top.blogapi.exception.AppException;
@@ -33,7 +33,6 @@ import top.blogapi.service.TagService;
 import top.blogapi.service.impl.RedisServiceImpl;
 import top.blogapi.util.SlugUtils;
 import top.blogapi.util.StringUtils;
-import top.blogapi.util.markdown.MarkdownUtils;
 
 import java.util.*;
 
@@ -155,7 +154,7 @@ public class BlogOrchestrator {
     public PageResult<BlogInfo> getBlogInfoListByIsPublished(Integer pageNum){
         String redisHash = RedisKeyConfig.HOME_BLOG_INFO_LIST;
 
-        PageResult<BlogInfo> redisResult = redisService.getPageResultByHash(redisHash,pageNum);
+        PageResult<BlogInfo> redisResult = redisService.getBlogInfoPageResultByHash(redisHash,pageNum);
         if(redisResult != null) return redisResult;
 
         String orderBy = "is_top desc, create_time desc";
@@ -164,10 +163,8 @@ public class BlogOrchestrator {
         if(pageInfo.getList().isEmpty())
             return null;
 
-        PageResult<BlogInfo> pageResult = new PageResult<>(pageInfo.getPages(),pageInfo.getList().stream().map(
-                blogMapper::toBlogsResponse
-        ).toList());
-        redisService.setPageResultToHash(redisHash,pageNum,pageResult);
+        PageResult<BlogInfo> pageResult = PageResult.from(pageInfo.convert(blogMapper::toBlogsResponse));
+        redisService.saveBlogInfoPageResultToHash(redisHash,pageNum,pageResult);
         return pageResult;
     }
 
@@ -176,15 +173,24 @@ public class BlogOrchestrator {
     }
 
     public List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend(){
-        try(Page<Object> page1 = PageHelper.startPage(1, 3)) {
-            return blogService.getIdAndTitleListByIsPublishedAndIsRecommend();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return List.of();
+        String redisKey = RedisKeyConfig.NEW_BLOG_LIST;
+        List<BlogIdAndTitle> newBlogListFromRedis = redisService.getListByValue(redisKey, new TypeReference<List<BlogIdAndTitle>>() {});
+        if (newBlogListFromRedis != null)
+            return newBlogListFromRedis;
+
+        PageHelper.startPage(1, 3);
+        List<BlogIdAndTitle> newBlogList = blogService.getIdAndTitleListByIsPublishedAndIsRecommend();
+
+        redisService.saveListToValue(redisKey, newBlogList);
+        return newBlogList;
     }
 
     public Map<String, Object> getArchiveBlogListIsPublished(){
+        String redisKey = RedisKeyConfig.ARCHIVE_BLOG_MAP;
+        Map<String, Object> mapFromRedis = redisService.getMapByValue(redisKey, new TypeReference<Map<String, Object>>() {});
+        if (mapFromRedis != null)
+            return mapFromRedis;
+
         List<String> groupYearMonth = blogService.getGroupYearMonthAndIsPublished();
         List<ArchiveBlog> archiveBlogsBatch = blogService.getArchiveBlogListByYearMonthAndIsPublished(groupYearMonth);
         Map<String, List<ArchiveBlogResponse>> blogMap = new LinkedHashMap<>();
@@ -193,10 +199,13 @@ public class BlogOrchestrator {
             blogMap.computeIfAbsent(a.getYM(), k -> new ArrayList<>())
                     .add(blogMapper.toArchiveBlogResponse(a));
         }
-        return Map.of(
+        Map<String, Object> map = Map.of(
                 "blogMap",blogMap,
                 "count", archiveBlogsBatch.size()
         );
+
+        redisService.saveMapToValue(redisKey, map);
+        return map;
     }
 
     public BlogDetail getBlogByIdAndIsPublished(Long id){

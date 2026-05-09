@@ -1,9 +1,9 @@
 package top.blogapi.dto.response.tag;
 
-import com.github.pagehelper.PageInfo;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import top.blogapi.dto.response.blog.BlogInfo;
+import top.blogapi.model.vo.PageResult;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,7 +11,7 @@ import top.blogapi.dto.response.blog.BlogInfo;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TagSlugGetBlogsResponse {
     TagSlugs queryTag;
-    PageInfo<BlogInfo> blogInfos;
+    PageResult<BlogInfo> blogInfos;
 }
 
 

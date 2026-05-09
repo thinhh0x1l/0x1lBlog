@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="category-wrapper">
-      {{ 'Bạn đang chọn ở phần '}}<span class="text">{{category.name}}</span> {{ ` quay trở lại` }}
+      {{ 'Bạn đang chọn ở Phân loại '}}<span class="text">{{category.name}}</span> {{ ` quay trở lại` }}
       <router-link class="backhome" to="/home">{{` trang chủ`}}</router-link>
     </div>
-    <BlogList :total-page="totalPage" :blog-list="blogList" :get-blog-list="getBlogListByCategoryName"/>
+    <BlogList :page-info="pageInfo" :blog-list="blogList" :get-blog-list="getBlogListByCategoryName"/>
   </div>
 </template>
 
@@ -16,7 +16,6 @@ import type {ApiResponse} from "@/plugins/axios2";
 import {fGetBlogListByCategoryName} from "@/api/category";
 import {useRoute} from "vue-router";
 import type {Category, CategoryGetBlogsResponse} from "@/types/categoryType";
-import Ribbon from "@/components/blogList/Ribbon.vue";
 
 const route = useRoute()
 
@@ -24,8 +23,15 @@ const category = ref<Category>({
   name: '',
   slug: '',
 })
+
+const pageInfo = ref({
+  pageNum: 0,
+  pageSize: 0,
+  totalPages: 0,
+  totalElements: 0,
+})
+
 const blogList = ref<BlogInfo[]>([])
-const totalPage = ref<number>(0)
 const categoryName = computed<string>(() => <string>route.params.name)
 
 const getBlogListByCategoryName = async (pageNum: number) => {
@@ -33,22 +39,25 @@ const getBlogListByCategoryName = async (pageNum: number) => {
     const response: ApiResponse<CategoryGetBlogsResponse> =
         await fGetBlogListByCategoryName(categoryName.value,pageNum, 5)
     if (response.code === 200){
-      blogList.value = response.data.blogInfos.list
-      totalPage.value = response.data.blogInfos.pages
+      Object.assign(pageInfo.value, {
+        pageSize: response.data.blogInfos.pageSize,
+        pageNum: response.data.blogInfos.pageNum,
+        totalPages: response.data.blogInfos.totalPages,
+        totalElements: response.data.blogInfos.totalElements
+      });
+      blogList.value = response.data.blogInfos.items
       category.value = response.data.categorySlug
     }
   }catch (err) {
   }
 }
-watch(() => route.path, () => {
+watch(() => route.params.name, () => {
       if(route.name === 'category')
         getBlogListByCategoryName(1)
     },
     {immediate: true}
 )
-onMounted(() => {
-  getBlogListByCategoryName(1);
-})
+
 
 </script>
 

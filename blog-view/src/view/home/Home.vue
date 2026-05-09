@@ -1,6 +1,6 @@
 <template>
   <div  >
-    <BlogList :getBlogList="fetchBlogList" :blogList="blogList" :totalPage="totalPage"/>
+    <BlogList :getBlogList="fetchBlogList" :page-info="pageInfo" :blog-list="blogList"/>
   </div>
 </template>
 
@@ -11,14 +11,18 @@ import {nextTick, onActivated, onBeforeUpdate, onMounted, ref} from 'vue'
 import {getBlogList} from "@/api/home.js";
 import {useToast} from "@/plugins/primevueConfig/primePluginVue.js";
 import mediumZoom from "medium-zoom";
-import {onBeforeRouteLeave, onBeforeRouteUpdate, useRoute} from "vue-router";
+import {useAppStore} from "@/store/index.ts";
 
-const route = useRoute()
+const store = useAppStore();
 
+const pageInfo = ref({
+  pageNum: 0,
+  pageSize: 0,
+  totalPages: 0,
+  totalElements: 0,
+})
 const toast = useToast()
-
 const blogList = ref([])
-const totalPage = ref(0)
 
 const fetchBlogList = async (pageNum) => {
   try {
@@ -26,8 +30,14 @@ const fetchBlogList = async (pageNum) => {
     const res = await getBlogList(pageNum);
     if(res.code === 200){
       toast.success(res.msg)
-      blogList.value = res.data.list
-      totalPage.value = res.data.totalPage
+      Object.assign(pageInfo.value, {
+        pageSize: res.data.pageSize,
+        pageNum: res.data.pageNum,
+        totalPages: res.data.totalPages,
+        totalElements: res.data.totalElements
+      });
+      blogList.value = res.data.items
+
     }
   }catch (error){
     console.error(error.response.data)
@@ -44,10 +54,17 @@ const initZoom = () => {
     background: "#000"
   })
 }
+
 onMounted( async () => {
   await nextTick()
-  await fetchBlogList()
   initZoom()
+})
+
+onActivated(async ()=>{
+  // nếu prevPath ko phải blog thì fetch lại
+  if(!history.state.back?.includes('/blog')){
+    await fetchBlogList()
+  }
 })
 </script>
 
