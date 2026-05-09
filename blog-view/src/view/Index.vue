@@ -111,12 +111,12 @@ import {useScrollToTop} from '@/util/ScrollToTop.js'
 import Tags from "@/components/sidebar/Tags.vue";
 import {getTags} from '@/api/tags'
 import type {ApiResponse} from "@/plugins/axios2";
-import type {Tag} from "@/types/tagType";
+import type {Tag, TagSlug} from "@/types/tagType";
 import Toc from "@/components/sidebar/Toc.vue";
 import {useBlogDetailStore} from "@/store/blogDetailStore";
 import {useWindowSize} from "@vueuse/core";
 
-const tags = ref<Tag[]>([])
+const tags = ref<TagSlug[]>([])
 const loading = ref(false)
 const error = ref<string|null>(null)
 
@@ -190,7 +190,7 @@ const fetchTags = async () => {
   loading.value = true
   error.value = null
   try {
-    const response: ApiResponse<Tag[]> = await getTags()
+    const response: ApiResponse<TagSlug[]> = await getTags()
     if(response.code === 200){
       tags.value = response.data ?? []
     }

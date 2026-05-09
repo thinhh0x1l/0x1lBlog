@@ -26,5 +26,5 @@ public interface TagService {
 
     List<Tag> getTagListByBlogId(Long blogId);
 
-    List<BlogTagsInfo> getBlogInfoListByTagIdAndIsPublished(String name);
+    List<BlogTagsInfo> getBlogInfoListByTagNameAndIsPublished(String name);
 }

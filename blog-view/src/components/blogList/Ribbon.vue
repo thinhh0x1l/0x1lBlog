@@ -54,7 +54,7 @@ const props = defineProps({
 
 <template>
   <!-- Category button -->
-  <router-link class="col-12 mb-3" :to="'/category/'+category.id">
+  <router-link class="col-12 mb-3" :to="'/category/'+category.slug">
     <Button
         :label="category.name"
         icon="pi pi-folder-open"

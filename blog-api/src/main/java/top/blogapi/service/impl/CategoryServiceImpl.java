@@ -12,6 +12,7 @@ import top.blogapi.dto.request.category.CategoryQueryRequest;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.Category;
+import top.blogapi.model.vo.BlogTagsInfo;
 import top.blogapi.repository.CategoryRepository;
 import top.blogapi.service.CategoryService;
 
@@ -74,5 +75,10 @@ public class CategoryServiceImpl implements CategoryService {
     public void updateCategory(Category category) {
         if( categoryRepository.updateCategory(category)==0)
             throw new AppException(ErrorCode.COMMENT_NOT_FOUND,"Thể loại này không tồn tại");
+    }
+
+    @Override
+    public List<BlogTagsInfo> getBlogInfoListByCategoryNameAndIsPublished(String categoryName) {
+        return categoryRepository.getBlogInfoListByCategoryNameAndIsPublished(categoryName);
     }
 }

@@ -30,7 +30,6 @@ public class BlogAdminController {
     BlogOrchestrator blogOrchestrator;
     @GetMapping("/blogs")
     public Result<?> blogs(@ModelAttribute BlogQueryRequest blogQueryRequest) {
-        log.info("[/blogs] request {}", blogQueryRequest);
         return Result.ok("Yêu cầu thành công",blogOrchestrator.getListByTitleOrCategory(blogQueryRequest));
     }
 

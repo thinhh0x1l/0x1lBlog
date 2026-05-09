@@ -36,7 +36,7 @@ public interface BlogService {
 
     List<BlogIdAndTitle> getIdAndTitleList();
 
-    List<BlogInfo> getBlogInfoListByIsPublished();
+    List<BlogTagsInfo> getBlogInfoListByIsPublished();
 
     List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend();
 

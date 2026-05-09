@@ -25,7 +25,7 @@ const init =  () => {
   commentStore.setCommentQueryPageNum(1)
   commentStore.getCommentList()
 }
-watch(() => route.fullPath,
+watch(() => route.path,
     (newId) => {
   commentStore.clearCommentData()
   init()

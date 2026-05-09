@@ -183,16 +183,45 @@ public interface BlogRepository {
     @Select("SELECT b.title, b.id FROM blog b ORDER BY create_time DESC ")
     List<BlogIdAndTitle> getIdAndTitleList();
 
-    @Select("SELECT b.id, b.title, b.description, b.create_time, b.views, b.words, b.read_time," +
-            "   b.is_top, c.id AS category_id, c.name AS category_name  " +
-            "FROM blog b LEFT JOIN category c ON b.category_id = c.id " +
-            "WHERE b.is_published = TRUE")
+    @Select("""
+        WITH
+            blog_base AS (
+                SELECT
+                    b.id,
+                    b.title,
+                    b.description,
+                    b.create_time,
+                    b.views,
+                    b.words,
+                    b.read_time,
+                    b.is_top,
+                    c.name AS category_name
+                FROM category c
+                JOIN blog b
+                ON c.id = b.category_id
+                WHERE b.is_published
+            ),
+            blog_tags AS (
+                SELECT
+                    bt.blog_id,
+                    GROUP_CONCAT(t.name SEPARATOR '||') AS allTagNames,
+                    GROUP_CONCAT(t.color SEPARATOR '||') AS allTagColors
+                FROM blog_tag bt
+                JOIN tag t
+                ON t.id = bt.tag_id
+                GROUP BY bt.blog_id
+            )
+        SELECT
+            b.*,
+            bt.allTagNames,
+            bt.allTagColors
+        FROM blog_base b
+        LEFT JOIN blog_tags bt ON bt.blog_id = b.id;
+""")
     @Results({
-            @Result(property = "top", column = "is_top"),
-            @Result(property = "category.id", column = "category_id"),
-            @Result(property = "category.name", column = "category_name")
+            @Result(property = "top", column = "is_top")
     })
-    List<BlogInfo> getBlogInfoListByIsPublished();
+    List<BlogTagsInfo> getBlogInfoListByIsPublished();
 
     @Select("SELECT id, title FROM blog " +
             "WHERE is_published = TRUE AND is_recommend = TRUE " +

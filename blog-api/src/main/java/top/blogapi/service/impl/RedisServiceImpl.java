@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import top.blogapi.model.vo.BlogInfo;
+import top.blogapi.dto.response.blog.BlogInfo;
 import top.blogapi.model.vo.PageResult;
 import top.blogapi.service.RedisService;
 
@@ -25,7 +25,6 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public PageResult<BlogInfo> getPageResultByHash(String hash, Integer pageNum) {
         Object redisResult = redisTemplate.opsForHash().get(hash, pageNum.toString());
-        log.error("Redis");
         if(redisResult == null) return null;
         return objectMapper.convertValue(
                 redisResult,

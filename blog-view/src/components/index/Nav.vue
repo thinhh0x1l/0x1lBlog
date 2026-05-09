@@ -22,7 +22,7 @@
               ]"
           >
               <font-awesome-icon icon="lightbulb" class="mr-2"/>
-              Thể loai
+              Phân loại
               <Menu ref="menu" :model="categoryItems"
                     :pt="{root: { class: 'custom-menu-nav' }}"
                       @mouseleave="menu?.hide()"
@@ -134,7 +134,7 @@ const categoryRoute = (name: string) => {
 const categoryItems = computed(() =>
     categoryList.value.map(category => ({
       label: category.name,
-      command: () => categoryRoute(category.name)
+      command: () => categoryRoute(category.slug)
     }))
 )
 
@@ -143,6 +143,7 @@ const getCategoryList = async () => {
     const res: ApiResponse<Category[]> = await fGetCategoryList();
     if(res.code === 200){
       categoryList.value = res.data
+      console.log(categoryList.value)
     }
 
   }catch (e){

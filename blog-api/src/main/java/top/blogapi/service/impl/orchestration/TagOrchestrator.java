@@ -14,6 +14,8 @@ import top.blogapi.dto.request.tag.UpdateTagRequest;
 import top.blogapi.dto.response._page.TagListPageResponse;
 import top.blogapi.dto.response.tag.TagSlugGetBlogsResponse;
 import top.blogapi.dto.response.tag.TagResponse;
+import top.blogapi.dto.response.tag.TagSlugs;
+import top.blogapi.mapper.BlogMapper;
 import top.blogapi.mapper.TagMapper;
 import top.blogapi.model.entity.Tag;
 import top.blogapi.model.vo.BlogTagsInfo;
@@ -29,6 +31,7 @@ import java.util.List;
 public class TagOrchestrator {
     TagService tagService;
     TagMapper tagMapper;
+    BlogMapper blogMapper;
 
     public TagListPageResponse getTagListPage(TagQueryRequest tagQueryRequest) {
         PageInfo<TagResponse> pageInfo = tagService.getTagList(tagQueryRequest)
@@ -36,9 +39,9 @@ public class TagOrchestrator {
         return new TagListPageResponse(pageInfo);
     }
 
-    public List<TagSlugGetBlogsResponse.Tag> getTagSlugList(){
+    public List<TagSlugs> getTagSlugList(){
         return tagService.getTagList().stream().map(t ->
-                tagMapper.toTagIdGetBlogsResponse_Tag(t,SlugUtils.convertSpaceToHyphen(t.getName()))
+                tagMapper.toTagSlugs(t,SlugUtils.convertSpaceToHyphen(t.getName()))
         ).toList();
     }
 
@@ -60,11 +63,11 @@ public class TagOrchestrator {
         String orderBy = "is_top desc, create_time desc";
         PageHelper.startPage(pageNum,pageSize,orderBy);
         PageInfo<BlogTagsInfo>  blogTagsInfos =
-                new PageInfo<>(tagService.getBlogInfoListByTagIdAndIsPublished(tagName));
+                new PageInfo<>(tagService.getBlogInfoListByTagNameAndIsPublished(tagName));
         Tag tag = tagService.getTagByName(tagName);
         return new TagSlugGetBlogsResponse(
-                tagMapper.toTagIdGetBlogsResponse_Tag(tag,SlugUtils.convertSpaceToHyphen(tag.getName())),
-                blogTagsInfos.convert(tagMapper::toTagIdGetBlogsResponse)
+                tagMapper.toTagSlugs(tag,SlugUtils.convertSpaceToHyphen(tag.getName())),
+                blogTagsInfos.convert(blogMapper::toBlogsResponse)
         );
     }
 }

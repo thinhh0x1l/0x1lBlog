@@ -26,5 +26,5 @@ public class BlogTagsInfo {
     Boolean top;
     String allTagNames;
     String allTagColors;
-    Category category;      // Danh mục bài viết
+    String categoryName;      // Danh mục bài viết
 }

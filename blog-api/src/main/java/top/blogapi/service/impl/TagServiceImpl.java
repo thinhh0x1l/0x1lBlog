@@ -95,7 +95,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BlogTagsInfo> getBlogInfoListByTagIdAndIsPublished(String name) {
-        return tagRepository.getBlogInfoListByTagIdAndIsPublished(name);
+    public List<BlogTagsInfo> getBlogInfoListByTagNameAndIsPublished(String name) {
+        return tagRepository.getBlogInfoListByTagNameAndIsPublished(name);
     }
 }

@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import top.blogapi.dto.response.blog.BlogSummaryResponse;
 import top.blogapi.dto.response.category.CategoryResponse;
+import top.blogapi.dto.response.category.CategorySlug;
 
 import java.util.List;
 
@@ -16,5 +17,5 @@ import java.util.List;
 @ToString
 public class BlogListPageResponse {
     PageInfo<BlogSummaryResponse> blogs;
-    List<CategoryResponse> categories;
+    List<CategorySlug> categories;
 }

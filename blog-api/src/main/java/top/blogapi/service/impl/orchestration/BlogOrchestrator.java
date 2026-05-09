@@ -16,9 +16,11 @@ import top.blogapi.client.zing_mp3.MusicService;
 import top.blogapi.config.RedisKeyConfig;
 import top.blogapi.dto.request.blog.BlogQueryRequest;
 import top.blogapi.dto.response.blog.ArchiveBlogResponse;
+import top.blogapi.dto.response.blog.BlogInfo;
 import top.blogapi.dto.response.blog.BlogSummaryResponse;
 import top.blogapi.dto.response.category.CategoryResponse;
 import top.blogapi.dto.response._page.BlogListPageResponse;
+import top.blogapi.dto.response.category.CategorySlug;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.*;
@@ -56,9 +58,9 @@ public class BlogOrchestrator {
         PageInfo<BlogSummaryResponse> pageInfoResponse =
                 blogService.getListByTitleOrCategory(blogQueryRequest).convert(blogMapper::toBlogSummaryResponse);
 
-        List<CategoryResponse> categoryResponses =
+        List<CategorySlug> categoryResponses =
                 categoryService.getCategoryList().stream().map(c ->
-                        categoryMapper.toCategoryResponse(c, SlugUtils.convertSpaceToHyphen(c.getName()))
+                        new CategorySlug(SlugUtils.convertSpaceToHyphen(c.getName()),c.getName())
                 ).toList();
 
         return new BlogListPageResponse(pageInfoResponse, categoryResponses);
@@ -158,15 +160,13 @@ public class BlogOrchestrator {
 
         String orderBy = "is_top desc, create_time desc";
         PageHelper.startPage(pageNum,5, orderBy);
-        PageInfo<BlogInfo> pageInfo = new PageInfo<>(blogService.getBlogInfoListByIsPublished());
-        pageInfo.getList().forEach(blogInfo -> {
-            blogInfo.setTags(tagService.getTagListByBlogId(blogInfo.getId()));
-            blogInfo.setDescription(MarkdownUtils.markdownToHtmlExtensions(blogInfo.getDescription()));
-        });
+        PageInfo<BlogTagsInfo> pageInfo = new PageInfo<>(blogService.getBlogInfoListByIsPublished());
         if(pageInfo.getList().isEmpty())
             return null;
-        log.error("Database");
-        PageResult<BlogInfo> pageResult = new PageResult<>(pageInfo.getPages(),pageInfo.getList());
+
+        PageResult<BlogInfo> pageResult = new PageResult<>(pageInfo.getPages(),pageInfo.getList().stream().map(
+                blogMapper::toBlogsResponse
+        ).toList());
         redisService.setPageResultToHash(redisHash,pageNum,pageResult);
         return pageResult;
     }

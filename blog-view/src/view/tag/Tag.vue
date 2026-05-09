@@ -38,7 +38,8 @@ const fetchBlogsByTagId = async (pageNum: number) => {
   }
 }
 
-watch(() => route.fullPath, () => {
+watch(() => route.path, () => {
+  if(route.name === 'tag')
       fetchBlogsByTagId(1)
       tags.value = []
     },

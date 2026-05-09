@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import {computed, ref, watch} from "vue";
+import router from "@/router";
+import {useRoute} from "vue-router";
 
 // Interfaces
 export interface SiteInfo {
@@ -21,11 +23,17 @@ export interface Introduction {
 }
 
 export const useAppStore = defineStore('app', () => {
+    const route = useRoute()
+
     // Site info state
     const siteInfo = ref<SiteInfo>(getStorage<SiteInfo>('siteInfo', {}));
     const introduction = ref<Introduction>(getStorage<Introduction>('introduction', getDefaultIntro()));
 
+    // // Lấy route.name trước
+    // co
+    // const prevRouteName = computed(() => route.name)
 
+    // watch(prevRouteName, (newName) => {console.log(newName)})
     // Getters
     const webTitleSuffix = computed(() => siteInfo.value?.webTitleSuffix || '');
     const author = computed(() => siteInfo.value?.author || '');

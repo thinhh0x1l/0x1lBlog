@@ -146,7 +146,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BlogInfo> getBlogInfoListByIsPublished() {
+    public List<BlogTagsInfo> getBlogInfoListByIsPublished() {
         return blogRepository.getBlogInfoListByIsPublished();
     }
 

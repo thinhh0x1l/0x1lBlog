@@ -44,13 +44,13 @@ public interface TagRepository {
         WITH blog_tags AS (
             SELECT
                 bt.blog_id,
-                GROUP_CONCAT(t.name) AS allTagNames,
-                GROUP_CONCAT(t.color) AS allTagColors
+                GROUP_CONCAT(t.name SEPARATOR '||') AS allTagNames,
+                GROUP_CONCAT(t.color SEPARATOR '||') AS allTagColors
             FROM tag t
             JOIN blog_tag bt
             ON t.id = bt.tag_id
             GROUP BY bt.blog_id
-            HAVING SUM(CASE WHEN t.name = #{tagName} THEN 1 ELSE 0 END) > 0
+            HAVING COUNT(CASE WHEN t.name = #{tagName} THEN 1 END) > 0
         )
         SELECT
             b.id,
@@ -61,7 +61,6 @@ public interface TagRepository {
             b.words,
             b.read_time,
             b.is_top,
-            c.id AS category_id,
             c.name AS category_name,
             bt.allTagNames,
             bt.allTagColors
@@ -72,8 +71,6 @@ public interface TagRepository {
 """)
     @Results({
             @Result(property = "top", column = "is_top"),
-            @Result(property = "category.id", column = "category_id"),
-            @Result(property = "category.name", column = "category_name")
     })
-    List<BlogTagsInfo> getBlogInfoListByTagIdAndIsPublished(String tagName);
+    List<BlogTagsInfo> getBlogInfoListByTagNameAndIsPublished(String tagName);
 }
