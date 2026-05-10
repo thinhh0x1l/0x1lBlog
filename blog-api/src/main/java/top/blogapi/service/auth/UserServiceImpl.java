@@ -1,4 +1,4 @@
-package top.blogapi.service.impl;
+package top.blogapi.service.auth;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -7,8 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import top.blogapi.exception.AppException;
-import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.User;
 import top.blogapi.repository.UserRepository;
 

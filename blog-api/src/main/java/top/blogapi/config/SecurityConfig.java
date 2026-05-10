@@ -1,13 +1,11 @@
 package top.blogapi.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Jwts;
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,9 +19,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import top.blogapi.service.impl.UserServiceImpl;
+import top.blogapi.service.auth.UserServiceImpl;
 
-import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.util.List;
 
@@ -33,11 +30,11 @@ import java.util.List;
 public class SecurityConfig {
     UserServiceImpl userService;
     MyAuthenticationEntryPoint myAuthenticationEntryPoint;
+    MyAccessDeniedHandler myAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   JwtLoginFilter jwtLoginFilter,
-                                                   JwtFilter jwtFilter) throws Exception {
+                                                   JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -46,15 +43,19 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/admin/login").permitAll()
+                        .requestMatchers("/admin/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/admin/**").hasAnyRole("admin", "visitor")
+                        .requestMatchers("/admin/**").hasRole("admin")
                         .anyRequest().permitAll()
                 )
                 //filter JWT tùy chỉnh
-                .addFilterBefore(jwtLoginFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtFilter, JwtLoginFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
-                .exceptionHandling(ex->ex
+                .exceptionHandling(ex -> ex
+                        // 401 - AuthenticationEntryPoint
                         .authenticationEntryPoint(myAuthenticationEntryPoint)
+                        // 403 - AccessDeniedHandler
+                        .accessDeniedHandler(myAccessDeniedHandler)
                 );
         return http.build();
     }

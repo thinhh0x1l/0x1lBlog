@@ -3,7 +3,6 @@ package top.blogapi.service.impl.orchestration;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.maxmind.geoip2.model.CityResponse;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -17,16 +16,14 @@ import top.blogapi.dto.request.comment.SaveCommentReq;
 import top.blogapi.dto.response.comment.CommentByBlogIdResponse;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
-import top.blogapi.mapper.CommentMapper;
 import top.blogapi.model.entity.Comment;
 import top.blogapi.model.entity.User;
 import top.blogapi.model.vo.BlogIdAndTitle;
 import top.blogapi.service.BlogService;
 import top.blogapi.service.CommentService;
-import top.blogapi.service.impl.GeoIpService;
-import top.blogapi.service.impl.UserServiceImpl;
+import top.blogapi.service.auth.JwtService;
+import top.blogapi.service.auth.UserServiceImpl;
 import top.blogapi.util.IpAddressUtils;
-import top.blogapi.util.JwtUtils;
 import top.blogapi.util.MD5Utils;
 import top.blogapi.util.StringUtils;
 
@@ -42,7 +39,7 @@ public class CommentOrchestrator {
     CommentService commentService;
     BlogService blogService;
     UserServiceImpl userService;
-    JwtUtils jwtUtils;
+    JwtService jwtService;
 
     public PageInfo<Comment> getListByPageAndParentCommentId(CommentQueryRequest request) {
         try(Page<Object> page1 = PageHelper.startPage(request.getPageNum(), request.getPageSize(),
@@ -102,49 +99,57 @@ public class CommentOrchestrator {
         return true;
     }
 
-    public void saveComment(SaveCommentReq req, HttpServletRequest request) throws Exception {
-        String jwtToken = request.getHeader("Authorization");
-        if(StringUtils.isEmpty(jwtToken))
-            if(StringUtils.isEmpty(req.getContent(), req.getEmail(), req.getNickname())
-                    || req.getNickname().length() > 15 || req.getContent().length() > 250 || req.getWebsite().length() > 100){
-                throw new AppException(ErrorCode.INVALID_INPUT,"Dữ liệu không đúng");
-            }
+    public void saveComment(SaveCommentReq req, HttpServletRequest request) {
+
+        validateRequest(req);
+
         Comment comment = new Comment();
 
-        if(jwtUtils.judgeTokenIsExist(jwtToken)){
-            try{
-                setAdminComment(comment, request, jwtToken);
-            }catch (Exception e){
-                e.printStackTrace();
-                throw new AppException(ErrorCode.INTERNAL_ERROR);
-            }
-        }else {
-            try{
-                setVisitorComment(req, request,comment);
-            }catch (Exception e){
-                e.printStackTrace();
-                throw new AppException(ErrorCode.INTERNAL_ERROR);
-            }
+        String jwtToken = resolveJwt(request);
+
+        if (jwtToken != null && jwtService.isValid(jwtToken)) {
+            applyAdminComment(comment, jwtToken);
+        } else {
+            applyVisitorComment(comment, req);
         }
 
-        BlogIdAndTitle blogIdAndTitle = new BlogIdAndTitle(req.getBlogId(),"");
-        comment.setParentCommentId(req.getParentCommentId());
-        comment.setPage(req.getPage());
-        comment.setBlog(blogIdAndTitle);
-        comment.setPublished(true);
-        comment.setContent(req.getContent().trim());
-        String ip = IpAddressUtils.getIpAddress(request);
-        if(!IpAddressUtils.isLocalhost(ip)){
-            comment.setIp(ip);
-        }
-        comment.setCreateTime(LocalDateTime.now());
-
+        fillCommonFields(comment, req, request);
 
         commentService.saveComment(comment);
     }
-    private void setAdminComment(Comment comment, HttpServletRequest request, String jwtToken) {
-        Claims claims = jwtUtils.getTokenContent(jwtToken);
-        User admin = (User) userService.loadUserByUsername(claims.getSubject());
+    private void validateRequest(SaveCommentReq req) {
+
+        if (req == null
+                || StringUtils.isEmpty(req.getContent(),req.getEmail(),req.getNickname())
+                || req.getContent().length() > 250
+                || req.getNickname().length() > 15
+                || (req.getWebsite() != null && req.getWebsite().length() > 100)) {
+
+            throw new AppException(ErrorCode.INVALID_INPUT, "Dữ liệu không hợp lệ");
+        }
+    }
+
+    private String resolveJwt(HttpServletRequest request) {
+
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || authHeader.isBlank()) {
+            return null;
+        }
+
+        return authHeader.startsWith("Bearer ")
+                ? authHeader.substring(7)
+                : authHeader;
+    }
+
+    private void applyAdminComment(Comment comment, String jwtToken) {
+
+        Claims claims = jwtService.extractClaims(jwtToken);
+
+        User admin = (User) userService.loadUserByUsername(
+                claims.getSubject()
+        );
+
         comment.setAdminComment(true);
         comment.setAvatar(admin.getAvatar());
         comment.setWebsite("/");
@@ -152,21 +157,53 @@ public class CommentOrchestrator {
         comment.setEmail(admin.getEmail());
         comment.setNotice(false);
     }
-    private void setVisitorComment(SaveCommentReq req, HttpServletRequest request, Comment comment ) {
-        String nicknameMd5 = MD5Utils.getMD5(req.getEmail());
-        char m = nicknameMd5.charAt(nicknameMd5.length()-1);
-        int num = m % 6 + 1;
 
-        String website = req.getWebsite().trim();
-        if (!website.isEmpty() && !website.startsWith("http://") && !website.startsWith("https://"))
-            website = "http://" + website;
+    private void applyVisitorComment(Comment comment, SaveCommentReq req) {
 
-        comment.setAvatar(num+".png");
+        String emailHash = MD5Utils.getMD5(req.getEmail());
+
+        int avatarIndex =
+                (emailHash.charAt(emailHash.length() - 1) % 6) + 1;
+
+        String website = normalizeWebsite(req.getWebsite());
+
+        comment.setAvatar(avatarIndex + ".png");
         comment.setNotice(req.isNotice());
         comment.setAdminComment(false);
         comment.setNickname(req.getNickname().trim());
         comment.setEmail(req.getEmail().trim());
         comment.setWebsite(website);
+    }
 
+    private String normalizeWebsite(String website) {
+        if (website == null || website.isBlank())
+            return "";
+        website = website.trim();
+        if (!(website.startsWith("http://") || website.startsWith("https://")))
+            website = "http://" + website;
+        return website;
+    }
+
+    private void fillCommonFields(
+            Comment comment,
+            SaveCommentReq req,
+            HttpServletRequest request
+    ) {
+
+        comment.setParentCommentId(req.getParentCommentId());
+        comment.setPage(req.getPage());
+        comment.setBlog(
+                new BlogIdAndTitle(req.getBlogId(), "")
+        );
+
+        comment.setPublished(true);
+        comment.setContent(req.getContent().trim());
+        comment.setCreateTime(LocalDateTime.now());
+
+        String ip = IpAddressUtils.getIpAddress(request);
+
+        if (!IpAddressUtils.isLocalhost(ip)) {
+            comment.setIp(ip);
+        }
     }
 }
