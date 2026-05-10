@@ -6,9 +6,10 @@ import com.github.pagehelper.PageInfo;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.blogapi.config.RedisKeyConfig;
+import top.blogapi.config.CacheKeyConfig;
 import top.blogapi.dto.request.category.CategoryQueryRequest;
 import top.blogapi.dto.response.blog.BlogInfo;
 import top.blogapi.dto.response.category.CategoryResponse;
@@ -20,7 +21,6 @@ import top.blogapi.mapper.CategoryMapper;
 import top.blogapi.model.vo.BlogTagsInfo;
 import top.blogapi.model.vo.PageResult;
 import top.blogapi.service.CategoryService;
-import top.blogapi.service.RedisService;
 import top.blogapi.util.SlugUtils;
 
 import java.util.List;
@@ -35,8 +35,6 @@ public class CategoryOrchestrator {
     CategoryMapper categoryMapper;
     BlogMapper blogMapper;
 
-    RedisService redisService;
-
     public List<CategoryResponse> getCategoryResponsesList() {
         return categoryService.getCategoryList().stream().map(categoryMapper::toCategoryResponse
         ).toList();
@@ -46,16 +44,17 @@ public class CategoryOrchestrator {
         return categoryService.getCategoryList(request);
     }
 
-    public List<CategorySlug> getCategoryList(){
-        String redisKey = RedisKeyConfig.CATEGORY_NAME_LIST;
-        List<CategorySlug> categoryListFromRedis = redisService.getListByValue(redisKey,  new TypeReference<List<CategorySlug>>() {});
-        if(categoryListFromRedis == null){
-            categoryListFromRedis = categoryService.getCategoryList().stream().map(
-                    category -> new CategorySlug(SlugUtils.convertSpaceToHyphen(category.getName()), category.getName())
-            ).toList();
-            redisService.saveListToValue(redisKey,categoryListFromRedis);
-        }
-        return categoryListFromRedis;
+    @Cacheable(value = CacheKeyConfig.CATEGORY_NAME_LIST)
+    public List<CategorySlug> getCategoryList() {
+        return categoryService.getCategoryList()
+                .stream()
+                .map(category ->
+                        new CategorySlug(
+                                SlugUtils.convertSpaceToHyphen(category.getName()),
+                                category.getName()
+                        )
+                )
+                .toList();
     }
 
     public void deleteCategoryById(Long id) {
@@ -79,26 +78,27 @@ public class CategoryOrchestrator {
         return categoryMapper.toCategoryResponse(category);
     }
 
-    public CategorySlugGetBlogsResponse getBlogInfoListByCategoryNameAndIsPublished(String categoryNameSlug,  Integer pageNum, Integer pageSize) {
-        String redisHash = RedisKeyConfig.CATEGORY_BLOG_INFO_LIST + categoryNameSlug;
-
+    @Cacheable(
+            value = CacheKeyConfig.CATEGORY_BLOG_INFO_LIST,
+            key = "#categoryNameSlug + '_' + #pageNum + '_' + #pageSize"
+    )
+    public CategorySlugGetBlogsResponse getBlogInfoListByCategoryNameAndIsPublished(String categoryNameSlug, Integer pageNum, Integer pageSize) {
         String categoryName = SlugUtils.convertHyphenToSpace(categoryNameSlug);
 
-        PageResult<BlogInfo> pageResultFromRedis = redisService.getBlogInfoPageResultByHash(redisHash, pageNum);
-        if(pageResultFromRedis == null){
-            String orderBy = "is_top desc, create_time desc";
-            PageHelper.startPage(pageNum,pageSize,orderBy);
-            PageInfo<BlogTagsInfo>  blogTagsInfos =
-                    new PageInfo<>(categoryService.getBlogInfoListByCategoryNameAndIsPublished(categoryName));
-            pageResultFromRedis = PageResult.from(blogTagsInfos.convert(blogMapper::toBlogsResponse));
-            redisService.saveBlogInfoPageResultToHash(redisHash, pageNum, pageResultFromRedis);
-        }
+        String orderBy = "is_top desc, create_time desc";
+        PageHelper.startPage(pageNum, pageSize, orderBy);
+        PageInfo<BlogTagsInfo> blogTagsInfos =
+                new PageInfo<>(categoryService.getBlogInfoListByCategoryNameAndIsPublished(categoryName));
+
+        PageResult<BlogInfo> pageResult =
+                PageResult.from(blogTagsInfos.convert(blogMapper::toBlogsResponse));
 
         return new CategorySlugGetBlogsResponse(
                 new CategorySlug(categoryNameSlug, categoryName),
-                pageResultFromRedis
+                pageResult
         );
     }
+
     public void updateCategory(Long id, String name) {
         Category category = categoryService.getCategoryById(id);
         category.setName(name);

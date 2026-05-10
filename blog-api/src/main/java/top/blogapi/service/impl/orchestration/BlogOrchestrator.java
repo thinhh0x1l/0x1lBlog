@@ -3,18 +3,18 @@ package top.blogapi.service.impl.orchestration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.client.zing_mp3.MusicService;
-import top.blogapi.config.RedisKeyConfig;
+import top.blogapi.config.CacheKeyConfig;
 import top.blogapi.dto.request.blog.BlogQueryRequest;
 import top.blogapi.dto.response.blog.ArchiveBlogResponse;
 import top.blogapi.dto.response.blog.BlogInfo;
@@ -30,7 +30,6 @@ import top.blogapi.model.vo.*;
 import top.blogapi.service.BlogService;
 import top.blogapi.service.CategoryService;
 import top.blogapi.service.TagService;
-import top.blogapi.service.impl.RedisServiceImpl;
 import top.blogapi.util.SlugUtils;
 import top.blogapi.util.StringUtils;
 
@@ -49,7 +48,6 @@ public class BlogOrchestrator {
     BlogMapper blogMapper;
     CategoryMapper categoryMapper;
     ObjectMapper objectMapper;
-    RedisServiceImpl redisService;
 
     public BlogListPageResponse getListByTitleOrCategory(BlogQueryRequest blogQueryRequest) {
         validateBlogQuery(blogQueryRequest);
@@ -151,61 +149,58 @@ public class BlogOrchestrator {
         return blogService.getIdAndTitleList();
     }
 
+    @Cacheable(
+            value = CacheKeyConfig.HOME_BLOG_INFO_LIST,
+            key = "#pageNum",
+            unless = "#result == null"
+    )
     public PageResult<BlogInfo> getBlogInfoListByIsPublished(Integer pageNum){
-        String redisHash = RedisKeyConfig.HOME_BLOG_INFO_LIST;
 
-        PageResult<BlogInfo> redisResult = redisService.getBlogInfoPageResultByHash(redisHash,pageNum);
-        if(redisResult != null) return redisResult;
-
+        System.out.println(">>> QUERY DATABASE");
         String orderBy = "is_top desc, create_time desc";
-        PageHelper.startPage(pageNum,5, orderBy);
-        PageInfo<BlogTagsInfo> pageInfo = new PageInfo<>(blogService.getBlogInfoListByIsPublished());
-        if(pageInfo.getList().isEmpty())
+        PageHelper.startPage(pageNum, 5, orderBy);
+        PageInfo<BlogTagsInfo> pageInfo =
+                new PageInfo<>(blogService.getBlogInfoListByIsPublished());
+
+        if (pageInfo.getList().isEmpty())
             return null;
 
-        PageResult<BlogInfo> pageResult = PageResult.from(pageInfo.convert(blogMapper::toBlogsResponse));
-        redisService.saveBlogInfoPageResultToHash(redisHash,pageNum,pageResult);
-        return pageResult;
+        return PageResult.from(
+                pageInfo.convert(blogMapper::toBlogsResponse)
+        );
     }
 
     public void updateBlogTopById(Long blogId, Boolean top){
         blogService.updateBlogTopById(blogId, top);
     }
 
-    public List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend(){
-        String redisKey = RedisKeyConfig.NEW_BLOG_LIST;
-        List<BlogIdAndTitle> newBlogListFromRedis = redisService.getListByValue(redisKey, new TypeReference<List<BlogIdAndTitle>>() {});
-        if (newBlogListFromRedis != null)
-            return newBlogListFromRedis;
-
+    @Cacheable(
+            value = CacheKeyConfig.NEW_BLOG_LIST,
+            key = "'default'"
+    )
+    public List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend() {
         PageHelper.startPage(1, 3);
-        List<BlogIdAndTitle> newBlogList = blogService.getIdAndTitleListByIsPublishedAndIsRecommend();
-
-        redisService.saveListToValue(redisKey, newBlogList);
-        return newBlogList;
+        return blogService.getIdAndTitleListByIsPublishedAndIsRecommend();
     }
 
-    public Map<String, Object> getArchiveBlogListIsPublished(){
-        String redisKey = RedisKeyConfig.ARCHIVE_BLOG_MAP;
-        Map<String, Object> mapFromRedis = redisService.getMapByValue(redisKey, new TypeReference<Map<String, Object>>() {});
-        if (mapFromRedis != null)
-            return mapFromRedis;
-
+    @Cacheable(
+            value = CacheKeyConfig.ARCHIVE_BLOG_MAP
+    )
+    public Map<String, Object> getArchiveBlogListIsPublished() {
         List<String> groupYearMonth = blogService.getGroupYearMonthAndIsPublished();
         List<ArchiveBlog> archiveBlogsBatch = blogService.getArchiveBlogListByYearMonthAndIsPublished(groupYearMonth);
         Map<String, List<ArchiveBlogResponse>> blogMap = new LinkedHashMap<>();
-        for(int i = archiveBlogsBatch.size() -1 ; i>=0 ;i--){
+
+        for (int i = archiveBlogsBatch.size() - 1; i >= 0; i--) {
             ArchiveBlog a = archiveBlogsBatch.get(i);
-            blogMap.computeIfAbsent(a.getYM(), k -> new ArrayList<>())
+            blogMap
+                    .computeIfAbsent(a.getYM(), k -> new ArrayList<>())
                     .add(blogMapper.toArchiveBlogResponse(a));
         }
-        Map<String, Object> map = Map.of(
-                "blogMap",blogMap,
+        return Map.of(
+                "blogMap", blogMap,
                 "count", archiveBlogsBatch.size()
         );
-
-        redisService.saveMapToValue(redisKey, map);
-        return map;
     }
 
     public BlogDetail getBlogByIdAndIsPublished(Long id){

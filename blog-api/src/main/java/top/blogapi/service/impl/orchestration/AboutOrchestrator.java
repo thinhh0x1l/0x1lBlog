@@ -4,16 +4,16 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.client.zing_mp3.MusicService;
-import top.blogapi.config.RedisKeyConfig;
+import top.blogapi.config.CacheKeyConfig;
 import top.blogapi.dto.response.about.AboutResponse;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.About;
 import top.blogapi.service.AboutService;
-import top.blogapi.service.RedisService;
 import top.blogapi.util.markdown.MarkdownUtils;
 
 import java.util.*;
@@ -26,16 +26,10 @@ import java.util.*;
 public class AboutOrchestrator {
     AboutService aboutService;
 
-    RedisService redisService;
     MusicService musicService;
 
+    @Cacheable(value = CacheKeyConfig.ABOUT_INFO_MAP)
     public AboutResponse getAboutInfo(){
-        String redisKey = RedisKeyConfig.ABOUT_INFO_MAP;
-        AboutResponse  aboutInfoMapFromRedis = redisService.getObjectByValue(redisKey, AboutResponse.class);
-
-        if (aboutInfoMapFromRedis != null)
-           return aboutInfoMapFromRedis;
-
         AboutResponse aboutResponse = new AboutResponse();
         for (About about : aboutService.getAboutInfo()) {
             String value = about.getValue();
@@ -44,8 +38,6 @@ public class AboutOrchestrator {
             aboutResponse.setter(about.getNameEn(),value);
         }
         aboutResponse.setMusicInfo(musicService.getCompleteSongData(aboutResponse.getMusicId(),2));
-
-        redisService.saveObjectToValue(redisKey,aboutResponse);
         return aboutResponse;
     }
 

@@ -10,17 +10,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.client.zing_mp3.Mp3Service;
-import top.blogapi.config.RedisKeyConfig;
+import top.blogapi.config.CacheKeyConfig;
 import top.blogapi.model.TypeSetting;
 import top.blogapi.model.entity.SiteSetting;
 import top.blogapi.model.vo.Badge;
 import top.blogapi.model.vo.Copyright;
 import top.blogapi.model.vo.Favorite;
 import top.blogapi.model.vo.Introduction;
-import top.blogapi.service.RedisService;
 import top.blogapi.service.SiteSettingService;
 
 import java.util.*;
@@ -39,7 +39,6 @@ public class SiteSettingOrchestrator {
     SiteSettingService siteSettingService;
 
     Mp3Service mp3Service;
-    RedisService redisService;
 
     ObjectMapper objectMapper;
 
@@ -48,32 +47,30 @@ public class SiteSettingOrchestrator {
                .collect(Collectors.groupingBy(siteSetting -> "type" + siteSetting.getType()));
    }
 
-   public Map<String, Object> getSiteInfo(){
-       String redisKey = RedisKeyConfig.SITE_INFO_MAP;
+    @Cacheable(value = CacheKeyConfig.SITE_INFO_MAP)
+    public Map<String, Object> getSiteInfo() {
+        List<SiteSetting> siteSettings = siteSettingService.getList();
 
-       Map<String, Object> siteInfoMapFromRedis = redisService.getMapByValue(redisKey, new TypeReference<Map<String, Object>>() {   });
-       if (siteInfoMapFromRedis != null)
-           return siteInfoMapFromRedis;
+        Map<Integer, List<SiteSetting>> groupedByType =
+                siteSettings.stream()
+                        .collect(Collectors.groupingBy(SiteSetting::getType));
 
-       List<SiteSetting> siteSettings = siteSettingService.getList();
+        Map<String, Object> siteInfoMap =
+                processSiteInfo(groupedByType.getOrDefault(TYPE_SITE_INFO.getType(), List.of()));
 
-       // Phân nhóm theo type
-       Map<Integer, List<SiteSetting>> groupedByType = siteSettings.stream()
-               .collect(Collectors.groupingBy(SiteSetting::getType));
+        List<Badge> badges =
+                processBadges(groupedByType.getOrDefault(TypeSetting.TYPE_BADGE.getType(), List.of()));
 
-       // Xử lý từng nhóm
-       Map<String, Object> siteInfoMap = processSiteInfo(groupedByType.getOrDefault(TYPE_SITE_INFO.getType(), List.of()));
-       List<Badge> badges = processBadges(groupedByType.getOrDefault(TypeSetting.TYPE_BADGE.getType(), List.of()));
-       Introduction introduction = processIntroduction(groupedByType.getOrDefault(TYPE_INTRODUCTION.getType(), List.of()));
+        Introduction introduction =
+                processIntroduction(groupedByType.getOrDefault(TYPE_INTRODUCTION.getType(), List.of()));
 
-       Map<String, Object> map = new HashMap<>();
-       map.put("siteInfo", siteInfoMap);
-       map.put("badges", badges);
-       map.put("introduction", introduction);
+        Map<String, Object> result = new HashMap<>();
+        result.put("siteInfo", siteInfoMap);
+        result.put("badges", badges);
+        result.put("introduction", introduction);
 
-       redisService.saveMapToValue(redisKey, map);
-       return map;
-   }
+        return result;
+    }
 
 
     /// Xử lý thông tin site (type 1)
@@ -132,7 +129,6 @@ public class SiteSettingOrchestrator {
                         throw new RuntimeException(e);
                     }
                 });
-        System.out.println(map);
         return map;
     }
 
