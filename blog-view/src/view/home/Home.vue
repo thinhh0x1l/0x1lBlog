@@ -54,18 +54,21 @@ const initZoom = () => {
     background: "#000"
   })
 }
-
-onMounted( async () => {
-  await nextTick()
-  initZoom()
-})
-
+const first = ref(false)
 onActivated(async ()=>{
   // nếu prevPath ko phải blog thì fetch lại
-  if(!history.state.back?.includes('/blog')){
+  if(first.value && !history.state.back?.includes('/blog')){
     await fetchBlogList()
   }
 })
+onMounted( async () => {
+  await nextTick()
+  await fetchBlogList()
+  first.value = true
+  initZoom()
+})
+
+
 </script>
 
 

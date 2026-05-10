@@ -1,7 +1,6 @@
 package top.blogapi.service.impl.orchestration;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -14,7 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.client.zing_mp3.MusicService;
-import top.blogapi.config.CacheKeyConfig;
+import top.blogapi.config.CacheNameConfig;
 import top.blogapi.dto.request.blog.BlogQueryRequest;
 import top.blogapi.dto.response.blog.ArchiveBlogResponse;
 import top.blogapi.dto.response.blog.BlogInfo;
@@ -150,7 +149,7 @@ public class BlogOrchestrator {
     }
 
     @Cacheable(
-            value = CacheKeyConfig.HOME_BLOG_INFO_LIST,
+            value = CacheNameConfig.HOME_BLOG_INFO_LIST,
             key = "#pageNum",
             unless = "#result == null"
     )
@@ -175,7 +174,7 @@ public class BlogOrchestrator {
     }
 
     @Cacheable(
-            value = CacheKeyConfig.NEW_BLOG_LIST,
+            value = CacheNameConfig.NEW_BLOG_LIST,
             key = "'default'"
     )
     public List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend() {
@@ -184,7 +183,7 @@ public class BlogOrchestrator {
     }
 
     @Cacheable(
-            value = CacheKeyConfig.ARCHIVE_BLOG_MAP
+            value = CacheNameConfig.ARCHIVE_BLOG_MAP
     )
     public Map<String, Object> getArchiveBlogListIsPublished() {
         List<String> groupYearMonth = blogService.getGroupYearMonthAndIsPublished();
@@ -202,17 +201,39 @@ public class BlogOrchestrator {
                 "count", archiveBlogsBatch.size()
         );
     }
-
     public BlogDetail getBlogByIdAndIsPublished(Long id){
-        BlogDetail blogDetail =  blogService.getBlogByIdAndIsPublished(id);
+
+        long start = System.currentTimeMillis();
+
+        BlogDetail blogDetail =
+                blogService.getBlogByIdAndIsPublished(id);
+
+        log.info("DB query: {} ms",
+                System.currentTimeMillis() - start);
+
         if(blogDetail.getMusicId() != null){
+
+            start = System.currentTimeMillis();
+
             try {
-                blogDetail.setMusicInfo(musicService.getCompleteSongData(blogDetail.getMusicId(),2));
+                blogDetail.setMusicInfo(
+                        musicService.getCompleteSongData(
+                                blogDetail.getMusicId(),
+                                2
+                        )
+                );
+
             } catch (Exception e){
-                log.error("Error load music info for songId={}", blogDetail.getMusicId(), e);
+
+                log.error("Error load music info", e);
+
                 blogDetail.setMusicInfo(null);
             }
+
+            log.info("Music API: {} ms",
+                    System.currentTimeMillis() - start);
         }
+
         return blogDetail;
     }
 

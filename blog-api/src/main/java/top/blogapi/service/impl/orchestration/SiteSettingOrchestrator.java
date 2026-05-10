@@ -14,7 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.client.zing_mp3.Mp3Service;
-import top.blogapi.config.CacheKeyConfig;
+import top.blogapi.config.CacheNameConfig;
 import top.blogapi.model.TypeSetting;
 import top.blogapi.model.entity.SiteSetting;
 import top.blogapi.model.vo.Badge;
@@ -47,7 +47,7 @@ public class SiteSettingOrchestrator {
                .collect(Collectors.groupingBy(siteSetting -> "type" + siteSetting.getType()));
    }
 
-    @Cacheable(value = CacheKeyConfig.SITE_INFO_MAP)
+    @Cacheable(value = CacheNameConfig.SITE_INFO_MAP)
     public Map<String, Object> getSiteInfo() {
         List<SiteSetting> siteSettings = siteSettingService.getList();
 

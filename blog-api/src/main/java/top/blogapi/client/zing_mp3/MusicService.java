@@ -3,7 +3,9 @@ package top.blogapi.client.zing_mp3;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import top.blogapi.config.CacheNameConfig;
 import top.blogapi.dto.response._common.MusicInfo;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
@@ -22,6 +24,10 @@ public class MusicService {
     Mp3Service mp3Service;
     ExecutorService executorService = Executors.newFixedThreadPool(4);
 
+    @Cacheable(
+            value = CacheNameConfig.MUSIC_INFO,
+            key = "#songId"
+    )
     public MusicInfo getCompleteSongData(String songId, int retry) {
         if (retry <= 0) {
             System.out.println("Hết retry");

@@ -8,7 +8,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.client.zing_mp3.MusicService;
-import top.blogapi.config.CacheKeyConfig;
+import top.blogapi.config.CacheNameConfig;
 import top.blogapi.dto.response.about.AboutResponse;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
@@ -28,7 +28,7 @@ public class AboutOrchestrator {
 
     MusicService musicService;
 
-    @Cacheable(value = CacheKeyConfig.ABOUT_INFO_MAP)
+    @Cacheable(value = CacheNameConfig.ABOUT_INFO_MAP)
     public AboutResponse getAboutInfo(){
         AboutResponse aboutResponse = new AboutResponse();
         for (About about : aboutService.getAboutInfo()) {

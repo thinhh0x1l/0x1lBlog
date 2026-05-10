@@ -1,7 +1,6 @@
 package top.blogapi.service.impl.orchestration;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.AccessLevel;
@@ -10,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.blogapi.config.CacheKeyConfig;
+import top.blogapi.config.CacheNameConfig;
 import top.blogapi.dto.request.tag.CreateTagRequest;
 import top.blogapi.dto.request.tag.TagQueryRequest;
 import top.blogapi.dto.request.tag.UpdateTagRequest;
@@ -45,7 +44,7 @@ public class TagOrchestrator {
     }
 
     @Cacheable(
-            value = CacheKeyConfig.TAG_CLOUD_LIST,
+            value = CacheNameConfig.TAG_CLOUD_LIST,
             unless = "#result.isEmpty()"
     )
     public List<TagSlugs> getTagSlugList() {
@@ -74,7 +73,7 @@ public class TagOrchestrator {
 
 
     @Cacheable(
-            value = CacheKeyConfig.TAG_BLOG_INFO_LIST,
+            value = CacheNameConfig.TAG_BLOG_INFO_LIST,
             key = "#slug + '_' + #pageNum + '_' + #pageSize"
     )
     public TagSlugGetBlogsResponse tagIdGetBlogsResponse(String slug, Integer pageNum, Integer pageSize) {

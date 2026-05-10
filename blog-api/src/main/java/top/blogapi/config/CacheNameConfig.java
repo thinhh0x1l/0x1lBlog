@@ -1,6 +1,6 @@
 package top.blogapi.config;
 
-public class CacheKeyConfig {
+public class CacheNameConfig {
 
     public static final String HOME_BLOG_INFO_LIST = "homeBlogInfoList";
 
@@ -19,4 +19,6 @@ public class CacheKeyConfig {
     public static final String ABOUT_INFO_MAP = "aboutInfoMap";
 
     public static final String ARCHIVE_BLOG_MAP = "archiveBlogMap";
+
+    public static final String MUSIC_INFO = "musicInfo";
 }
