@@ -1,7 +1,7 @@
 <template>
   <div >
     <Comment/>
-    <Pagination/>
+    <Pagination v-if="commentStore.pageInfo.totalPages>1"/>
   </div>
 </template>
 

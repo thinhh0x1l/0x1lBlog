@@ -85,7 +85,6 @@ public class CommentOrchestrator {
         for(CommentByBlogIdResponse.CommentNode commentNode: pageInfo.getList()){
             List<CommentByBlogIdResponse.CommentNode> listChild = commentChildTrees.get(commentNode.getId());
             if(listChild==null ||  listChild.isEmpty()) continue;
-
             commentNode.setReplyComment(listChild);
             totalComments += listChild.size();
         }

@@ -1,10 +1,13 @@
 <template>
   <Paginator
-    :rows="commentQuery.pageSize"
-    :total-records="totalPages*commentQuery.pageSize"
-    @page="handleCurrentChange"
-    :pageLinkSize="7"
-    :alwaysShow="false"
+      v-if="pageInfo"
+      :rows="pageInfo.pageSize"
+      :totalRecords="pageInfo.totalElements"
+      @page="handleCurrentChange"
+      :template="{
+          layout: 'PrevPageLink PageLinks NextPageLink',
+        }"
+      class="custom-paginator"
   />
 </template>
 
@@ -15,7 +18,7 @@ import {storeToRefs} from "pinia";
 import {onMounted} from "vue";
 
 const commentStore = useCommentStore()
-const {commentQuery, totalPages} = storeToRefs(commentStore)
+const {commentQuery, pageInfo} = storeToRefs(commentStore)
 
 const handleCurrentChange = (pageState: PageState) => {
   commentStore.setCommentQueryPageNum(pageState.page+1)

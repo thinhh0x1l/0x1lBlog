@@ -50,7 +50,7 @@ import {formatDate} from "@/util/dateTimeFormatUtils.js";
 import type {Moment} from "@/types/momentType";
 import {useScrollToTop} from "@/util/ScrollToTop.js";
 import {getMomentListByPageNum} from "@/api/moment";
-import type {ApiResponse, PageResult} from "@/plugins/axios2";
+import type {ApiResponse, PageResult} from "@/types/commonType";
 const {scrollToTop} = useScrollToTop()
 
 const store = useAppStore()

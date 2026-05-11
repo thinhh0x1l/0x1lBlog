@@ -192,7 +192,7 @@ const fetchBlog = async () => {
   }
 }
 
-watch(() => route.fullPath,
+watch(() => route.params.id,
     async () => {
       clearPlayer()
       await fetchBlog();

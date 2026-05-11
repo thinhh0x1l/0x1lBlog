@@ -1,5 +1,5 @@
 <template>
-    <h3 class="dividing">Comments | Tổng {{ commentStats.totalComments }} bình luận</h3>
+    <h3 class="dividing">Comments | Tổng {{pageInfo?.totalElements }} bình luận</h3>
     <CommentInfoUser ref="infoRef" :form-validate-message="formValidateMessage"/>
     <CommentForm v-if="!replyCmId"
                  @submit="throttledSubmit"/>
@@ -82,13 +82,11 @@ import {useAppStore} from "@/store";
 import {toast} from "@/plugins/primevueConfig/primePluginVue";
 import {throttle} from "lodash-es";
 
-
-
 const commentStore = useCommentStore()
 const store = useAppStore()
 
 const {siteInfo} = storeToRefs(store)
-const {comments,threadRoot,commentStats,commentForm} = storeToRefs(commentStore)
+const {comments,threadRoot,commentForm, pageInfo} = storeToRefs(commentStore)
 
 const commentRefs = ref<Record<any,any>>({})
 let currentEl: any = null

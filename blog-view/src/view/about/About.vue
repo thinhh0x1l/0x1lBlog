@@ -36,8 +36,8 @@ import { fGetAboutList } from "@/api/about"
 import CommentList from "@/components/comments/CommentList.vue"
 import { useToast } from 'primevue/usetoast'
 import mediumZoom from "medium-zoom";
-import type {ApiResponse} from "@/plugins/axios2.ts";
 import type {About} from "@/types/aboutType.ts";
+import type {ApiResponse} from "@/types/commonType";
 
 const playerRef = ref(null)
 let playerInstance: { destroy: () => void; } | null = null

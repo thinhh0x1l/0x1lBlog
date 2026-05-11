@@ -100,10 +100,10 @@
 import {computed, onMounted, ref} from 'vue'
 import {useRouter} from "vue-router";
 import type {Category} from "@/types/categoryType.ts";
-import type {ApiResponse} from "@/plugins/axios2";
 import {fGetCategoryList} from "@/api/category";
 import {fSearchBlog} from "@/api/blog";
 import type { AutoCompleteCompleteEvent } from 'primevue/autocomplete';
+import type {ApiResponse} from "@/types/commonType";
 
 const router = useRouter()
 const menu = ref()

@@ -1,12 +1,14 @@
 import {defineStore} from "pinia";
 import {ref, watch} from "vue";
-import type {CommentNode, CommentQuery, CommentStats, SaveCommentReq} from "@/types/commentType";
+import type {CommentNode, CommentQuery, SaveCommentReq} from "@/types/commentType";
 import {getCommentListByQuery, submitComment} from "@/api/comment";
 
 import {validateSchema} from "@/util/validateHelper";
 import z from "zod";
-import type {ApiResponse} from "@/plugins/axios2";
 import {toast} from "@/plugins/primevueConfig/primePluginVue";
+import {updatePageInfo} from "@/util/pageInfo";
+import type {ApiResponse} from "@/types/commonType";
+import type {PageInfo} from "@/types/commonType";
 
 export interface InfoUser{
     nickname: string,
@@ -51,31 +53,31 @@ export const useCommentStore = defineStore('comment',() => {
         ],([nickname, website, email]) => {
         setInfoUser({nickname,website,email} as InfoUser)
     })
-    const totalPages     = ref<number>(0)
-    const commentStats = ref<CommentStats>({
-        totalComments: 0,
-        uniqueCommenters:0
-    })
     const threadRoot = ref<number|null>(null)
     const parentNickname = ref<string>('')
     const comments = ref<CommentNode[]>([])
+    const pageInfo = ref<PageInfo>({
+        pageNum: 0,
+        pageSize: 0,
+        totalPages: 0,
+        totalElements: 0,
+    })
 
     const clearCommentData = (): void => {
-        totalPages.value = 0
-        commentStats.value = {totalComments: 0,
-                             uniqueCommenters:0}
-        comments.value = []
 
+        comments.value = []
     }
+
     // Comment actions
     const getCommentList = async () => {
         try {
             const res: any = await getCommentListByQuery(commentQuery.value);
             console.log(res);
             if (res.code === 200) {
-                totalPages.value = res.data.comments.pages
-                commentStats.value = res.data.commentStats
-                comments.value = res.data.comments.list;
+                updatePageInfo(pageInfo,res.data.comments )
+                console.log(pageInfo.value)
+                console.log(res.data)
+                comments.value = res.data.comments.items;
             } else
                 toast.error(res.msg);
         } catch {
@@ -211,9 +213,8 @@ export const useCommentStore = defineStore('comment',() => {
     });
     return{
         commentQuery,
+        pageInfo,
         infoUser,
-        totalPages,
-        commentStats,
         comments,
         threadRoot,
         parentNickname,

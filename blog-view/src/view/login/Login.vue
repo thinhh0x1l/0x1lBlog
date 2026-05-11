@@ -70,8 +70,7 @@ import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
 import type {Login, LoginRes} from "@/types/loginType";
-import type {ApiResponse} from "@/plugins/axios2";
-
+import type {ApiResponse} from "@/types/commonType";
 const router = useRouter()
 const toast = useToast()
 

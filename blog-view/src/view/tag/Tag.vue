@@ -15,9 +15,10 @@ import TagComponent from '@/components/blogList/Tag.vue'
 import type { TagSlug} from '@/types/tagType'
 import {computed, ref, watch} from "vue";
 import { useRoute} from "vue-router";
-import type {ApiResponse} from "@/plugins/axios2";
 import type {BlogInfo} from "@/types/blogType";
 import type {TagIdGetBlogsResponse} from "@/types/tagType";
+import {updatePageInfo} from "@/util/pageInfo";
+import type {ApiResponse} from "@/types/commonType";
 const route = useRoute()
 
 const tags = ref<TagSlug[]>([])
@@ -37,12 +38,7 @@ const fetchBlogsByTagId = async (pageNum: number) => {
         await getBlogListByTagId(tagId.value,pageNum, 2)
     if (response.code === 200){
       console.log(response)
-      Object.assign(pageInfo.value, {
-        pageSize: response.data.blogInfos.pageSize,
-        pageNum: response.data.blogInfos.pageNum,
-        totalPages: response.data.blogInfos.totalPages,
-        totalElements: response.data.blogInfos.totalElements
-      });
+      updatePageInfo(pageInfo, response.data.blogInfos)
       blogList.value = response.data.blogInfos.items
       tags.value.push(response.data.queryTag)
     }

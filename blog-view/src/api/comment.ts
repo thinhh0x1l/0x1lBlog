@@ -1,6 +1,6 @@
 import axios from '@/plugins/axios'
 import type {CommentByBlogIdResponse, SaveCommentReq} from "@/types/commentType";
-import type {ApiResponse} from "@/plugins/axios2";
+import type {ApiResponse} from "@/types/commonType";
 
 export function getCommentListByQuery(query: any):Promise<ApiResponse<CommentByBlogIdResponse>> {
     return axios({

@@ -1,5 +1,6 @@
-import {type ApiResponse, request} from '@/plugins/axios2'
 import type {Category, CategoryGetBlogsResponse} from "@/types/categoryType";
+import type {ApiResponse} from "@/types/commonType";
+import {request} from "@/plugins/axios2";
 
 export function fGetCategoryList(): Promise<ApiResponse<Category[]>> {
     return request({

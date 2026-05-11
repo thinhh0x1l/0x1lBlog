@@ -1,5 +1,6 @@
-import {request, type ApiResponse} from '@/plugins/axios2'
+import {request,} from '@/plugins/axios2'
 import type {Tag, TagIdGetBlogsResponse, TagSlug} from "@/types/tagType";
+import type {ApiResponse} from "@/types/commonType";
 
 
 

@@ -1,4 +1,4 @@
-import type {PageResult} from "@/plugins/axios2";
+import type {PageResult} from '@/types/commonType'
 import type {BlogInfo} from "@/types/blogType";
 
 export interface Category {

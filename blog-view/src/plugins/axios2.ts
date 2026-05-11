@@ -5,30 +5,6 @@ import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosErr
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
-export interface ApiResponse<T = any>{
-    code: number,
-    msg: string,
-    data: T,
-}
-
-export interface ApiErrorResponse {
-    code: string;
-    message: string;
-    status: number;
-    path: string;
-    traceId: string;
-    timestamp: Date;
-    details?: Record<string, any>;
-}
-
-export interface PageResult<T = any> {
-    pageNum: number;          // Trang hiện tại (bắt đầu từ 1)
-    pageSize: number;         // Kích thước trang
-    totalElements: number;            // Tổng số phần tử
-    totalPages: number;            // Tổng số trang
-    items: T[];                // Danh sách dữ liệu
-}
-
 export const request: AxiosInstance = axios.create({
     baseURL: 'https://danuta-epirogenic-reportedly.ngrok-free.dev/',
     timeout: 10000,

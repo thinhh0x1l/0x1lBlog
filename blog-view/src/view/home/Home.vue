@@ -12,6 +12,7 @@ import {getBlogList} from "@/api/home.js";
 import {useToast} from "@/plugins/primevueConfig/primePluginVue.js";
 import mediumZoom from "medium-zoom";
 import {useAppStore} from "@/store/index.ts";
+import {updatePageInfo} from "@/util/pageInfo.js";
 
 const store = useAppStore();
 
@@ -30,12 +31,7 @@ const fetchBlogList = async (pageNum) => {
     const res = await getBlogList(pageNum);
     if(res.code === 200){
       toast.success(res.msg)
-      Object.assign(pageInfo.value, {
-        pageSize: res.data.pageSize,
-        pageNum: res.data.pageNum,
-        totalPages: res.data.totalPages,
-        totalElements: res.data.totalElements
-      });
+      updatePageInfo(pageInfo, res.data)
       blogList.value = res.data.items
 
     }

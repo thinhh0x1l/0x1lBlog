@@ -12,10 +12,11 @@
 import BlogList from "@/components/blogList/BlogList.vue";
 import {computed, onMounted, ref, watch} from "vue";
 import type {BlogInfo} from "@/types/blogType";
-import type {ApiResponse} from "@/plugins/axios2";
 import {fGetBlogListByCategoryName} from "@/api/category";
 import {useRoute} from "vue-router";
 import type {Category, CategoryGetBlogsResponse} from "@/types/categoryType";
+import {updatePageInfo} from "@/util/pageInfo";
+import type {ApiResponse} from "@/types/commonType";
 
 const route = useRoute()
 
@@ -39,12 +40,7 @@ const getBlogListByCategoryName = async (pageNum: number) => {
     const response: ApiResponse<CategoryGetBlogsResponse> =
         await fGetBlogListByCategoryName(categoryName.value,pageNum, 5)
     if (response.code === 200){
-      Object.assign(pageInfo.value, {
-        pageSize: response.data.blogInfos.pageSize,
-        pageNum: response.data.blogInfos.pageNum,
-        totalPages: response.data.blogInfos.totalPages,
-        totalElements: response.data.blogInfos.totalElements
-      });
+      updatePageInfo(pageInfo, response.data.blogInfos)
       blogList.value = response.data.blogInfos.items
       category.value = response.data.categorySlug
     }

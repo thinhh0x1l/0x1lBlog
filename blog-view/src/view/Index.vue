@@ -110,11 +110,11 @@ import {storeToRefs} from "pinia";
 import {useScrollToTop} from '@/util/ScrollToTop.js'
 import Tags from "@/components/sidebar/Tags.vue";
 import {getTags} from '@/api/tags'
-import type {ApiResponse} from "@/plugins/axios2";
 import type {Tag, TagSlug} from "@/types/tagType";
 import Toc from "@/components/sidebar/Toc.vue";
 import {useBlogDetailStore} from "@/store/blogDetailStore";
 import {useWindowSize} from "@vueuse/core";
+import type {ApiResponse} from "@/types/commonType";
 
 const tags = ref<TagSlug[]>([])
 const loading = ref(false)

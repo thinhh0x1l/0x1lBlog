@@ -96,6 +96,7 @@ public class CommentServiceImpl implements CommentService {
     public PageInfo<CommentByBlogIdResponse.CommentNode> commentRootTrees (int pageNum, int pageSize,Long blogId, Integer page){
         PageHelper.startPage(pageNum, pageSize, "id desc");
         List<CommentTree> commentRootTrees = commentRepository.findRootComments(blogId,page);
+
         return new PageInfo<>(commentRootTrees).convert(commentMapper::toCommentNode);
     }
 
@@ -104,10 +105,14 @@ public class CommentServiceImpl implements CommentService {
         List<CommentTree> commentChildTrees = commentRepository.findRepliesByRootIds(commentRootIds);
 
         Map<Long, List<CommentByBlogIdResponse.CommentNode>> map = new HashMap<>();
-        for(int i = commentRootIds.size() ; i < commentChildTrees.size() ;i++)
-            map.computeIfAbsent(commentChildTrees.get(i).getThreadRoot(),
-                    key -> new LinkedList<>())
-                    .add(commentMapper.toCommentNode(commentChildTrees.get(i)));
+        for(CommentTree c: commentChildTrees){
+            Long key = c.getThreadRoot();
+            if(map.containsKey(key))
+                map.get(key).add(commentMapper.toCommentNode(c));
+            else
+                map.put(key, new ArrayList<>());
+        }
+
         return map;
     }
 

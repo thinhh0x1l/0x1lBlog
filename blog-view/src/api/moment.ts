@@ -1,5 +1,6 @@
-import {type ApiResponse, type PageResult, request} from "@/plugins/axios2";
+import { request} from "@/plugins/axios2";
 import type {Moment} from "@/types/momentType";
+import type {ApiResponse, PageResult} from "@/types/commonType";
 
 export function getMomentListByPageNum(pageNum: number): Promise<ApiResponse<PageResult<Moment>>> {
     return request({
