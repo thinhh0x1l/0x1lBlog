@@ -1,11 +1,11 @@
 import {defineStore} from "pinia";
 import {ref, watch} from "vue";
-import type {CommentNode, CommentQuery, SaveCommentReq} from "@/types/commentType";
-import {getCommentListByQuery, submitComment} from "@/api/comment";
+import type {CommentNode, CommentQuery, EditCommentReq, SaveCommentReq} from "@/types/commentType";
+import {editComment, getCommentListByQuery, submitComment} from "@/api/comment";
 
 import {validateSchema} from "@/util/validateHelper";
 import z from "zod";
-import {toast} from "@/plugins/primevueConfig/primePluginVue";
+import { useToast} from "@/plugins/primevueConfig/primePluginVue";
 import {updatePageInfo} from "@/util/pageInfo";
 import type {ApiResponse} from "@/types/commonType";
 import type {PageInfo} from "@/types/commonType";
@@ -17,7 +17,7 @@ export interface InfoUser{
 }
 
 export const useCommentStore = defineStore('comment',() => {
-
+    const  toast = useToast()
     // Comment state
     const infoUser = ref<InfoUser>(getStorage<InfoUser>('infoUser',{
         nickname: '',
@@ -31,6 +31,10 @@ export const useCommentStore = defineStore('comment',() => {
         pageNum: 1,
         pageSize: 5
     });
+
+    const isEditing = ref<boolean>(false);
+
+    // create comment
     const commentForm = ref<SaveCommentReq>({
         content: '',
         nickname: infoUser.value.nickname,
@@ -41,6 +45,13 @@ export const useCommentStore = defineStore('comment',() => {
         page: commentQuery.value.page,
         parentCommentId: null
     });
+
+    // edit comment
+    const commentEditForm = ref<EditCommentReq>({
+        id: -1,
+        content: '',
+    });
+
     watch(infoUser, (val) => {
         commentForm.value.nickname = val.nickname
         commentForm.value.email = val.email
@@ -88,13 +99,37 @@ export const useCommentStore = defineStore('comment',() => {
     const getToken=  (): string =>{
         return sessionStorage.getItem('adminToken') || ''
     }
+    const handleSubmitComment = async () =>{
+       if(isEditing.value){
+           await putComment()
+       }else{
+           await postComment()
+       }
+    }
+
+    const putComment = async () =>{
+        try {
+            console.log(commentEditForm.value)
+            const res: ApiResponse<null> = await editComment(commentEditForm.value, getToken())
+            if(res.code === 200){
+                await getCommentList()
+
+                console.log(res.data)
+                toast.success(res.msg)
+                resetFormEdit()
+            }
+        }catch (e){
+            toast.error(e)
+        }
+    }
+
     const postComment = async () =>{
         try {
             console.log(commentForm.value)
             const res: ApiResponse<null> = await submitComment(commentForm.value, getToken())
             if(res.code === 200){
-                toast.success(res.msg)
                 await getCommentList()
+                toast.success(res.msg)
                 resetFormComment()
             }
 
@@ -119,6 +154,11 @@ export const useCommentStore = defineStore('comment',() => {
         parentNickname.value = ''
         threadRoot.value = null
     }
+    const resetFormEdit = (): void => {
+        commentEditForm.value.content = ''
+        commentEditForm.value.id = -1
+        isEditing.value = false;
+    }
 
 
     const setFieldFromComment = (tR: number| null, pI: number|null, pNN: string) => {
@@ -127,7 +167,7 @@ export const useCommentStore = defineStore('comment',() => {
         threadRoot.value = tR
     }
     const validateAll = () => {
-        const { valid, errors } = validateSchema(commentSchema, commentForm.value)
+        const { valid, errors } = validateSchema(commentSchema,  commentForm.value)
         const firstErrorKey = Object.entries(errors)[0]
         return{
             valid,
@@ -212,6 +252,7 @@ export const useCommentStore = defineStore('comment',() => {
             )
     });
     return{
+        isEditing,
         commentQuery,
         pageInfo,
         infoUser,
@@ -219,12 +260,15 @@ export const useCommentStore = defineStore('comment',() => {
         threadRoot,
         parentNickname,
         commentForm,
+        commentEditForm,
+
+        resetFormEdit,
         getCommentList,
         setFieldFromComment,
         clearCommentData,
         resetFormComment,
         setInfoUser,
-        postComment,
+        handleSubmitComment,
         setCommentQueryPage,
         setCommentQueryBlogId,
         validateAll,

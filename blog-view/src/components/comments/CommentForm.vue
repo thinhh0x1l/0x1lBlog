@@ -8,7 +8,7 @@
              class="custom-textarea"
              :placeholder="nicknameReply"
              :class="{'textarea-custom' : threadRoot}"
-             v-model="commentForm.content"
+             v-model="currentContent"
              name="content"
              ref="textareaRef"
          ></Textarea>
@@ -18,7 +18,7 @@
         <div class="align-items-center flex gap-2">
           <span>Thông báo phản hồi</span>
           <ToggleSwitch v-model="commentForm.notice"/>
-          <button type="submit" :disabled="commentForm.content.length===0">
+          <button type="submit" :disabled="currentContent.length===0">
             <font-awesome-icon icon="location-arrow" class="mr-2" size="2xl" style="color: #00a6ff; "/>
           </button>
         </div>
@@ -37,13 +37,13 @@ const emit = defineEmits<{
   (e: "submit"): void
 }>()
 function onSubmit(){ emit("submit")}
-const {threadRoot, parentNickname, commentForm} = storeToRefs(commentStore)
+const {threadRoot, parentNickname, commentForm, isEditing, commentEditForm} = storeToRefs(commentStore)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
 const insertEmoji = (emoji: any) => {
   const textarea = textareaRef.value
   if(textarea){
-    commentForm.value.content = commentForm.value.content+ emoji.native
+    currentContent.value = currentContent.value + emoji.native
 
   // const start = textarea.selectionStart
   // const end = textarea.selectionEnd
@@ -58,6 +58,21 @@ const insertEmoji = (emoji: any) => {
   // textarea.setSelectionRange(cursor, cursor)
   }
 }
+const currentContent = computed({
+  get() {
+    return isEditing.value
+        ? commentEditForm.value.content
+        : commentForm.value.content
+  },
+
+  set(value) {
+    if (isEditing.value) {
+      commentEditForm.value.content = value
+    } else {
+      commentForm.value.content = value
+    }
+  }
+})
 const nicknameReply = ref<string>('')
 watch(() => parentNickname.value , (newName,oldValue) =>{
   if(newName)

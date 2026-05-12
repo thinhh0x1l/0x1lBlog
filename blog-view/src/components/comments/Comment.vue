@@ -1,7 +1,7 @@
 <template>
     <h3 class="dividing">Comments | Tổng {{pageInfo?.totalElements }} bình luận</h3>
     <CommentInfoUser ref="infoRef" :form-validate-message="formValidateMessage"/>
-    <CommentForm v-if="!replyCmId"
+    <CommentForm v-if="!replyCmId && commentEditForm.id == -1"
                  @submit="throttledSubmit"/>
     <div class="comments-list">
       <div v-for="cm in comments"
@@ -14,21 +14,43 @@
                 :image="cm.adminComment ? cm.avatar : `/img/comment-avatar/${cm.avatar}`"
                 :size="'large'"
             />
-            <div class="comment"  :ref="el => setItemRef(el,cm.id)">
-              <div class="comment-header">
-                <a class="nickname" :href="cm.website?.trim() || '#'"
-                   target="_blank" rel="external nofollow noopener">{{cm.nickname}}</a>
-                <span class="owner-tag" :style="{background:  '#fa2745'}"
-                      v-if="cm.adminComment">
-                  {{siteInfo.commentAdminFlag}}</span>
-                <span class="metadata">
-                  {{ ` ${formatDate(cm.createTime,'YYYY-MM-DD HH:mm')}`}}
-                </span>
-                <span class="replying" :style="{background: replyCmId ===cm.id? '#fa2745' : '#48a5ff'}"
-                      @click="setReplyComment(cm.threadRoot,cm.id,cm.nickname)">
+             <div v-show="commentEditForm.id != cm.id">
+               <div style="display: flex; flex-direction: column">
+                 <div class="comment"  :ref="el => setItemRef(el,cm.id)">
+                   <div class="comment-header">
+                     <a class="nickname" :href="cm.website?.trim() || '#'"
+                        target="_blank" rel="external nofollow noopener">{{cm.nickname}}</a>
+                     <span class="owner-tag"  v-if="cm.adminComment"> {{siteInfo.commentAdminFlag}}</span>
+                     <span class="owner-tag" v-else-if="cm.editAble"> {{siteInfo.commentGuess}}</span>
+
+                     <span class="replying" :style="{background: replyCmId ===cm.id? '#fa2745' : '#48a5ff'}"
+                           @click="setReplyComment(cm.threadRoot,cm.id,cm.nickname)">
                   {{replyCmId ===cm.id ? 'Hủy': 'Trả lời'}}</span>
+                   </div>
+                   <div class="content">{{cm.content}}</div>
+
+                 </div>
+                 <div class="metadata">
+                   {{ ` ${formatDate(cm.createTime,'YYYY-MM-DD HH:mm')}`}}
+                   <span v-if="cm.isEdited"> Đã chỉnh sửa</span>
+                 </div>
+               </div>
+             </div >
+            <div v-show="commentEditForm.id == cm.id">
+              <CommentForm @submit="handleSubmit" />
+              <div @click="removeEdit">Hủy</div>
+            </div>
+
+            <div v-if="cm.editAble" class="edit-circle" @click.stop="toggleMenu(cm.id)">
+              ⋯
+              <div v-if="openedMenu === cm.id" class="comment-menu">
+                <div class="menu-item" @click.stop="editComment(cm)">
+                  Sửa
+                </div>
+                <div class="menu-item delete" @click.stop="deleteComment(cm.id)">
+                  Xóa
+                </div>
               </div>
-              <div>{{cm.content}}</div>
             </div>
           </div>
           <div class="">
@@ -43,24 +65,46 @@
                     :image="replyCm.adminComment ? replyCm.avatar : `/img/comment-avatar/${replyCm.avatar}`"
                     :size="'normal'"
                 />
-                <div class="comment" :ref="el => setItemRef(el,replyCm.id)">
-                  <div class="comment-header">
-                    <a class="nickname"  :href="cm.website?.trim() || '#'"
-                          target="_blank" rel="external nofollow noopener">{{replyCm.nickname}}</a>
-                    <span class="owner-tag" v-if="replyCm.adminComment">{{siteInfo.commentAdminFlag}}</span>
-                    <div class="metadata">
-                      {{ ` ${formatDate(replyCm.createTime,'YYYY-MM-DD HH:mm')}`}}
+                <div v-show="commentEditForm.id != replyCm.id">
+                  <div style="display: flex; flex-direction: column">
+                    <div class="comment" :ref="el => setItemRef(el,replyCm.id)">
+                      <div class="comment-header">
+                        <a class="nickname"  :href="cm.website?.trim() || '#'"
+                              target="_blank" rel="external nofollow noopener">{{replyCm.nickname}}</a>
+                        <span class="owner-tag" v-if="replyCm.adminComment">{{siteInfo.commentAdminFlag}}</span>
+                        <span class="owner-tag" v-else-if="replyCm.editAble"> {{siteInfo.commentGuess}}</span>
+
+                        <span class="replying" :style="{background: replyCmId ===replyCm.id? '#fa2745' : '#48a5ff'}"
+                                @click="setReplyComment(cm.threadRoot,replyCm.id,replyCm.nickname)">
+                          {{replyCmId ===replyCm.id ? 'Hủy': 'Trả lời'}}</span>
+                      </div>
+                      <div><span class="reply">{{`${replyCm.reply}`}}</span>{{ ` ${replyCm.content} `}}</div>
                     </div>
-                    <span class="replying" :style="{background: replyCmId ===replyCm.id? '#fa2745' : '#48a5ff'}"
-                            @click="setReplyComment(cm.threadRoot,replyCm.id,replyCm.nickname)">
-                      {{replyCmId ===replyCm.id ? 'Hủy': 'Trả lời'}}</span>
+                    <div class="metadata">
+                      <span v-if="!replyCm.isEdited">{{ ` ${formatDate(replyCm.createTime,'YYYY-MM-DD HH:mm')}`}}</span>
+                      <span v-else>{{ ` ${formatDate(replyCm.createTime,'YYYY-MM-DD HH:mm')}  Đã chỉnh sửa `}}</span>
+                    </div>
                   </div>
-                  <div><span class="reply">{{`${replyCm.reply}`}}</span>{{ ` ${replyCm.content} `}}</div>
+                </div>
+                <div v-show="commentEditForm.id == replyCm.id">
+                  <CommentForm @submit="handleSubmit" />
+                  <div @click="removeEdit">Hủy</div>
+                </div>
+                <div v-if="replyCm.editAble" class="edit-circle" @click.stop="toggleMenu(replyCm.id)">
+                  ⋯
+                  <div v-if="openedMenu === replyCm.id" class="comment-menu">
+                    <div class="menu-item" @click.stop="editComment(replyCm)">
+                      Sửa
+                    </div>
+                    <div class="menu-item delete" @click.stop="deleteComment(replyCm.id)">
+                      Xóa
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div v-if="threadRoot === cm.threadRoot && replyCmId" class="comment-item comment-reply">
+          <div v-if="threadRoot === cm.threadRoot && replyCmId " class="comment-item comment-reply">
             <CommentForm @submit="handleSubmit" />
           </div>
           <div v-if="cm.replyComment"  class="thread-line"/>
@@ -73,7 +117,7 @@
 <script setup lang="ts">
 import {formatDate} from "@/util/dateTimeFormatUtils.js";
 import CommentForm from "@/components/comments/CommentForm.vue";
-import {ref, watch} from "vue";
+import {onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useCommentStore} from "@/store/commentStore";
 import {storeToRefs} from "pinia";
 import CommentInfoUser from "@/components/comments/CommentInfoUser.vue";
@@ -86,7 +130,7 @@ const commentStore = useCommentStore()
 const store = useAppStore()
 
 const {siteInfo} = storeToRefs(store)
-const {comments,threadRoot,commentForm, pageInfo} = storeToRefs(commentStore)
+const {comments,threadRoot,commentForm, pageInfo, commentEditForm, isEditing} = storeToRefs(commentStore)
 
 const commentRefs = ref<Record<any,any>>({})
 let currentEl: any = null
@@ -118,19 +162,28 @@ const handleSubmit = async () => {
   if(sessionStorage.getItem('adminToken')){
     if(commentForm.value.content==='' || commentForm.value.content.length >250)
       toast.warn('Nội dung bình luận không hợp lê!')
-    else
-      await commentStore.postComment()
+    else{
+      replyCmId.value = null
+      if(    !isEditing.value)
+        currentEl.classList.remove('is-reply')
+      await commentStore.handleSubmitComment()
+    }
     return;
   }
-  const { valid, firstErrorKey } = commentStore.validateAll()
-  formValidateMessage.value = {}
-  if (!valid && firstErrorKey) {
-    formValidateMessage.value[firstErrorKey[0]] = firstErrorKey[1]
-    infoRef.value?.scrollToField(firstErrorKey[0] as any)
-    console.log('aaa')
-    return
+  if(!isEditing.value) {
+    const { valid, firstErrorKey } = commentStore.validateAll()
+    formValidateMessage.value = {}
+    if (!valid && firstErrorKey) {
+      formValidateMessage.value[firstErrorKey[0]] = firstErrorKey[1]
+      infoRef.value?.scrollToField(firstErrorKey[0] as any)
+      console.log('aaa')
+      return
+    }
   }
-  await commentStore.postComment()
+  replyCmId.value = null
+  if(    !isEditing.value)
+    currentEl.classList.remove('is-reply')
+  await commentStore.handleSubmitComment()
 }
 
 const throttledSubmit = throttle(handleSubmit, 10000)
@@ -145,6 +198,44 @@ const setItemRef= (el: any, index: number) =>{
 watch(()=> comments.value , () =>{
   commentRefs.value = {}
   replyCmId.value = null
+})
+
+
+const openedMenu = ref<any>(null)
+
+const toggleMenu = (id :any) => {
+  openedMenu.value =
+      openedMenu.value === id ? null : id
+}
+
+const editComment = (cm :any) => {
+  console.log('edit', cm)
+  commentEditForm.value.content = cm.content
+  commentEditForm.value.id = cm.id
+  openedMenu.value = null
+  isEditing.value = true
+}
+const removeEdit = () => {
+  commentEditForm.value.content = ''
+  commentEditForm.value.id = -1
+  isEditing.value = false;
+}
+const deleteComment = (id :any) => {
+  console.log('delete', id)
+
+  openedMenu.value = null
+}
+
+const closeMenu = () => {
+  openedMenu.value = null
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeMenu)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeMenu)
 })
 </script>
 
@@ -170,6 +261,8 @@ watch(()=> comments.value , () =>{
 }
 .comment-item{
   display: flex;
+  align-items: flex-start;
+  gap: 5px;
   flex-direction: row;
   margin: 10px  ;
 }
@@ -179,8 +272,21 @@ watch(()=> comments.value , () =>{
   border-radius: 10px;
   padding: 0.4rem 1rem;
   margin: 0 3px;
+  min-width: 0;
 }
-
+.content{
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.edit-circle{
+  flex-shrink: 0;
+  background: #c1d7df;
+  padding: 5px 10px;
+  border-radius: 10px 10px ;
+  top: 10px;
+  font-weight: bolder;
+  cursor: pointer;
+}
 .comment-header{
   display: flex;
   align-items: center;
@@ -196,7 +302,9 @@ watch(()=> comments.value , () =>{
 .metadata {
   font-weight: 700;
   color: rgba(0, 0, 0, 0.51);
-  font-size: 1em;
+  font-size: 14px;
+  margin-left: 20px;
+  margin-top: 5px;
 }
 .owner-tag{
   cursor: default;
@@ -280,5 +388,43 @@ watch(()=> comments.value , () =>{
     box-shadow: 0 0 0 10px rgba(0, 167, 224, 0);
     border-width: 3px;
   }
+}
+
+
+
+.edit-circle{
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.comment-menu{
+  position: absolute;
+  top: 30px;
+  right: 0;
+
+  width: 80px;
+  background: white;
+
+  border-radius: 10px;
+  box-shadow:
+      0 4px 12px rgba(0,0,0,.12);
+
+  overflow: hidden;
+  z-index: 20;
+}
+
+.menu-item{
+  padding: 10px 14px;
+  font-size: 14px;
+  transition: .2s;
+}
+
+.menu-item:hover{
+  background: #f5f5f5;
+}
+
+.menu-item.delete{
+  color: #ff4d4f;
 }
 </style>

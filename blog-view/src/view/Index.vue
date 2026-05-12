@@ -147,24 +147,33 @@ watch(() => width.value, (w) => {
   }
 })
 
-// Functions
-const getHitokotoData = async () => {
+const getHitokotoData = async (): Promise<void> => {
   try {
     const res = await getHitokoto()
+
     hitokoto.value = res
-    const trans1: Record<string, any> = await translateUrl(hitokoto.value.hitokoto)
-    const trans2: Record<string, any> = await translateUrl(hitokoto.value.from)
-    hitokoto.value.hitokoto = trans1[0][0][0]
-    hitokoto.value.from = trans2[0][0][0]
-  } catch (error) {
+
+    Promise.all([
+      translateUrl(hitokoto.value.hitokoto),
+      translateUrl(hitokoto.value.from)
+    ])
+        .then(([trans1, trans2]: [any, any]) => {
+          hitokoto.value.hitokoto = trans1[0][0][0]
+          hitokoto.value.from = trans2[0][0][0]
+        })
+        .catch((err: unknown) => {
+          console.error('Dịch thất bại:', err)
+        })
+
+  } catch (error: unknown) {
     console.error('Lấy hitokoto thất bại:', error)
+
     hitokoto.value = {
       hitokoto: 'Hãy viết code bằng cả trái tim',
       from: 'Lập trình viên'
     }
   }
 }
-
 const site = async () => {
   try {
     const res:Record<string, any> = await getSite();
@@ -225,8 +234,8 @@ watch(
 )
 onMounted(() => {
   site()
-  getHitokotoData()
   fetchTags()
+  setTimeout(() =>  getHitokotoData(),3000)
 })
 
 </script>

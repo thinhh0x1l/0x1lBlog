@@ -20,9 +20,11 @@ public interface CommentService {
 
     void updateComment(CommentUpdateRequest request);
 
-    PageInfo<CommentByBlogIdResponse.CommentNode> commentRootTrees (int pageNum, int pageSize, Long blogId, Integer page);
+    PageInfo<CommentByBlogIdResponse.CommentNode> commentRootTrees (int pageNum, int pageSize, Long blogId, Integer page, Long guessId);
 
-    Map<Long, List<CommentByBlogIdResponse.CommentNode>> commentChildTrees(List<Long> commentRootIds);
+    Map<Long, List<CommentByBlogIdResponse.CommentNode>> commentChildTrees(List<Long> commentRootIds, Long guessId);
 
     Long saveComment(Comment comment);
+
+    void editComment(Long id, String content);
 }

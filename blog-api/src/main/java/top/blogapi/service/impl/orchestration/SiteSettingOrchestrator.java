@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.blogapi.client.zing_mp3.Mp3Service;
+import top.blogapi.service._zing_mp3.Mp3Service;
 import top.blogapi.config.CacheNameConfig;
 import top.blogapi.model.TypeSetting;
 import top.blogapi.model.entity.SiteSetting;

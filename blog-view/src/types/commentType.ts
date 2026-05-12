@@ -11,6 +11,11 @@ export interface SaveCommentReq{
     parentCommentId: number | null
 }
 
+export interface EditCommentReq{
+    id: number
+    content: string,
+}
+
 export interface CommentQuery {
     page: number;
     blogId: number | null;
@@ -27,6 +32,8 @@ export interface CommentNode {
     createTime: string
     adminComment: boolean
     reply: string
+    editAble: boolean,
+    isEdited: boolean,
     threadRoot: number
     website: string
     replyComment: CommentNode[]

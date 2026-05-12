@@ -12,7 +12,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.blogapi.client.zing_mp3.MusicService;
+import top.blogapi.service._zing_mp3.MusicService;
 import top.blogapi.config.CacheNameConfig;
 import top.blogapi.dto.request.blog.BlogQueryRequest;
 import top.blogapi.dto.response.blog.ArchiveBlogResponse;
@@ -201,6 +201,10 @@ public class BlogOrchestrator {
                 "count", archiveBlogsBatch.size()
         );
     }
+    @Cacheable(
+            value = CacheNameConfig.BLOG_DETAILS,
+            key = "#id"
+    )
     public BlogDetail getBlogByIdAndIsPublished(Long id){
 
         long start = System.currentTimeMillis();

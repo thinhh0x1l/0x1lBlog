@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.blogapi.client.zing_mp3.MusicService;
+import top.blogapi.service._zing_mp3.MusicService;
 import top.blogapi.config.CacheNameConfig;
 import top.blogapi.dto.response.about.AboutResponse;
 import top.blogapi.exception.AppException;

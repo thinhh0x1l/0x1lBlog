@@ -18,6 +18,8 @@ public class CommentTree {
     Boolean adminComment; // Bình luận của quản trị viên (chủ blog)
     Long parentCommentId; // Bình luận cha (nếu là trả lời)
     String website;
+    Long guessId;
+    boolean isEdited;
     Long threadRoot;
     Long depth;
     String reply;

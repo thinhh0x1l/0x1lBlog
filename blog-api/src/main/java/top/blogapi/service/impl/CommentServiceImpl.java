@@ -93,22 +93,25 @@ public class CommentServiceImpl implements CommentService {
 
     @SuppressWarnings("resource")
     @Transactional(readOnly = true)
-    public PageInfo<CommentByBlogIdResponse.CommentNode> commentRootTrees (int pageNum, int pageSize,Long blogId, Integer page){
+    public PageInfo<CommentByBlogIdResponse.CommentNode> commentRootTrees (int pageNum, int pageSize,
+                                                                           Long blogId, Integer page,
+                                                                           Long guessId){
         PageHelper.startPage(pageNum, pageSize, "id desc");
         List<CommentTree> commentRootTrees = commentRepository.findRootComments(blogId,page);
-
-        return new PageInfo<>(commentRootTrees).convert(commentMapper::toCommentNode);
+        if(commentRootTrees.isEmpty()) return PageInfo.emptyPageInfo();
+        return new PageInfo<>(commentRootTrees).convert(c ->
+                commentMapper.toCommentNode(c).setEditAble(c.getGuessId(),guessId));
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, List<CommentByBlogIdResponse.CommentNode>> commentChildTrees(List<Long> commentRootIds){
+    public Map<Long, List<CommentByBlogIdResponse.CommentNode>> commentChildTrees(List<Long> commentRootIds, Long guessId){
         List<CommentTree> commentChildTrees = commentRepository.findRepliesByRootIds(commentRootIds);
 
         Map<Long, List<CommentByBlogIdResponse.CommentNode>> map = new HashMap<>();
         for(CommentTree c: commentChildTrees){
             Long key = c.getThreadRoot();
             if(map.containsKey(key))
-                map.get(key).add(commentMapper.toCommentNode(c));
+                map.get(key).add(commentMapper.toCommentNode(c).setEditAble(c.getGuessId(),guessId));
             else
                 map.put(key, new ArrayList<>());
         }
@@ -122,5 +125,11 @@ public class CommentServiceImpl implements CommentService {
         if(r == 0)
             throw new AppException(ErrorCode.INTERNAL_ERROR,"Viết bình luận không thành công");
         return comment.getId();
+    }
+
+    @Override
+    public void editComment(Long id, String content) {
+        if(commentRepository.editComment(id, content) == 0)
+            log.debug("Id comment {} này tồn tại", id);
     }
 }

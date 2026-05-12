@@ -1,4 +1,4 @@
-package top.blogapi.client.zing_mp3;
+package top.blogapi.service._zing_mp3;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

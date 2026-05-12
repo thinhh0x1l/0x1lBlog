@@ -1,4 +1,4 @@
-package top.blogapi.client.zing_mp3;
+package top.blogapi.service._zing_mp3;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,6 @@ import top.blogapi.config.CacheNameConfig;
 import top.blogapi.dto.response._common.MusicInfo;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
-import top.blogapi.model.vo.BlogDetail;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;

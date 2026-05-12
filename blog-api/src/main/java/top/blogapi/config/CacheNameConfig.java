@@ -4,6 +4,8 @@ public class CacheNameConfig {
 
     public static final String HOME_BLOG_INFO_LIST = "homeBlogInfoList";
 
+    public static final String BLOG_DETAILS = "blogDetails";
+
     public static final String CATEGORY_BLOG_INFO_LIST = "categoryBlogInfoList";
 
     public static final String TAG_BLOG_INFO_LIST = "tagBlogInfoList";

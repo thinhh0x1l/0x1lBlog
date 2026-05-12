@@ -106,7 +106,7 @@ public interface CommentRepository {
     @Select("""
     <script>
         SELECT
-            id, nickname, content, avatar, create_time, is_admin_comment, parent_comment_id, website,
+            id, nickname, content, avatar, create_time, is_admin_comment, parent_comment_id, website, guess_id, is_edited,
             id AS thread_root,
             1 AS depth,
             CAST('' AS char(100)) as reply
@@ -128,7 +128,7 @@ public interface CommentRepository {
     <script>
         WITH RECURSIVE comment_tree AS (
             SELECT
-                id, nickname, content, avatar, create_time, is_admin_comment, parent_comment_id, website,
+                id, nickname, content, avatar, create_time, is_admin_comment, parent_comment_id, website, guess_id, is_edited,
                 id AS thread_root,
                 1 AS depth,
                 CAST('' AS char(100)) as reply
@@ -139,7 +139,7 @@ public interface CommentRepository {
             </foreach>
             UNION ALL
             SELECT
-                c.id, c.nickname, c.content, c.avatar, c.create_time, c.is_admin_comment, c.parent_comment_id, c.website,
+                c.id, c.nickname, c.content, c.avatar, c.create_time, c.is_admin_comment, c.parent_comment_id, c.website, c.guess_id, c.is_edited,
                 ct.thread_root,
                 ct.depth + 1,
                 CONCAT('@',ct.nickname) as reply
@@ -169,7 +169,10 @@ public interface CommentRepository {
             page,
             is_notice,
             parent_comment_id,
-            blog_id
+            blog_id,
+            update_at,
+            is_edited,
+            guess_id
         )values(
             #{nickname},
             #{email},
@@ -183,9 +186,21 @@ public interface CommentRepository {
             #{page},
             #{notice},
             #{parentCommentId},
-            #{blog.id}
-        ) 
+            #{blog.id},
+            #{updateAt},
+            #{isEdited},
+            #{guessId}
+        )
 """)
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int saveComment (Comment comment);
+
+
+    @Update("""
+        UPDATE comment SET content = #{content},
+                           is_edited = true,
+                           update_at = NOW()
+                           WHERE id =#{id}
+""")
+    int editComment(Long id, String content);
 }
