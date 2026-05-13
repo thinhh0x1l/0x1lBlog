@@ -3,7 +3,11 @@
     <div class="header-container">
       <font-awesome-icon icon="tags" class="mr-2" />Đám mây Tag</div>
     <div class="body-container">
-      <TagComponent :list-tag="tagList"></TagComponent>
+      <TagComponent
+          :list-tag="tagList"
+          :loading="loading"
+          :skeleton-count="10"
+      />
     </div>
   </div>
 </template>
@@ -13,7 +17,8 @@ import TagComponent from '@/components/blogList/Tag.vue'
 import type {Tag, TagSlug} from "@/types/tagType";
 
 const props = defineProps<{
-  tagList: TagSlug[]
+  tagList: TagSlug[],
+  loading: boolean
 }>()
 
 </script>

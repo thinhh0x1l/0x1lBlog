@@ -1,8 +1,12 @@
 <template>
   <div>
-   <BlogItem :blog-list="blogList"/>
+   <BlogItem
+       :blog-list="blogList"
+       :loading="loading"
+       :skeletonCount="5"
+   />
 
-    <Pagination :getBlogList="getBlogList" :page-info="pageInfo"/>
+    <Pagination v-if="pageInfo.totalPages>1" :getBlogList="getBlogList" :page-info="pageInfo"/>
   </div>
 </template>
 <script setup lang="ts">
@@ -24,6 +28,10 @@
    blogList:{
      type: Array,
      required: true,
-   }
+   },
+   loading: {
+     type: Boolean,
+     default: false
+   },
  })
 </script>

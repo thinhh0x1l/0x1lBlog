@@ -38,7 +38,7 @@
             </div>
 
             <div class="hidden md:block flex-none" style="width: 18.75% !important;">
-              <Tags :tag-list="tags"/>
+              <Tags :loading="loading" :tag-list="tags"/>
             </div>
 
             <div class="bat"></div>
@@ -201,11 +201,12 @@ const fetchTags = async () => {
   try {
     const response: ApiResponse<TagSlug[]> = await getTags()
     if(response.code === 200){
+
+      loading.value = false
       tags.value = response.data ?? []
     }
   }catch (err: any){
   }finally {
-    loading.value = false
   }
 }
 

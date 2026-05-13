@@ -1,6 +1,9 @@
 <template>
   <div  >
-    <BlogList :getBlogList="fetchBlogList" :page-info="pageInfo" :blog-list="blogList"/>
+    <BlogList :getBlogList="fetchBlogList"
+              :loading="loading"
+              :page-info="pageInfo"
+              :blog-list="blogList"/>
   </div>
 </template>
 
@@ -24,12 +27,16 @@ const pageInfo = ref({
 })
 const toast = useToast()
 const blogList = ref([])
+const loading = ref(true)
+
 
 const fetchBlogList = async (pageNum) => {
+  loading.value = true
   try {
     console.log(12323)
     const res = await getBlogList(pageNum);
     if(res.code === 200){
+      loading.value = false
       toast.success(res.msg)
       updatePageInfo(pageInfo, res.data)
       blogList.value = res.data.items

@@ -4,7 +4,12 @@
       {{ 'Bạn đang chọn ở Phân loại '}}<span class="text">{{category.name}}</span> {{ ` quay trở lại` }}
       <router-link class="backhome" to="/home">{{` trang chủ`}}</router-link>
     </div>
-    <BlogList :page-info="pageInfo" :blog-list="blogList" :get-blog-list="getBlogListByCategoryName"/>
+    <BlogList
+        :loading="loading"
+        :page-info="pageInfo"
+        :blog-list="blogList"
+        :get-blog-list="getBlogListByCategoryName"
+    />
   </div>
 </template>
 
@@ -32,19 +37,25 @@ const pageInfo = ref({
   totalElements: 0,
 })
 
+const loading = ref<boolean>(true)
+
 const blogList = ref<BlogInfo[]>([])
 const categoryName = computed<string>(() => <string>route.params.name)
 
 const getBlogListByCategoryName = async (pageNum: number) => {
+  loading.value = true
   try {
     const response: ApiResponse<CategoryGetBlogsResponse> =
         await fGetBlogListByCategoryName(categoryName.value,pageNum, 5)
     if (response.code === 200){
+      loading.value = false
       updatePageInfo(pageInfo, response.data.blogInfos)
       blogList.value = response.data.blogInfos.items
       category.value = response.data.categorySlug
     }
   }catch (err) {
+  }finally {
+    // loading.value = false
   }
 }
 watch(() => route.params.name, () => {

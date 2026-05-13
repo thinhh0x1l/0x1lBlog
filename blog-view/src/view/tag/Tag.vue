@@ -4,7 +4,12 @@
       Bạn đang chọn ở Tag <TagComponent :list-tag="tags"/> quay trở lại
        <router-link class="backhome" to="/home">{{` trang chủ`}}</router-link>
     </div>
-    <BlogList :getBlogList="fetchBlogsByTagId" :page-info="pageInfo" :blog-list="blogList"/>
+    <BlogList
+        :loading="loading"
+        :getBlogList="fetchBlogsByTagId"
+        :page-info="pageInfo"
+        :blog-list="blogList"
+    />
   </div>
 </template>
 
@@ -21,6 +26,8 @@ import {updatePageInfo} from "@/util/pageInfo";
 import type {ApiResponse} from "@/types/commonType";
 const route = useRoute()
 
+const loading = ref<boolean>(true)
+
 const tags = ref<TagSlug[]>([])
 const blogList = ref<BlogInfo[]>([])
 const tagId = computed<string>(() => <string>route.params.id)
@@ -33,16 +40,20 @@ const pageInfo = ref({
 })
 
 const fetchBlogsByTagId = async (pageNum: number) => {
+  loading.value = true
   try {
     const response: ApiResponse<TagIdGetBlogsResponse> =
         await getBlogListByTagId(tagId.value,pageNum, 2)
     if (response.code === 200){
       console.log(response)
+      loading.value = false
       updatePageInfo(pageInfo, response.data.blogInfos)
       blogList.value = response.data.blogInfos.items
       tags.value.push(response.data.queryTag)
     }
   }catch (err) {
+  }finally {
+    // loading.value = false
   }
 }
 
