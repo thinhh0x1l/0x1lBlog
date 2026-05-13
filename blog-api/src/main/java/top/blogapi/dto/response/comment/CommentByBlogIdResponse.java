@@ -38,6 +38,7 @@ public class CommentByBlogIdResponse {
         boolean editAble = false;
         boolean isEdited;
         Long threadRoot;
+        Long parentCommentId;
         List<CommentNode> replyComment;
 
         public CommentNode setEditAble(Long id1, Long prId){

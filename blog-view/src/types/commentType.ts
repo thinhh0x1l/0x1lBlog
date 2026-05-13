@@ -36,6 +36,7 @@ export interface CommentNode {
     isEdited: boolean,
     threadRoot: number
     website: string
+    parentCommentId: number
     replyComment: CommentNode[]
 }
 

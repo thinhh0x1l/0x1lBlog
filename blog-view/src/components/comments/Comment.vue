@@ -14,9 +14,11 @@
                 :image="cm.adminComment ? cm.avatar : `/img/comment-avatar/${cm.avatar}`"
                 :size="'large'"
             />
-             <div v-show="commentEditForm.id != cm.id">
+             <div
+                 v-show="commentEditForm.id != cm.id"
+             >
                <div style="display: flex; flex-direction: column">
-                 <div class="comment"  :ref="el => setItemRef(el,cm.id)">
+                 <div :id="`comment-${cm.id}`" class="comment"  :ref="el => setItemRef(el,cm.id)">
                    <div class="comment-header">
                      <a class="nickname" :href="cm.website?.trim() || '#'"
                         target="_blank" rel="external nofollow noopener">{{cm.nickname}}</a>
@@ -27,7 +29,7 @@
                            @click="setReplyComment(cm.threadRoot,cm.id,cm.nickname)">
                   {{replyCmId ===cm.id ? 'Hủy': 'Trả lời'}}</span>
                    </div>
-                   <div class="content">{{cm.content}}</div>
+                   <div  class="content">{{cm.content}}</div>
 
                  </div>
                  <div class="metadata">
@@ -65,9 +67,14 @@
                     :image="replyCm.adminComment ? replyCm.avatar : `/img/comment-avatar/${replyCm.avatar}`"
                     :size="'normal'"
                 />
-                <div v-show="commentEditForm.id != replyCm.id">
+                <div
+                    v-show="commentEditForm.id != replyCm.id"
+                >
                   <div style="display: flex; flex-direction: column">
-                    <div class="comment" :ref="el => setItemRef(el,replyCm.id)">
+                    <div
+                        :id="`comment-${replyCm.id}`"
+                        class="comment"
+                        :ref="el => setItemRef(el,replyCm.id)">
                       <div class="comment-header">
                         <a class="nickname"  :href="cm.website?.trim() || '#'"
                               target="_blank" rel="external nofollow noopener">{{replyCm.nickname}}</a>
@@ -78,7 +85,8 @@
                                 @click="setReplyComment(cm.threadRoot,replyCm.id,replyCm.nickname)">
                           {{replyCmId ===replyCm.id ? 'Hủy': 'Trả lời'}}</span>
                       </div>
-                      <div><span class="reply">{{`${replyCm.reply}`}}</span>{{ ` ${replyCm.content} `}}</div>
+                      <div><span  @click="scrollToComment(replyCm.parentCommentId)"
+                                  class="reply">{{`${replyCm.reply}`}}</span>{{ ` ${replyCm.content} `}}</div>
                     </div>
                     <div class="metadata">
                       <span v-if="!replyCm.isEdited">{{ ` ${formatDate(replyCm.createTime,'YYYY-MM-DD HH:mm')}`}}</span>
@@ -159,12 +167,13 @@ const formValidateMessage = ref<Record<string, string>>({
   email:'',
 })
 const handleSubmit = async () => {
+  console.log(isEditing.value)
   if(sessionStorage.getItem('adminToken')){
     if(commentForm.value.content==='' || commentForm.value.content.length >250)
       toast.warn('Nội dung bình luận không hợp lê!')
     else{
       replyCmId.value = null
-      if(    !isEditing.value)
+      if(   currentEl&& !isEditing.value)
         currentEl.classList.remove('is-reply')
       await commentStore.handleSubmitComment()
     }
@@ -181,7 +190,7 @@ const handleSubmit = async () => {
     }
   }
   replyCmId.value = null
-  if(    !isEditing.value)
+  if(  currentEl&&  !isEditing.value)
     currentEl.classList.remove('is-reply')
   await commentStore.handleSubmitComment()
 }
@@ -228,6 +237,23 @@ const deleteComment = (id :any) => {
 
 const closeMenu = () => {
   openedMenu.value = null
+}
+
+const scrollToComment = async (id: number) => {
+  const el = document.getElementById(`comment-${id}`)
+
+  if (!el) return
+
+  el.scrollIntoView({
+    behavior: 'smooth',
+    block: 'center'
+  })
+
+  el.classList.remove('comment-highlight')
+
+  void el.offsetWidth
+
+  el.classList.add('comment-highlight')
 }
 
 onMounted(() => {
@@ -345,9 +371,27 @@ onBeforeUnmount(() => {
   margin-left: 4.57rem  ;
 }
 .reply{
-  background: #8fede8;
+  color: #0f766e;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
 }
+.reply:before {
+   content: '';
+   position: absolute;
+   bottom: -2px;
+   height: 1px;
+   width: 0;
+   background-color: #1abc9c;
+   transform: translateX(50%);
+   right: 50%;
+   transition: width .25s ease-in-out;
+ }
 
+.reply:hover::before {
+  width: 100%;
+}
 
 .avt-l{
   position: relative;
@@ -426,5 +470,23 @@ onBeforeUnmount(() => {
 
 .menu-item.delete{
   color: #ff4d4f;
+}
+
+.comment-highlight {
+  animation: highlightFade 3s ease;
+}
+
+@keyframes highlightFade {
+  0% {
+    background: #8ceeff;
+  }
+
+  100% {
+    background: #e0fff1;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
 }
 </style>
