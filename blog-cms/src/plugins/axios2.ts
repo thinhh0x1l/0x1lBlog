@@ -35,7 +35,7 @@ export interface PageInfo<T = any> {
 }
 
 export const request: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:8090/admin/',
+    baseURL: 'https://danuta-epirogenic-reportedly.ngrok-free.dev/admin/',
     timeout: 10000,
     withCredentials: true
 })

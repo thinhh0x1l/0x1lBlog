@@ -12,7 +12,7 @@
           <div class="ui card">
             <div class="content m-top">
               <span style="font-weight: 700">{{ userName }}</span>
-              <span class="right floated">{{ formatDate(moment.createTime) }}</span>
+              <span class="right floated">{{ formatRelativeTimeOrDate(moment.createTime) }}</span>
             </div>
             <div class="content typo" :class="{'privacy': !moment.published}"
                  v-html="moment.content"></div>
@@ -46,11 +46,12 @@ import {ref, reactive, computed, onMounted, nextTick, watch} from 'vue'
 import Paginator, {type PageState} from 'primevue/paginator'
 import {useAppStore} from "@/store";
 import mediumZoom from "medium-zoom"
-import {formatDate} from "@/util/dateTimeFormatUtils.js";
+import {formatDate,formatRelativeTimeOrDate} from "@/util/dateTimeFormatUtils.js";
 import type {Moment} from "@/types/momentType";
 import {useScrollToTop} from "@/util/ScrollToTop.js";
 import {getMomentListByPageNum} from "@/api/moment";
 import type {ApiResponse, PageResult} from "@/types/commonType";
+
 const {scrollToTop} = useScrollToTop()
 
 const store = useAppStore()
