@@ -8,10 +8,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.blogapi.service.cacheService.BlogCacheService;
 import top.blogapi.service._zing_mp3.MusicService;
 import top.blogapi.config.CacheNameConfig;
 import top.blogapi.dto.request.blog.BlogQueryRequest;
@@ -33,6 +37,7 @@ import top.blogapi.util.SlugUtils;
 import top.blogapi.util.StringUtils;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 @Service
@@ -43,9 +48,12 @@ public class BlogOrchestrator {
     BlogService blogService;
     CategoryService categoryService;
     TagService tagService;
+    BlogCacheService blogCacheService;
     MusicService musicService;
+
     BlogMapper blogMapper;
     CategoryMapper categoryMapper;
+
     ObjectMapper objectMapper;
 
     public BlogListPageResponse getListByTitleOrCategory(BlogQueryRequest blogQueryRequest) {
@@ -140,6 +148,15 @@ public class BlogOrchestrator {
         }
         return "Cập nhật Blog thành công !!";
     }
+
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = CacheNameConfig.BLOG_DETAILS, key = "#id"),
+            @CacheEvict(cacheNames = CacheNameConfig.CATEGORY_BLOG_INFO_LIST, allEntries = true),
+            @CacheEvict(cacheNames = CacheNameConfig.TAG_BLOG_INFO_LIST, allEntries = true),
+            @CacheEvict(cacheNames = CacheNameConfig.HOME_BLOG_INFO_LIST, allEntries = true),
+            @CacheEvict(cacheNames = CacheNameConfig.ARCHIVE_BLOG_MAP, allEntries = true)
+    })
     public void deleteBlogById(Long id){
         blogService.deleteBlogTagByBlogId(id);
         blogService.deleteBlogById(id);
@@ -201,49 +218,15 @@ public class BlogOrchestrator {
                 "count", archiveBlogsBatch.size()
         );
     }
-    @Cacheable(
-            value = CacheNameConfig.BLOG_DETAILS,
-            key = "#id"
-    )
-    public BlogDetail getBlogByIdAndIsPublished(Long id){
 
-        long start = System.currentTimeMillis();
-
-        BlogDetail blogDetail =
-                blogService.getBlogByIdAndIsPublished(id);
-
-        log.info("DB query: {} ms",
-                System.currentTimeMillis() - start);
-
-        if(blogDetail.getMusicId() != null){
-
-            start = System.currentTimeMillis();
-
-            try {
-                blogDetail.setMusicInfo(
-                        musicService.getCompleteSongData(
-                                blogDetail.getMusicId(),
-                                2
-                        )
-                );
-
-            } catch (Exception e){
-
-                log.error("Error load music info", e);
-
-                blogDetail.setMusicInfo(null);
-            }
-
-            log.info("Music API: {} ms",
-                    System.currentTimeMillis() - start);
-        }
-
+    public BlogDetail getBlogDetail(Long id){
+        BlogDetail cache = blogCacheService.getBlogByIdAndIsPublished(id);
+        // clone blogDetail để view không cache -> hiện double view
+        BlogDetail blogDetail = BlogDetail.cloneBlogDetail(cache);
+        blogDetail.setViews(
+                blogDetail.getViews() +
+                        blogCacheService.getPending(blogDetail.getId()));
         return blogDetail;
-    }
-
-    @Async
-    public void updateViewByBlogId(Long id){
-        blogService.updateViewByBlogId(id);
     }
 
     public List<SearchBlog> searchBlogs(String search){
@@ -261,6 +244,29 @@ public class BlogOrchestrator {
             searchBlog.setContent(content.substring(index, end));
         }
         return searchBlogs;
+    }
+
+
+    @Scheduled(fixedDelay = 60000)
+    public void flushViews() {
+        Map<Long ,Long> mapViews = new HashMap<>();
+        for (Map.Entry<Long, AtomicLong> entry :
+                blogCacheService.getAll().entrySet()) {
+
+            long blogId = entry.getKey();
+
+            AtomicLong counter = entry.getValue();
+
+            long delta = counter.getAndSet(0);
+            if (delta > 0)
+                mapViews.put(blogId,delta);
+
+
+        }
+
+        if(!mapViews.isEmpty())
+            blogService.flushViewsAllBlogs(mapViews);
+
     }
 
 }

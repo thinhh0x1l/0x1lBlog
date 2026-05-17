@@ -10,9 +10,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.blogapi.dto.request.siteSetting.SiteSettingUpdateReq;
 import top.blogapi.service._zing_mp3.Mp3Service;
 import top.blogapi.config.CacheNameConfig;
 import top.blogapi.model.TypeSetting;
@@ -180,19 +182,24 @@ public class SiteSettingOrchestrator {
         return texts;
     }
 
-    public void updateAll(Map<String, Object> map){
-        List<LinkedHashMap> siteSettings = (List<LinkedHashMap>) map.get("settings");
-        List<Integer> deleteIds = (List<Integer>) map.get("deleteIds");
-        log.info("Các id được xóa {}",deleteIds);
-        for(Integer id : deleteIds)
-            siteSettingService.deleteSettingById(Long.parseLong( id+""));
-        for (LinkedHashMap s : siteSettings){
-            SiteSetting siteSetting = objectMapper.convertValue(s,SiteSetting.class);
-            if(siteSetting.getId() != null)
-                siteSettingService.updateSiteSetting(siteSetting);
-            else
-                siteSettingService.saveSiteSetting(siteSetting);
-        }
+    @CacheEvict(value = CacheNameConfig.SITE_INFO_MAP, allEntries = true)
+    public void updateAll(SiteSettingUpdateReq req){
+        List<SiteSetting> siteSettings =
+                Optional.ofNullable(req.getSettings())
+                        .orElse(Collections.emptyList());
+        List<Long> deleteIds =
+                Optional.ofNullable(req.getDeleteIds())
+                        .orElse(Collections.emptyList());
+        List<SiteSetting> updates = new ArrayList<>();
+        List<SiteSetting> saves = new ArrayList<>();
+
+        for (SiteSetting s : siteSettings)
+            if(s.getId() != null) updates.add(s);
+            else saves.add(s);
+
+        siteSettingService.saveSiteSetting(saves);
+        siteSettingService.updateSiteSetting(updates);
+        siteSettingService.deleteSettingById(deleteIds);
     }
 
 

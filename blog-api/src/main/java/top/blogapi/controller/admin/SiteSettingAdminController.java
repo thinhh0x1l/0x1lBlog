@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import top.blogapi.dto.request.siteSetting.SiteSettingUpdateReq;
 import top.blogapi.model.entity.SiteSetting;
 import top.blogapi.model.vo.Result;
 import top.blogapi.service.impl.orchestration.BlogOrchestrator;
@@ -39,8 +40,8 @@ public class SiteSettingAdminController {
     }
 
     @PostMapping("/site-settings")
-    public Result<?> updateSiteSettingAll(@RequestBody Map<String, Object> map) {
-        siteSettingOrchestrator.updateAll(map);
+    public Result<?> updateSiteSettingAll(@RequestBody SiteSettingUpdateReq req) {
+        siteSettingOrchestrator.updateAll(req);
         return Result.ok("Cập nhật Setting thành công!");
     }
 }

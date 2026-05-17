@@ -8,6 +8,7 @@ import top.blogapi.model.entity.Blog;
 import top.blogapi.model.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface BlogService {
     PageInfo<Blog> getListByTitleOrCategory(BlogQueryRequest blogQueryRequest);
@@ -48,7 +49,7 @@ public interface BlogService {
 
     Boolean getCommentEnabledByBlogId(Long blogId);
 
-    void updateViewByBlogId(Long id);
-
     List<SearchBlog> searchBlogs(String search);
+
+    void flushViewsAllBlogs(Map<Long, Long> map);
 }

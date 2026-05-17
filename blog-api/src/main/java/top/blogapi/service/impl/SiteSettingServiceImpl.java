@@ -30,22 +30,23 @@ public class SiteSettingServiceImpl implements SiteSettingService {
 
     @Transactional
     @Override
-    public void updateSiteSetting(SiteSetting siteSetting) {
-        if(siteSettingRepository.updateSiteSetting(siteSetting) == 0)
+    public void updateSiteSetting(List<SiteSetting> siteSettings) {
+        if(siteSettingRepository.updateAll(siteSettings) == 0)
             throw new AppException(ErrorCode.SITE_SETTINGS_NOT_FOUND);
     }
 
     @Transactional
     @Override
-    public void deleteSettingById(Long id) {
-        if(siteSettingRepository.deleteSettingById(id)==0)
+    public void deleteSettingById(List<Long> ids) {
+
+        if(siteSettingRepository.deleteBatch(ids)==0)
             throw new AppException(ErrorCode.SITE_SETTINGS_NOT_FOUND);
     }
 
     @Transactional
     @Override
-    public void saveSiteSetting(SiteSetting siteSetting) {
-        if(siteSettingRepository.saveSiteSetting(siteSetting) == 0)
+    public void saveSiteSetting(List<SiteSetting>  siteSettings) {
+        if(siteSettingRepository.saveBatch(siteSettings) == 0)
             throw new AppException(ErrorCode.SITE_SETTINGS_NOT_FOUND);
     }
 

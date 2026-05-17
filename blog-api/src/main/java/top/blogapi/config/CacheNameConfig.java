@@ -23,4 +23,6 @@ public class CacheNameConfig {
     public static final String ARCHIVE_BLOG_MAP = "archiveBlogMap";
 
     public static final String MUSIC_INFO = "musicInfo";
+
+    public static final String INCREASE_BLOG_VIEWS = "increaseBlogViews";
 }

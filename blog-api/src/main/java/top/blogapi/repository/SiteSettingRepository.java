@@ -12,16 +12,53 @@ public interface SiteSettingRepository {
     @Select("SELECT * FROM site_setting")
     List<SiteSetting> getList();
 
-    @Update("UPDATE site_setting SET value = #{value} WHERE id = #{id}")
-    int updateSiteSetting(SiteSetting siteSetting);
+    @Update("""
+        <script>
+            UPDATE site_setting
+            SET value = CASE id
+            <foreach collection="list" item="item">
+                WHEN #{item.id} THEN #{item.value}
+            </foreach>
+            END
+            WHERE id IN
+            <foreach collection="list" item="item" open="(" separator="," close=")">
+                #{item.id}
+            </foreach>
+        </script>
+""")
+    int updateAll(@Param("list") List<SiteSetting> list);
 
-    @Delete("DELETE FROM site_setting WHERE id = #{id}")
-    int deleteSettingById(@Param("id") Long id);
+    @Delete("""
+    <script>
+        DELETE FROM site_setting
+        WHERE id IN
+        <foreach collection="ids"
+                 item="id"
+                 open="("
+                 separator=","
+                 close=")">
+            #{id}
+        </foreach>
+    </script>
+""")
+    int deleteBatch(@Param("ids") List<Long> ids);
 
-    @Insert("INSERT INTO site_setting (name_en, name_vn, value, type) " +
-            "VALUES (#{nameEn},#{nameVn},#{value},#{type})")
+    @Insert("""
+        <script>
+            INSERT INTO site_setting (name_en, name_vn, value, type)
+            VALUES
+            <foreach collection="list" item="item" separator=",">
+                (
+                    #{item.nameEn},
+                    #{item.nameVn},
+                    #{item.value},
+                    #{item.type}
+                )
+            </foreach>
+        </script>
+""")
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    int saveSiteSetting(SiteSetting siteSetting);
+    int saveBatch(List<SiteSetting> list);
 
     @Select("""
         SELECT *

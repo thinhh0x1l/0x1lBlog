@@ -8,6 +8,7 @@ import top.blogapi.model.entity.Tag;
 import top.blogapi.model.vo.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Mapper
@@ -291,13 +292,25 @@ public interface BlogRepository {
     })
     List<Blog> getRandomBlogListByLimitNumAndIsPublished(int limitNum);
 
-    @Update("""
-    UPDATE blog SET views = views + 1 WHERE id = #{blogId}
-""")
-    void updateView (Long blogId);
-
     @Select("""
     SELECT id, title, content FROM blog WHERE title LIKE CONCAT('%',#{search},'%') AND is_published = TRUE
 """)
     List<SearchBlog> searchBlogs(String search);
+
+    @Update("""
+    <script>
+        UPDATE blog
+        SET views = views +
+        CASE id
+            <foreach collection="map" index="key" item="value">
+                WHEN #{key} THEN #{value}
+            </foreach>
+        END
+        WHERE id IN
+        <foreach collection="map.keySet()" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </script>
+""")
+    int flushViews(@Param("map") Map<Long, Long> map);
 }

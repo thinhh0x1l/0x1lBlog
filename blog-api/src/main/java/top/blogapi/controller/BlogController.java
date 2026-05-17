@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 import top.blogapi.model.vo.Result;
+import top.blogapi.service.cacheService.BlogCacheService;
 import top.blogapi.service.impl.orchestration.BlogOrchestrator;
 
 
@@ -14,15 +15,12 @@ import top.blogapi.service.impl.orchestration.BlogOrchestrator;
 @FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
 public class BlogController {
     BlogOrchestrator blogOrchestrator;
+    BlogCacheService blogViewCacheService;
 
     @GetMapping("/blog")
     public Result<?> getBlog(@RequestParam Long id){
-        return Result.ok("Yêu cầu thành công", blogOrchestrator.getBlogByIdAndIsPublished(id));
-    }
-    @PostMapping("/blog/increase-view")
-    public Result<?> increaseView(@RequestParam Long id){
-        blogOrchestrator.updateViewByBlogId(id);
-        return Result.ok("Yêu cầu thành công");
+        blogViewCacheService.increase(id);
+        return Result.ok("Yêu cầu thành công", blogOrchestrator.getBlogDetail(id));
     }
 
     @GetMapping("/search-blog")

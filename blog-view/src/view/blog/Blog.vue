@@ -244,7 +244,7 @@ import APlayer from 'aplayer'
 import 'aplayer/dist/APlayer.min.css'
 import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
 import Tag from '@/components/blogList/Tag.vue'
-import { getBlogById, increaseView } from '@/api/blog'
+import { getBlogById } from '@/api/blog'
 import { formatDate } from "@/util/dateTimeFormatUtils.js"
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute } from "vue-router"
 import { useAppStore } from "@/store/index.ts"
@@ -366,12 +366,6 @@ watch(() => route.params.id, async () => {
   }
 }, { immediate: true })
 
-watch(() => route.fullPath, () => {
-  if (!loading.value) {
-    handleIncreaseView()
-  }
-}, { immediate: true })
-
 onBeforeRouteLeave(() => {
   isBlogRenderCompleted.value = false
 })
@@ -389,15 +383,6 @@ function clearPlayer() {
   }
 }
 
-function handleIncreaseView() {
-  if (blogId.value && !loading.value) {
-    try {
-      increaseView(blogId.value)
-    } catch (e) {
-      console.log(e)
-    }
-  }
-}
 
 const initZoom = () => {
   zoom = mediumZoom(".typo img", {

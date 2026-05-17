@@ -24,6 +24,7 @@ import top.blogapi.util.markdown.MarkdownUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -183,14 +184,17 @@ public class BlogServiceImpl implements BlogService {
         return blogRepository.getCommentEnabledByBlogId(blogId);
     }
 
-    @Override
-    public void updateViewByBlogId(Long id) {
-        blogRepository.updateView(id);
-    }
 
     @Override
     public List<SearchBlog> searchBlogs(String search) {
         return blogRepository.searchBlogs(search);
+    }
+
+    @Override
+    public void flushViewsAllBlogs(Map<Long, Long> map) {
+        int r = blogRepository.flushViews(map);
+        if(map.size() != r)
+            log.info("update bị thiếu {}-{}={}",map.size(),r, map.size()-r);
     }
 
 

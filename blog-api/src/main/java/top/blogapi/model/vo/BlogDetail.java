@@ -10,11 +10,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class BlogDetail {
     Long id;
     String title;
@@ -24,7 +26,7 @@ public class BlogDetail {
     Boolean top;
     LocalDateTime createTime;
     LocalDateTime updateTime;
-    Integer views;
+    Long views;
     Integer words;
     Integer readTime;
     String musicId;
@@ -32,4 +34,25 @@ public class BlogDetail {
     List<Tag> tags = new ArrayList<>();
     MusicInfo musicInfo;
 
+    public static BlogDetail cloneBlogDetail(BlogDetail cache) {
+        if (cache == null) return null;
+
+        return BlogDetail.builder()
+                .id(cache.id)
+                .title(cache.title)
+                .content(cache.content)
+                .appreciation(cache.appreciation)
+                .commentEnabled(cache.commentEnabled)
+                .top(cache.top)
+                .createTime(cache.createTime)
+                .updateTime(cache.updateTime)
+                .views(cache.views)
+                .words(cache.words)
+                .readTime(cache.readTime)
+                .musicId(cache.musicId)
+                .category(cache.category)
+                .tags(cache.tags != null ? new ArrayList<>(cache.tags) : new ArrayList<>())
+                .musicInfo(cache.musicInfo) //
+                .build();
+    }
 }

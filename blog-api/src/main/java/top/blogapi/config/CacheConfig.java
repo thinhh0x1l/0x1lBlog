@@ -8,14 +8,16 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 @EnableCaching
 @Configuration
 public class CacheConfig {
 
     @Bean
-    public CacheManager cacheManager(){
+    public CacheManager caffeineCacheManager(){
         CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
 
         // Default
@@ -29,6 +31,7 @@ public class CacheConfig {
         caffeineCacheManager.registerCustomCache(CacheNameConfig.SITE_INFO_MAP, buildCache());
         caffeineCacheManager.registerCustomCache(CacheNameConfig.ABOUT_INFO_MAP, buildCache());
         caffeineCacheManager.registerCustomCache(CacheNameConfig.TAG_CLOUD_LIST, buildCache());
+
         caffeineCacheManager.registerCustomCache(
                 CacheNameConfig.MUSIC_INFO,
                 Caffeine.newBuilder()
@@ -39,11 +42,20 @@ public class CacheConfig {
         );
         return caffeineCacheManager;
     }
+
     private Cache<Object, Object> buildCache() {
         return Caffeine.newBuilder()
                 .maximumSize(1000)
                 .expireAfterWrite(24, TimeUnit.HOURS)
                 .recordStats()
+                .build();
+    }
+
+    @Bean
+    public Cache<Long, AtomicLong> blogViewCache() {
+        return Caffeine.newBuilder()
+                .maximumSize(100_000)
+                .expireAfterAccess(Duration.ofHours(1))
                 .build();
     }
 }
