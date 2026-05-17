@@ -257,7 +257,7 @@ public interface BlogRepository {
 
     @Select("""
         SELECT b.id, b.title, b.content,  b.is_appreciation, b.music_id,
-               b.is_comment_enabled, b.is_top, b.create_time, b.update_time, b.views, b.words ,
+               b.is_comment_enabled, b.is_top, b.create_time, b.update_time, b.words ,
                b.read_time,c.id AS category_id, c.name AS category_name
         FROM blog AS b
         LEFT JOIN category AS c ON b.category_id = c.id
@@ -272,6 +272,10 @@ public interface BlogRepository {
     })
     Optional<BlogDetail> getBlogWithCategory(Long id);
 
+    @Select("""
+        SELECT views FROM blog WHERE id = #{id}
+""")
+    Long queryViewsByBlogId(Long id);
 //    int getAmountOfCommentIs
 
     @Select("""

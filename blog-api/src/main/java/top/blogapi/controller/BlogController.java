@@ -4,7 +4,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import top.blogapi.dto.response._common.MusicInfo;
 import top.blogapi.model.vo.Result;
+import top.blogapi.service._zing_mp3.MusicService;
 import top.blogapi.service.cacheService.BlogCacheService;
 import top.blogapi.service.impl.orchestration.BlogOrchestrator;
 
@@ -16,11 +18,16 @@ import top.blogapi.service.impl.orchestration.BlogOrchestrator;
 public class BlogController {
     BlogOrchestrator blogOrchestrator;
     BlogCacheService blogViewCacheService;
-
+    MusicService musicService;
     @GetMapping("/blog")
     public Result<?> getBlog(@RequestParam Long id){
         blogViewCacheService.increase(id);
         return Result.ok("Yêu cầu thành công", blogOrchestrator.getBlogDetail(id));
+    }
+
+    @GetMapping("/music/{songId}")
+    public Result<?> getMusic(@PathVariable String songId) {
+        return Result.ok("Yêu cầu thành công", musicService.getMusic(songId));
     }
 
     @GetMapping("/search-blog")

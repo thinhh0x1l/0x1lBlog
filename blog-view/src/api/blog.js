@@ -10,6 +10,13 @@ export function getBlogById(id){
     })
 }
 
+export function fMusicInfoBySongId(songId){
+    return axios({
+        url: `music/${songId}`,
+        method: 'GET',
+    })
+}
+
 
 export function fSearchBlog(query){
     return axios({

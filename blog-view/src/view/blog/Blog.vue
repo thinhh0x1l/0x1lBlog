@@ -36,7 +36,7 @@
         </div>
 
         <!-- Player skeleton -->
-        <div v-if="blog.musicInfo" class="px-3 py-2">
+        <div v-if="blog.musicId" class="px-3 py-2">
           <Skeleton width="100%" height="80px" class="mb-3" />
         </div>
 
@@ -160,7 +160,7 @@
               <button @click="toggleFixed">
                 {{ isFixed ? ' Hủy ghim ' : ' Ghim ' }}
               </button>
-              <div v-if="blog.musicInfo" ref="playerRef" />
+              <div v-if="blog.musicId" ref="playerRef" />
 
               <!-- Mô tả bài viết -->
               <div
@@ -244,7 +244,7 @@ import APlayer from 'aplayer'
 import 'aplayer/dist/APlayer.min.css'
 import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
 import Tag from '@/components/blogList/Tag.vue'
-import { getBlogById } from '@/api/blog'
+import {fMusicInfoBySongId, getBlogById} from '@/api/blog'
 import { formatDate } from "@/util/dateTimeFormatUtils.js"
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute } from "vue-router"
 import { useAppStore } from "@/store/index.ts"
@@ -277,12 +277,12 @@ const blog = ref({
   words: 0,
   readTime: 0,
   category: null,
-  musicInfo: null,
   content: '',
   tags: null,
   createTime: '',
   commentEnabled: true
 })
+const musicInfo = ref(null)
 const playerRef = ref(null)
 let playerInstance = null
 const isFixed = ref(false)
@@ -290,7 +290,14 @@ const playerOptions = ref({
   lrcType: 3,
   autoplay: true,
   fixed: false,
-  audio: {}
+  audio: {
+    name:'UNKNOWN',
+    artist:'UNKNOWN',
+    lrc:'UNKNOWN',
+    url:'',
+    theme:"#000",
+    cover:''
+  }
 })
 
 const toggleFixed = () => {
@@ -330,30 +337,48 @@ function initPlayer() {
 const fetchBlog = async () => {
   try {
     loading.value = true
+
     const response = await getBlogById(blogId.value)
-    if (response.code === 200) {
 
-      loading.value = false
-      blog.value = response.data
-      await nextTick()
+    if (response.code !== 200) return
 
-      if (blog.value.musicInfo) {
-        playerOptions.value.audio = blog.value.musicInfo
-        initPlayer()
-      }
+    blog.value = response.data
 
-      isBlogRenderCompleted.value = true
-      zoom?.detach()
-      initZoom()
+    loading.value = false
 
-      if (typeof Prism !== 'undefined') {
-        Prism.highlightAll()
-      }
+    await nextTick()
+
+    isBlogRenderCompleted.value = true
+    zoom?.detach()
+    initZoom()
+
+    if (typeof Prism !== 'undefined') {
+      Prism.highlightAll()
     }
+
+    if (blog.value.musicId) {
+      loadMusicAsync(blog.value.musicId)
+    }
+
   } catch (error) {
     console.log(error)
-  } finally {
-    // loading.value = false
+    loading.value = false
+  }
+}
+
+const loadMusicAsync = async (musicId) => {
+  try {
+    const musicRes = await fMusicInfoBySongId(musicId)
+
+    if (!musicRes?.data) return
+
+    playerOptions.value.audio = musicRes.data
+    musicInfo.value = musicRes.data
+
+    initPlayer()
+
+  } catch (err) {
+    console.log("music load failed", err)
   }
 }
 

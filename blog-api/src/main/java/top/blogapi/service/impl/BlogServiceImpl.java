@@ -198,4 +198,10 @@ public class BlogServiceImpl implements BlogService {
     }
 
 
+    @Override
+    public Long getViewsByBlogId(Long blogId) {
+        return blogRepository.queryViewsByBlogId(blogId);
+    }
+
+
 }

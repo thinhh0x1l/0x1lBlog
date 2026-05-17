@@ -1,6 +1,7 @@
 package top.blogapi.service.cacheService;
 
-import com.github.benmanes.caffeine.cache.Cache;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -8,11 +9,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import top.blogapi.config.CacheNameConfig;
+import top.blogapi.dto.response.blog.BlogInfo;
+import top.blogapi.mapper.BlogMapper;
 import top.blogapi.model.vo.BlogDetail;
+import top.blogapi.model.vo.BlogTagsInfo;
+import top.blogapi.model.vo.PageResult;
 import top.blogapi.service.BlogService;
 import top.blogapi.service._zing_mp3.MusicService;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -20,26 +26,49 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BlogCacheService {
+
     BlogService blogService;
     MusicService musicService;
 
-    Cache<Long, AtomicLong> viewCache;
+    BlogMapper blogMapper;
+
+    Map<Long, Long> viewsDbCache = new ConcurrentHashMap<>();
+    Map<Long, AtomicLong> pendingCache = new ConcurrentHashMap<>();
+
+
+    public long getViews(Long blogId) {
+        Long dbViews = viewsDbCache.get(blogId);
+
+        if (dbViews == null) {
+            dbViews = blogService.getViewsByBlogId(blogId);
+            viewsDbCache.put(blogId, dbViews);
+        }
+
+        long pending = pendingCache
+                .computeIfAbsent(blogId, k -> new AtomicLong(0))
+                .get();
+
+        return dbViews + pending;
+    }
 
     public void increase(Long blogId) {
-        long delta = viewCache.asMap()
-                .computeIfAbsent(blogId, id -> new AtomicLong())
+        long value = pendingCache
+                .computeIfAbsent(blogId, k -> new AtomicLong(0))
                 .incrementAndGet();
-        System.out.println("Blog " +blogId +" tăng " + delta);
+        log.debug("Blog {} pending +{}", blogId, value);
+    }
+
+    public Map<Long, AtomicLong> getAllPending() {
+        return pendingCache;
+    }
+
+    public void addDbViews(Long blogId, long delta) {
+        viewsDbCache.merge(blogId, delta, Long::sum);
     }
 
     public long getPending(Long blogId) {
-        AtomicLong counter = viewCache.getIfPresent(blogId);
+        AtomicLong counter = pendingCache.get(blogId);
         return counter == null ? 0 : counter.get();
-    }
-
-
-    public Map<Long, AtomicLong> getAll() {
-        return viewCache.asMap();
     }
 
     @Cacheable(
@@ -48,40 +77,28 @@ public class BlogCacheService {
     )
     public BlogDetail getBlogByIdAndIsPublished(Long id){
 
-        long start = System.currentTimeMillis();
+        return blogService.getBlogByIdAndIsPublished(id);
+    }
 
-        BlogDetail blogDetail =
-                blogService.getBlogByIdAndIsPublished(id);
+    @Cacheable(
+            value = CacheNameConfig.HOME_BLOG_INFO_LIST,
+            key = "#pageNum",
+            unless = "#result == null"
+    )
+    public PageResult<BlogInfo> getFromCacheOrDb(Integer pageNum){
 
+        System.out.println(">>> QUERY DATABASE");
+        String orderBy = "is_top desc, create_time desc";
+        PageHelper.startPage(pageNum, 5, orderBy);
+        PageInfo<BlogTagsInfo> pageInfo =
+                new PageInfo<>(blogService.getBlogInfoListByIsPublished());
 
+        if (pageInfo.getList().isEmpty())
+            return null;
 
-        log.info("DB query: {} ms",
-                System.currentTimeMillis() - start);
-
-        if(blogDetail.getMusicId() != null){
-
-            start = System.currentTimeMillis();
-
-            try {
-                blogDetail.setMusicInfo(
-                        musicService.getCompleteSongData(
-                                blogDetail.getMusicId(),
-                                2
-                        )
-                );
-
-            } catch (Exception e){
-
-                log.error("Error load music info", e);
-
-                blogDetail.setMusicInfo(null);
-            }
-
-            log.info("Music API: {} ms",
-                    System.currentTimeMillis() - start);
-        }
-
-        return blogDetail;
+        return PageResult.from(
+                pageInfo.convert(blogMapper::toBlogsResponse)
+        );
     }
 }
 

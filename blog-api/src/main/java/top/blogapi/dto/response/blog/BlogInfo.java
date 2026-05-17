@@ -21,7 +21,7 @@ public class BlogInfo{
     String title;
     String description;
     LocalDateTime createTime;
-    Integer views;
+    Long views;
     Integer words;
     Integer readTime;
     Boolean top;

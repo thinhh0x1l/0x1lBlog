@@ -32,9 +32,8 @@ public class BlogDetail {
     String musicId;
     Category category;
     List<Tag> tags = new ArrayList<>();
-    MusicInfo musicInfo;
 
-    public static BlogDetail cloneBlogDetail(BlogDetail cache) {
+    public static BlogDetail cloneBlogDetail(BlogDetail cache, Long views) {
         if (cache == null) return null;
 
         return BlogDetail.builder()
@@ -46,13 +45,12 @@ public class BlogDetail {
                 .top(cache.top)
                 .createTime(cache.createTime)
                 .updateTime(cache.updateTime)
-                .views(cache.views)
+                .views(views)
                 .words(cache.words)
                 .readTime(cache.readTime)
                 .musicId(cache.musicId)
                 .category(cache.category)
                 .tags(cache.tags != null ? new ArrayList<>(cache.tags) : new ArrayList<>())
-                .musicInfo(cache.musicInfo) //
                 .build();
     }
 }

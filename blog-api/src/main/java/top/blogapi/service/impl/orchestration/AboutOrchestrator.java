@@ -38,7 +38,7 @@ public class AboutOrchestrator {
                 value = MarkdownUtils.markdownToHtmlExtensions(value);
             aboutResponse.setter(about.getNameEn(),value);
         }
-        aboutResponse.setMusicInfo(musicService.getCompleteSongData(aboutResponse.getMusicId(),2));
+        aboutResponse.setMusicInfo(musicService.getMusic(aboutResponse.getMusicId()));
         return aboutResponse;
     }
 

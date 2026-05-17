@@ -52,4 +52,6 @@ public interface BlogService {
     List<SearchBlog> searchBlogs(String search);
 
     void flushViewsAllBlogs(Map<Long, Long> map);
+
+    Long getViewsByBlogId(Long blogId);
 }

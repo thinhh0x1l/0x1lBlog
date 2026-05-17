@@ -43,7 +43,7 @@ public class Mp3Service {
         return zingMp3Client.getSongStreaming(songId).at("/data/128").asText();
     }
 
-    public String getLyric(String songId) throws Exception {
+    public String getLyric(String songId) {
         JsonNode lyric = zingMp3Client.getLyric(songId);
         return lyric.at("/data/file").asText();
     }

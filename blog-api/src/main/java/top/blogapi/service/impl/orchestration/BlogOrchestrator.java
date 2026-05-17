@@ -165,25 +165,15 @@ public class BlogOrchestrator {
         return blogService.getIdAndTitleList();
     }
 
-    @Cacheable(
-            value = CacheNameConfig.HOME_BLOG_INFO_LIST,
-            key = "#pageNum",
-            unless = "#result == null"
-    )
     public PageResult<BlogInfo> getBlogInfoListByIsPublished(Integer pageNum){
 
-        System.out.println(">>> QUERY DATABASE");
-        String orderBy = "is_top desc, create_time desc";
-        PageHelper.startPage(pageNum, 5, orderBy);
-        PageInfo<BlogTagsInfo> pageInfo =
-                new PageInfo<>(blogService.getBlogInfoListByIsPublished());
+        PageResult<BlogInfo> result = blogCacheService.getFromCacheOrDb(pageNum);
 
-        if (pageInfo.getList().isEmpty())
-            return null;
+        for (BlogInfo blog : result.getItems()) {
+            blog.setViews(blogCacheService.getViews(blog.getId())); // ALWAYS realtime
+        }
 
-        return PageResult.from(
-                pageInfo.convert(blogMapper::toBlogsResponse)
-        );
+        return result;
     }
 
     public void updateBlogTopById(Long blogId, Boolean top){
@@ -221,12 +211,8 @@ public class BlogOrchestrator {
 
     public BlogDetail getBlogDetail(Long id){
         BlogDetail cache = blogCacheService.getBlogByIdAndIsPublished(id);
-        // clone blogDetail để view không cache -> hiện double view
-        BlogDetail blogDetail = BlogDetail.cloneBlogDetail(cache);
-        blogDetail.setViews(
-                blogDetail.getViews() +
-                        blogCacheService.getPending(blogDetail.getId()));
-        return blogDetail;
+        long views = blogCacheService.getViews(id);
+        return BlogDetail.cloneBlogDetail(cache,views);
     }
 
     public List<SearchBlog> searchBlogs(String search){
@@ -250,25 +236,27 @@ public class BlogOrchestrator {
     @Scheduled(fixedDelay = 60000)
     public void flushViews() {
         Map<Long, Long> mapViews = new HashMap<>();
-        Map<Long, AtomicLong> cache = blogCacheService.getAll();
+        Map<Long, AtomicLong> cache = blogCacheService.getAllPending();
 
         for (Map.Entry<Long, AtomicLong> entry : cache.entrySet()) {
             long blogId = entry.getKey();
-            AtomicLong counter = entry.getValue();
-
-            long delta = counter.getAndSet(0);
+            long delta = entry.getValue().getAndSet(0);
 
             if (delta > 0)
                 mapViews.put(blogId, delta);
-
         }
 
         if (!mapViews.isEmpty()) {
             try {
                 blogService.flushViewsAllBlogs(mapViews);
+
+                // Update DB Cache
+                for (Map.Entry<Long, Long> entry : mapViews.entrySet())
+                    blogCacheService.addDbViews(entry.getKey(), entry.getValue());
+
             } catch (Exception e) {
-                // rollback lại nếu fail
-                for (Map.Entry<Long, Long> entry : mapViews.entrySet()) 
+                // Rollback
+                for (Map.Entry<Long, Long> entry : mapViews.entrySet())
                     cache.get(entry.getKey()).addAndGet(entry.getValue());
 
             }
