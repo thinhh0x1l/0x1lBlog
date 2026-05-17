@@ -249,24 +249,24 @@ public class BlogOrchestrator {
 
     @Scheduled(fixedDelay = 60000)
     public void flushViews() {
-        Map<Long ,Long> mapViews = new HashMap<>();
-        for (Map.Entry<Long, AtomicLong> entry :
-                blogCacheService.getAll().entrySet()) {
-
+        Map<Long, Long> mapViews = new HashMap<>();
+        Map<Long, AtomicLong> cache = blogCacheService.getAll();
+        for(Map.Entry<Long, AtomicLong> entry: cache.entrySet()){
             long blogId = entry.getKey();
+            long delta = entry.getValue().get();
 
-            AtomicLong counter = entry.getValue();
-
-            long delta = counter.getAndSet(0);
-            if (delta > 0)
-                mapViews.put(blogId,delta);
-
-
+            if(delta > 0) mapViews.put(blogId, delta);
         }
 
-        if(!mapViews.isEmpty())
+
+        if (!mapViews.isEmpty()) {
             blogService.flushViewsAllBlogs(mapViews);
 
+            // reset sau khi thành công
+            for (Map.Entry<Long, Long> entry : mapViews.entrySet()) {
+                cache.get(entry.getKey()).addAndGet(-entry.getValue());
+            }
+        }
     }
 
 }
