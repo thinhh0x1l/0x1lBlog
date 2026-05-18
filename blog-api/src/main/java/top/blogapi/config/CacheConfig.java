@@ -32,6 +32,8 @@ public class CacheConfig {
         caffeineCacheManager.registerCustomCache(CacheNameConfig.ABOUT_INFO_MAP, buildCache());
         caffeineCacheManager.registerCustomCache(CacheNameConfig.TAG_CLOUD_LIST, buildCache());
 
+        caffeineCacheManager.registerCustomCache(CacheNameConfig.GUEST_INFO_BY_TOKEN, guessCache());
+
         caffeineCacheManager.registerCustomCache(
                 CacheNameConfig.MUSIC_INFO,
                 Caffeine.newBuilder()
@@ -41,6 +43,14 @@ public class CacheConfig {
                         .build()
         );
         return caffeineCacheManager;
+    }
+
+    private Cache<Object, Object> guessCache(){
+        return Caffeine.newBuilder()
+                .maximumSize(1000)
+                .expireAfterWrite(120, TimeUnit.DAYS )
+                .recordStats()
+                .build();
     }
 
     private Cache<Object, Object> buildCache() {

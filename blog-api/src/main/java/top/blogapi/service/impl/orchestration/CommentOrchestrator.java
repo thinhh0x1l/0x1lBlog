@@ -4,16 +4,11 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.dto.request.comment.CommentEditReq;
@@ -24,12 +19,11 @@ import top.blogapi.dto.response.comment.CommentByBlogIdResponse;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.Comment;
-import top.blogapi.model.entity.Guess;
 import top.blogapi.model.entity.User;
 import top.blogapi.model.vo.BlogIdAndTitle;
 import top.blogapi.service.BlogService;
 import top.blogapi.service.CommentService;
-import top.blogapi.service.GuessService;
+import top.blogapi.service.GuestService;
 import top.blogapi.service.auth.JwtService;
 import top.blogapi.service.auth.UserServiceImpl;
 import top.blogapi.util.IpAddressUtils;
@@ -37,9 +31,7 @@ import top.blogapi.util.MD5Utils;
 import top.blogapi.util.StringUtils;
 
 import java.security.SecureRandom;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +42,7 @@ import java.util.Map;
 public class CommentOrchestrator {
     CommentService commentService;
     BlogService blogService;
-    GuessService guessService;
+    GuestService guestService;
 
     UserServiceImpl userService;
     JwtService jwtService;
@@ -86,19 +78,29 @@ public class CommentOrchestrator {
         return "Cập nhật Comment thành công!!";
     }
 
+    private Long getGuestId(HttpServletRequest request){
 
-    public CommentByBlogIdResponse listCommentByBlogId(int pageNum, int pageSize, Long blogId, Integer page, HttpServletRequest request){
-        Long guessId = guessService.getGuessIdByTokenHash(valueByCookieName("guest_token", request));
+        return guestService.getGuestOrCreateByToken(
+                    (String)request.getAttribute("guestToken"))
+                .getId();
+    }
+
+
+    public CommentByBlogIdResponse listCommentByBlogId(int pageNum, int pageSize, Long blogId,
+                                                       Integer page,
+                                                       HttpServletRequest request){
+
+        Long guestId = getGuestId(request);
 
         PageInfo<CommentByBlogIdResponse.CommentNode> pageInfo =
-                commentService.commentRootTrees(pageNum,pageSize, blogId,page, guessId);
+                commentService.commentRootTrees(pageNum,pageSize, blogId,page, guestId);
 
         if(pageInfo.getList().isEmpty())
             return new CommentByBlogIdResponse(pageInfo);
 
         List<Long> rootIds = pageInfo.getList().stream().map(CommentByBlogIdResponse.CommentNode::getId).toList();
         Map<Long, List<CommentByBlogIdResponse.CommentNode>> commentChildTrees =
-                commentService.commentChildTrees(rootIds, guessId);
+                commentService.commentChildTrees(rootIds, guestId);
 
         for(CommentByBlogIdResponse.CommentNode commentNode: pageInfo.getList()){
             List<CommentByBlogIdResponse.CommentNode> listChild = commentChildTrees.get(commentNode.getId());
@@ -126,8 +128,8 @@ public class CommentOrchestrator {
         if (jwtToken != null && jwtService.isValid(jwtToken)) {
             applyAdminComment(comment, jwtToken);
         } else {
-            Guess guess = getOrCreateGetByToken(request,response);
-            comment.setGuessId(guess.getId());
+            Long guestId =  getGuestId(request);
+            comment.setGuessId(guestId);
             applyVisitorComment(comment, req);
         }
 
@@ -168,52 +170,6 @@ public class CommentOrchestrator {
      * .sameSite("None")
      * .secure(true)*/
 
-    private String valueByCookieName(String cookieName, HttpServletRequest request){
-        String value = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookieName.equals(cookie.getName())) {
-                    value = cookie.getValue();
-                    break;
-                }
-            }
-        }
-        return value;
-    }
-
-    private Guess getOrCreateGetByToken(HttpServletRequest request, HttpServletResponse response){
-
-        String guessToken = valueByCookieName("guest_token", request);
-
-        Guess guess = null;
-        if (guessToken != null){
-            // check token này thì guess có tồn tại không
-            guess = guessService.getGuessByTokenHash(guessToken);
-        }
-        if (guess == null) {
-
-            byte[] bytes = new byte[32];
-            secureRandom.nextBytes(bytes);
-
-            guessToken = Base64.getUrlEncoder()
-                    .withoutPadding()
-                    .encodeToString(bytes);
-
-            guess = guessService.addGuess(guessToken);
-
-            ResponseCookie cookie = ResponseCookie.from("guest_token", guessToken)
-                    .httpOnly(true)
-                    .secure(true)
-                    .sameSite("None")
-                    .path("/")
-                    .maxAge(Duration.ofDays(365*100))
-                    .build();
-
-            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        }
-        return guess;
-    }
 
     private String resolveJwt(HttpServletRequest request) {
 

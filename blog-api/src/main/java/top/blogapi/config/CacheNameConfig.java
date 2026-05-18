@@ -25,4 +25,6 @@ public class CacheNameConfig {
     public static final String MUSIC_INFO = "musicInfo";
 
     public static final String INCREASE_BLOG_VIEWS = "increaseBlogViews";
+
+    public static final String GUEST_INFO_BY_TOKEN = "guessInfoByToken";
 }

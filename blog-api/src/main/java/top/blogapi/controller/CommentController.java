@@ -37,7 +37,7 @@ public class CommentController {
             return Result.create(403, "Chức năng bình luận đã bị tắt");
         }
         return Result.ok("Yêu cầu thành công!",commentOrchestrator
-                .listCommentByBlogId(pageNum, pageSize, blogId, page, request));
+                .listCommentByBlogId(pageNum, pageSize, blogId, page, request ));
     }
 
     @PostMapping("/comment")

@@ -28,13 +28,17 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
 public class SecurityConfig {
+
+    //filter
+    JwtAuthenticationFilter jwtAuthenticationFilter;
+    GuestTokenFilter guestTokenFilter;
+
     UserServiceImpl userService;
     MyAuthenticationEntryPoint myAuthenticationEntryPoint;
     MyAccessDeniedHandler myAccessDeniedHandler;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -49,6 +53,7 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 //filter JWT tùy chỉnh
+                .addFilterBefore(guestTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .exceptionHandling(ex -> ex

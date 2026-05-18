@@ -91,7 +91,6 @@ public class CommentServiceImpl implements CommentService {
             throw new AppException(ErrorCode.COMMENT_NOT_FOUND);
     }
 
-    @SuppressWarnings("resource")
     @Transactional(readOnly = true)
     public PageInfo<CommentByBlogIdResponse.CommentNode> commentRootTrees (int pageNum, int pageSize,
                                                                            Long blogId, Integer page,

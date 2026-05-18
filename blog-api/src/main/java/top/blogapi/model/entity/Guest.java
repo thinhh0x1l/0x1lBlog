@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
-public class Guess {
+public class Guest {
     Long id;
     String tokenHash; // String hash = DigestUtils.sha256Hex(token);
     LocalDateTime createAt;
     LocalDateTime lastSeenAt;
 
-    public Guess(String tokenHash){
+    public Guest(String tokenHash){
         this.tokenHash = tokenHash;
         this.createAt = LocalDateTime.now();
         this.lastSeenAt = LocalDateTime.now();
