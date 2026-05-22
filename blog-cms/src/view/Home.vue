@@ -9,7 +9,7 @@
 
       <el-dropdown>
         <div class="avatar-wrapper">
-          <img :src="user.avatar" class="user-avatar">
+<!--          <img :src="user.avatar" class="user-avatar">-->
         </div>
 
         <template #dropdown>
@@ -92,7 +92,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted, reactive} from "vue";
+import {ref, onMounted, reactive, watch} from "vue";
 import {useRouter ,useRoute } from "vue-router";
 import { getCurrentInstance } from "vue";
 import { useAppStore } from '@/store/index.js'
@@ -246,9 +246,8 @@ const user = ref({})
 const toast = useToast()
 // Lifecycle
 onMounted(() => {
-  if(!sessionStorage.getItem('user'))
-    router.push('/login')
-  user.value = JSON.parse(sessionStorage.getItem('user'))||null
+  const userData = sessionStorage.getItem('user')
+  user.value = userData ? JSON.parse(userData) : null
 })
 
 // Các phương thức
@@ -304,6 +303,7 @@ const toggleCollapse = () => {
   bottom: 0;
   right: 0;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .m-el-main-width-190 {

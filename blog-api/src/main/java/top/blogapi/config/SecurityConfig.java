@@ -47,7 +47,9 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/admin/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/admin/auth/**", "/admin/guest/bootstrap").permitAll()
+                        .requestMatchers("/admin/dashboard").permitAll()
                         .requestMatchers(HttpMethod.GET, "/admin/**").hasAnyRole("admin", "visitor")
                         .requestMatchers("/admin/**").hasRole("admin")
                         .anyRequest().permitAll()
@@ -67,11 +69,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         configuration.setMaxAge(Duration.ofSeconds(3600)); //cache preflight 1h
+        configuration.addExposedHeader("X-Guest-Token");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 

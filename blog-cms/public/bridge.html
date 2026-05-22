@@ -1,0 +1,33 @@
+<script>
+    const STORAGE_KEY = "guest_token";
+
+    const ALLOWED_ORIGINS = new Set(["http://localhost:5174"]);
+
+    function getToken() {
+        return localStorage.getItem(STORAGE_KEY);
+    }
+
+    // Nhận message từ FE khác
+    window.addEventListener("message",(event) => {
+            console.log(event)
+            // Chặn domain lạ
+            if (!ALLOWED_ORIGINS.has(event.origin))
+                return;
+
+            const data = event.data;
+
+            // FE khác yêu cầu token
+            if (data.type ==="GET_TOKEN"  ) {
+                const token =  getToken();
+                // Trả token về
+                event.source.postMessage(
+                    {
+                        type:"TOKEN_RESPONSE",
+                        token
+                    },
+                    event.origin
+                );
+            }
+        }
+    );
+</script>

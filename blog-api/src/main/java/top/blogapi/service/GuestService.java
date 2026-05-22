@@ -9,4 +9,8 @@ public interface GuestService {
     Guest addGuest(String rawToken);
 
     Long getGuestIdByTokenHash(String rawToken);
+
+    Guest createGuess();
+
+    String createGuestToken();
 }

@@ -12,9 +12,9 @@ import '@/assets/css/typo.css'
 import {PrismPlugin} from '@/plugins/prism/prism.js'
 import PrimeVuePlugin from "@/plugins/primevueConfig/primePluginVue.js";
 import FontAwesomeIcon from "@/plugins/fontAwesomeIcon.js";
-
+import {initGuestToken} from "@/services/bridge/guestBootstrap.js";
+import {pinia} from "@/store/pinia/pinia.js";
 const app = createApp(App)
-const pinia = createPinia()
 
 console.log("\n %c Thinhh's Blog %c https://0x1l-blog.vercel.app \n",
     "color: #48dbfb; background: #1b1c1d; padding:5px 0;", "background: #fadfa3; padding:5px 0;")
@@ -28,4 +28,7 @@ app .use(router)
         loading: "/img/loading.gif",
         error: "/img/error.png"
     })
-    .mount('#app')
+
+await initGuestToken();
+
+app.mount('#app')

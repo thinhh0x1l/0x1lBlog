@@ -75,15 +75,16 @@ public class JwtAuthenticationFilter
             }
 
         } catch (JwtException ex) {
-            log.warn("JWT không hợp lệ: {}", ex.getMessage());
-
+//            log.warn("JWT không hợp lệ: {}", ex.getMessage());
+//
+//            SecurityContextHolder.clearContext();
+//            writeErrorResponse(
+//                    response,
+//                    HttpServletResponse.SC_UNAUTHORIZED,
+//                    "JWT không hợp lệ"
+//            );
+//            return;
             SecurityContextHolder.clearContext();
-            writeErrorResponse(
-                    response,
-                    HttpServletResponse.SC_UNAUTHORIZED,
-                    "JWT không hợp lệ"
-            );
-            return;
         }
 
         filterChain.doFilter(request, response);

@@ -14,19 +14,21 @@ import top.blogapi.model.entity.Guest;
 import top.blogapi.repository.GuestRepository;
 import top.blogapi.service.GuestService;
 
+import java.security.SecureRandom;
+import java.util.Base64;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
 @Slf4j
 @Transactional
 public class GuestServiceImpl implements GuestService {
-
+    SecureRandom secureRandom = new SecureRandom();
     GuestRepository guestRepository;
 
     public String convertToTokenHash(String rawToken){
         return DigestUtils.sha256Hex(rawToken);
     }
-
 
 
     @Cacheable(
@@ -62,5 +64,19 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public Long getGuestIdByTokenHash(String rawToken) {
         return guestRepository.getGuessIdByTokenHash(convertToTokenHash(rawToken));
+    }
+
+    @Override
+    public Guest createGuess() {
+        return addGuest(createGuestToken());
+    }
+
+    public String createGuestToken() {
+        byte[] bytes = new byte[32];
+        secureRandom.nextBytes(bytes);
+
+        return Base64.getUrlEncoder()
+                .withoutPadding()
+                .encodeToString(bytes);
     }
 }
