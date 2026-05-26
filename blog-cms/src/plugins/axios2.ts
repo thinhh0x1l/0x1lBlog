@@ -37,7 +37,7 @@ export interface PageInfo<T = any> {
 }
 
 export const request: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:8090/admin/',
+    baseURL: import.meta.env.VITE_API_URL,
     timeout: 10000,
 })
 

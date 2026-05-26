@@ -1,6 +1,6 @@
-package top.blogapi.config;
+package top.blogapi.constant;
 
-public class CacheNameConfig {
+public class CacheNameConstant {
 
     public static final String HOME_BLOG_INFO_LIST = "homeBlogInfoList";
 
@@ -21,6 +21,8 @@ public class CacheNameConfig {
     public static final String ABOUT_INFO_MAP = "aboutInfoMap";
 
     public static final String ARCHIVE_BLOG_MAP = "archiveBlogMap";
+
+    public static final String MOMENT_LIST = "momentList";
 
     public static final String MUSIC_INFO = "musicInfo";
 

@@ -79,10 +79,11 @@ public class CommentOrchestrator {
     }
 
     private Long getGuestId(HttpServletRequest request){
-
-        return guestService.getGuestOrCreateByToken(
-                    (String)request.getAttribute("guestToken"))
+        Long id = guestService.getGuestOrCreateByToken(
+                        (String)request.getAttribute("guestToken"))
                 .getId();
+        System.out.println(id);
+        return id;
     }
 
 

@@ -6,7 +6,7 @@ import {pinia} from "@/store/pinia/pinia.js";
 import {useGuestStore} from "@/store/guessStore";
 
 const request = axios.create({
-    baseURL: 'http://localhost:8090/',
+    baseURL: import.meta.env.VITE_API_URL,
     timeout: 10000,
     // withCredentials: true
 })

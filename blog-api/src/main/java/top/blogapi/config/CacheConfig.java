@@ -7,8 +7,10 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import top.blogapi.constant.CacheNameConstant;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -28,14 +30,14 @@ public class CacheConfig {
                         .expireAfterWrite(30, TimeUnit.MINUTES)
                         .recordStats()
         );
-        caffeineCacheManager.registerCustomCache(CacheNameConfig.SITE_INFO_MAP, buildCache());
-        caffeineCacheManager.registerCustomCache(CacheNameConfig.ABOUT_INFO_MAP, buildCache());
-        caffeineCacheManager.registerCustomCache(CacheNameConfig.TAG_CLOUD_LIST, buildCache());
+        caffeineCacheManager.registerCustomCache(CacheNameConstant.SITE_INFO_MAP, buildCache());
+        caffeineCacheManager.registerCustomCache(CacheNameConstant.ABOUT_INFO_MAP, buildCache());
+        caffeineCacheManager.registerCustomCache(CacheNameConstant.TAG_CLOUD_LIST, buildCache());
 
-        caffeineCacheManager.registerCustomCache(CacheNameConfig.GUEST_INFO_BY_TOKEN, guessCache());
+        caffeineCacheManager.registerCustomCache(CacheNameConstant.GUEST_INFO_BY_TOKEN, guessCache());
 
         caffeineCacheManager.registerCustomCache(
-                CacheNameConfig.MUSIC_INFO,
+                CacheNameConstant.MUSIC_INFO,
                 Caffeine.newBuilder()
                         .expireAfterWrite(15, TimeUnit.DAYS)
                         .maximumSize(200)

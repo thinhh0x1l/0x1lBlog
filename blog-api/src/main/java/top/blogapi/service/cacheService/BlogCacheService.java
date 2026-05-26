@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import top.blogapi.config.CacheNameConfig;
+import top.blogapi.constant.CacheNameConstant;
 import top.blogapi.dto.response.blog.BlogInfo;
 import top.blogapi.mapper.BlogMapper;
 import top.blogapi.model.vo.BlogDetail;
@@ -72,7 +72,7 @@ public class BlogCacheService {
     }
 
     @Cacheable(
-            value = CacheNameConfig.BLOG_DETAILS,
+            value = CacheNameConstant.BLOG_DETAILS,
             key = "#id"
     )
     public BlogDetail getBlogByIdAndIsPublished(Long id){
@@ -81,7 +81,7 @@ public class BlogCacheService {
     }
 
     @Cacheable(
-            value = CacheNameConfig.HOME_BLOG_INFO_LIST,
+            value = CacheNameConstant.HOME_BLOG_INFO_LIST,
             key = "#pageNum",
             unless = "#result == null"
     )

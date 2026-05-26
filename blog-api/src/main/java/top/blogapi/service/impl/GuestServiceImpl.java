@@ -9,7 +9,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.blogapi.config.CacheNameConfig;
+import top.blogapi.constant.CacheNameConstant;
 import top.blogapi.model.entity.Guest;
 import top.blogapi.repository.GuestRepository;
 import top.blogapi.service.GuestService;
@@ -32,7 +32,7 @@ public class GuestServiceImpl implements GuestService {
 
 
     @Cacheable(
-            cacheNames = CacheNameConfig.GUEST_INFO_BY_TOKEN,
+            cacheNames = CacheNameConstant.GUEST_INFO_BY_TOKEN,
             key = "#rawToken",
             unless = "#result == null"
     )
@@ -41,7 +41,6 @@ public class GuestServiceImpl implements GuestService {
 
         System.out.println(">>> Guest DB");
         String hash = convertToTokenHash(rawToken);
-        System.out.println(rawToken);
         return guestRepository.getGuessByTokenHash(hash)
                 .orElseGet(() -> {
                     try {

@@ -1,18 +1,15 @@
-package top.blogapi.config;
+package top.blogapi.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import top.blogapi.service.GuestService;
+import top.blogapi.util.IpAddressUtils;
 
 import java.io.IOException;
-import java.security.SecureRandom;
-import java.util.Base64;
 
 @Slf4j
 @Component
@@ -26,6 +23,7 @@ public class GuestTokenFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        System.out.println(IpAddressUtils.getIpAddress(request));
         String guestToken = request.getHeader(TOKEN_HEADER);
 
         if (guestToken == null || guestToken.isEmpty()) {

@@ -6,10 +6,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import top.blogapi.config.CacheNameConfig;
+import top.blogapi.constant.CacheNameConstant;
 import top.blogapi.dto.response._common.MusicInfo;
-import top.blogapi.exception.AppException;
-import top.blogapi.exception.ErrorCode;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -25,7 +23,7 @@ public class MusicService {
     Mp3Service mp3Service;
     ExecutorService executorService = Executors.newFixedThreadPool(4);
 
-    @Cacheable(value = CacheNameConfig.MUSIC_INFO,
+    @Cacheable(value = CacheNameConstant.MUSIC_INFO,
             key = "#songId",
             unless = "#result == null"
     )

@@ -2,9 +2,8 @@ import { createApp} from "vue";
 import App from "@/App.vue";
 import router from "@/router/index.js";
 import '@/assets/css/base.css'
-import { createPinia } from "pinia";
-
-const pinia = createPinia()
+import {initGuestToken} from "@/services/bridge/guestBootstrap.js";
+import {pinia} from "@/store/pinia/pinia.js";
 
 // Element Plus (thay cho Element UI)
 import ElementPlus, {ElMessage} from 'element-plus'
@@ -22,7 +21,7 @@ app .use(router)
     .use(ElementPlus)
     .use(PrimePluginVue)
     .use(editor)
-
+await initGuestToken();
 const showMessage = (type,msg) =>{
     try{
         ElMessage[type](msg)

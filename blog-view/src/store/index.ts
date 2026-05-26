@@ -27,7 +27,6 @@ export const useAppStore = defineStore('app', () => {
     const siteInfo = ref<SiteInfo>(getStorage<SiteInfo>('siteInfo', {}));
     const introduction = ref<Introduction>(getStorage<Introduction>('introduction', getDefaultIntro()));
 
-    // watch(prevRouteName, (newName) => {console.log(newName)})
     // Getters
     const webTitleSuffix = computed(() => siteInfo.value?.webTitleSuffix || '');
     const author = computed(() => siteInfo.value?.author || '');

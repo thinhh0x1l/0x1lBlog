@@ -9,7 +9,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.service._zing_mp3.MusicService;
-import top.blogapi.config.CacheNameConfig;
+import top.blogapi.constant.CacheNameConstant;
 import top.blogapi.dto.response.about.AboutResponse;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
@@ -29,7 +29,7 @@ public class AboutOrchestrator {
 
     MusicService musicService;
 
-    @Cacheable(value = CacheNameConfig.ABOUT_INFO_MAP)
+    @Cacheable(value = CacheNameConstant.ABOUT_INFO_MAP)
     public AboutResponse getAboutInfo(){
         AboutResponse aboutResponse = new AboutResponse();
         for (About about : aboutService.getAboutInfo()) {
@@ -46,7 +46,7 @@ public class AboutOrchestrator {
         return aboutService.getAboutInfo();
     }
 
-    @CacheEvict(value = CacheNameConfig.ABOUT_INFO_MAP, allEntries = true)
+    @CacheEvict(value = CacheNameConstant.ABOUT_INFO_MAP, allEntries = true)
     public void updateAbouts(List<About> abouts){
         if(aboutService.updateAbout(abouts) == 0)
             throw new AppException(ErrorCode.ABOUT_UPDATE_PARTIAL);

@@ -11,13 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.service.cacheService.BlogCacheService;
 import top.blogapi.service._zing_mp3.MusicService;
-import top.blogapi.config.CacheNameConfig;
+import top.blogapi.constant.CacheNameConstant;
 import top.blogapi.dto.request.blog.BlogQueryRequest;
 import top.blogapi.dto.response.blog.ArchiveBlogResponse;
 import top.blogapi.dto.response.blog.BlogInfo;
@@ -151,11 +150,11 @@ public class BlogOrchestrator {
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(cacheNames = CacheNameConfig.BLOG_DETAILS, key = "#id"),
-            @CacheEvict(cacheNames = CacheNameConfig.CATEGORY_BLOG_INFO_LIST, allEntries = true),
-            @CacheEvict(cacheNames = CacheNameConfig.TAG_BLOG_INFO_LIST, allEntries = true),
-            @CacheEvict(cacheNames = CacheNameConfig.HOME_BLOG_INFO_LIST, allEntries = true),
-            @CacheEvict(cacheNames = CacheNameConfig.ARCHIVE_BLOG_MAP, allEntries = true)
+            @CacheEvict(cacheNames = CacheNameConstant.BLOG_DETAILS, key = "#id"),
+            @CacheEvict(cacheNames = CacheNameConstant.CATEGORY_BLOG_INFO_LIST, allEntries = true),
+            @CacheEvict(cacheNames = CacheNameConstant.TAG_BLOG_INFO_LIST, allEntries = true),
+            @CacheEvict(cacheNames = CacheNameConstant.HOME_BLOG_INFO_LIST, allEntries = true),
+            @CacheEvict(cacheNames = CacheNameConstant.ARCHIVE_BLOG_MAP, allEntries = true)
     })
     public void deleteBlogById(Long id){
         blogService.deleteBlogTagByBlogId(id);
@@ -181,7 +180,7 @@ public class BlogOrchestrator {
     }
 
     @Cacheable(
-            value = CacheNameConfig.NEW_BLOG_LIST,
+            value = CacheNameConstant.NEW_BLOG_LIST,
             key = "'default'"
     )
     public List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend() {
@@ -190,7 +189,7 @@ public class BlogOrchestrator {
     }
 
     @Cacheable(
-            value = CacheNameConfig.ARCHIVE_BLOG_MAP
+            value = CacheNameConstant.ARCHIVE_BLOG_MAP
     )
     public Map<String, Object> getArchiveBlogListIsPublished() {
         List<String> groupYearMonth = blogService.getGroupYearMonthAndIsPublished();

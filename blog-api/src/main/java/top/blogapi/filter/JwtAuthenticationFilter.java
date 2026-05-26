@@ -1,4 +1,4 @@
-package top.blogapi.config;
+package top.blogapi.filter;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;

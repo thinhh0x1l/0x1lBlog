@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.dto.request.siteSetting.SiteSettingUpdateReq;
 import top.blogapi.service._zing_mp3.Mp3Service;
-import top.blogapi.config.CacheNameConfig;
+import top.blogapi.constant.CacheNameConstant;
 import top.blogapi.model.TypeSetting;
 import top.blogapi.model.entity.SiteSetting;
 import top.blogapi.model.vo.Badge;
@@ -49,7 +49,7 @@ public class SiteSettingOrchestrator {
                .collect(Collectors.groupingBy(siteSetting -> "type" + siteSetting.getType()));
    }
 
-    @Cacheable(value = CacheNameConfig.SITE_INFO_MAP)
+    @Cacheable(value = CacheNameConstant.SITE_INFO_MAP)
     public Map<String, Object> getSiteInfo() {
         List<SiteSetting> siteSettings = siteSettingService.getList();
 
@@ -182,7 +182,7 @@ public class SiteSettingOrchestrator {
         return texts;
     }
 
-    @CacheEvict(value = CacheNameConfig.SITE_INFO_MAP, allEntries = true)
+    @CacheEvict(value = CacheNameConstant.SITE_INFO_MAP, allEntries = true)
     public void updateAll(SiteSettingUpdateReq req){
         List<SiteSetting> siteSettings =
                 Optional.ofNullable(req.getSettings())

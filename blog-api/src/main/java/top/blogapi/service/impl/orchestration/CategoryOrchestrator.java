@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.blogapi.config.CacheNameConfig;
+import top.blogapi.constant.CacheNameConstant;
 import top.blogapi.dto.request.category.CategoryQueryRequest;
 import top.blogapi.dto.response.blog.BlogInfo;
 import top.blogapi.dto.response.category.CategoryResponse;
@@ -43,7 +43,7 @@ public class CategoryOrchestrator {
         return categoryService.getCategoryList(request);
     }
 
-    @Cacheable(value = CacheNameConfig.CATEGORY_NAME_LIST)
+    @Cacheable(value = CacheNameConstant.CATEGORY_NAME_LIST)
     public List<CategorySlug> getCategoryList() {
         return categoryService.getCategoryList()
                 .stream()
@@ -78,7 +78,7 @@ public class CategoryOrchestrator {
     }
 
     @Cacheable(
-            value = CacheNameConfig.CATEGORY_BLOG_INFO_LIST,
+            value = CacheNameConstant.CATEGORY_BLOG_INFO_LIST,
             key = "#categoryNameSlug + '_' + #pageNum + '_' + #pageSize"
     )
     public CategorySlugGetBlogsResponse getBlogInfoListByCategoryNameAndIsPublished(String categoryNameSlug, Integer pageNum, Integer pageSize) {

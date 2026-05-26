@@ -19,6 +19,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import top.blogapi.filter.GuestTokenFilter;
+import top.blogapi.filter.JwtAuthenticationFilter;
 import top.blogapi.service.auth.UserServiceImpl;
 
 import java.time.Duration;
