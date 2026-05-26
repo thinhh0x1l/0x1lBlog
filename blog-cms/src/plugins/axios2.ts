@@ -50,6 +50,10 @@ request.interceptors.request.use(
         const isYourApi =  !(config.url)?.includes("http");
         if (  isYourApi && guestStore.guestToken ) {
             config.headers["X-Guest-Token"] = guestStore.guestToken;
+            const cleared = guestStore.backUpToken();
+            if(cleared){
+                console.log('cleared')
+            }
         }
 
         const token = window.sessionStorage.getItem('token')

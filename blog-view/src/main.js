@@ -12,6 +12,7 @@ import '@/assets/css/typo.css'
 import {PrismPlugin} from '@/plugins/prism/prism.js'
 import PrimeVuePlugin from "@/plugins/primevueConfig/primePluginVue.js";
 import FontAwesomeIcon from "@/plugins/fontAwesomeIcon.js";
+import tokenBackupPlugin from './plugins/tokenBackup'
 import {initGuestToken} from "@/services/bridge/guestBootstrap.js";
 import {pinia} from "@/store/pinia/pinia.js";
 const app = createApp(App)
@@ -30,5 +31,5 @@ app .use(router)
     })
 
 await initGuestToken();
-
-app.mount('#app')
+app .use(tokenBackupPlugin)
+    .mount('#app')

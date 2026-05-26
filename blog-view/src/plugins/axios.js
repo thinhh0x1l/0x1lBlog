@@ -20,6 +20,10 @@ request.interceptors.request.use((config) => {
 
     if ( isYourApi && guestStore.guestToken) {
         config.headers["X-Guest-Token" ] = guestStore.guestToken;
+        const cleared = guestStore.backUpToken();
+        if(cleared){
+            console.log('cleared')
+        }
     }
 
     return config;

@@ -20,14 +20,26 @@ export const useGuestStore = defineStore('guest', () => {
         guestToken.value = '';
         localStorage.removeItem(TOKEN_KEY);
     };
-
+    function setSelfToken () {
+        localStorage.setItem(TOKEN_KEY, guestToken.value);
+    }
     function initToken () {
         return localStorage.getItem(TOKEN_KEY) || '';
     }
 
+    const backUpToken = () =>{
+        if(!initToken()){
+            setSelfToken()
+            return true;
+        }
+        return false;
+    }
+
     return{
+        TOKEN_KEY,
         guestToken,
         isTokenExist,
+        backUpToken,
         setToken,
         clearToken,
     }
