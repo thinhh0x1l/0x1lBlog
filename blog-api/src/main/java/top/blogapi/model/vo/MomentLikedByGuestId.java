@@ -1,9 +1,6 @@
-package top.blogapi.model.entity;
+package top.blogapi.model.vo;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
@@ -12,9 +9,12 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Moment {
+@Builder
+public class MomentLikedByGuestId {
     Long id;
     String content;
     LocalDateTime createTime;
-    Boolean published;
+    Integer likes;
+    boolean liked;
+
 }

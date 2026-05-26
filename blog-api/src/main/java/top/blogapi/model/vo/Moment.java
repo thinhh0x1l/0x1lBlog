@@ -1,4 +1,4 @@
-package top.blogapi.model.entity;
+package top.blogapi.model.vo;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,5 +16,6 @@ public class Moment {
     Long id;
     String content;
     LocalDateTime createTime;
+    Integer likes;
     Boolean published;
 }

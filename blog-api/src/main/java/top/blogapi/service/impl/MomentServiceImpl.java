@@ -1,19 +1,24 @@
 package top.blogapi.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import top.blogapi.dto.response.moment.MomentPublished;
+import top.blogapi.constant.CacheNameConstant;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.Moment;
+import top.blogapi.model.vo.MomentLikesAndLiked;
 import top.blogapi.repository.MomentRepository;
 import top.blogapi.service.MomentService;
 import top.blogapi.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,19 +27,44 @@ public class MomentServiceImpl implements MomentService {
     MomentRepository momentRepository;
 
     @Override
-    public List<Moment> getMomentList() {
+    public List<top.blogapi.model.vo.Moment> getMomentList() {
         return momentRepository.getMomentList();
     }
 
+
+    @Cacheable(
+            value = CacheNameConstant.MOMENT_LIST,
+            key = "#pageNum"
+    )
     @Override
-    public List<Moment> getMomentListByPublished() {
+    public List<Moment> getMomentListByPublished(Integer pageNum) {
+        String orderBy = "create_time desc";
+        System.out.println("momentDB");
+        PageHelper.startPage(pageNum,5, orderBy);
         return momentRepository.getMomentListByPublished();
     }
 
     @Override
-    public void addLikeByMomentId(Long momentId) {
-        momentRepository.addLikeByMomentId(momentId);
+    public Map<Long, MomentLikesAndLiked> getMomentLikedByGuestIdMap(List<Long> momentIds, Long guestId) {
+        return Optional.ofNullable(momentRepository.getMomentLikesAndLikedList(momentIds, guestId))
+                .orElse(Collections.emptyList())
+                .stream()
+                .collect(Collectors.toMap(
+                        MomentLikesAndLiked::getId,
+                        Function.identity()     // m -> m
+                ));
     }
+
+    @Override
+    public void handleMomentLikeIncrease(Long momentId, Long guestId) {
+        momentRepository.addLikeByMomentIdAndGuestId(momentId, guestId);
+    }
+
+    @Override
+    public void handleMomentLikeDecrease(Long momentId, Long guestId) {
+        momentRepository.deleteLikeByMomentIdAndGuestId(momentId, guestId);
+    }
+
 
     @Override
     public void updateMomentPublishedById(Long momentId, Boolean published) {
@@ -42,7 +72,7 @@ public class MomentServiceImpl implements MomentService {
     }
 
     @Override
-    public Moment getMomentById(Long id) {
+    public top.blogapi.model.vo.Moment getMomentById(Long id) {
         return momentRepository.getMomentById(id)
                 .orElseThrow(() -> new AppException(
                         ErrorCode.USER_NOT_FOUND,

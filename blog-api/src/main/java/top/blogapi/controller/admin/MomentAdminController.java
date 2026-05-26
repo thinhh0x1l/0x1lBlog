@@ -22,7 +22,7 @@ public class MomentAdminController {
                              @RequestParam(defaultValue = "5") Integer pageSize){
         String orderBy = "create_time desc";
         PageHelper.startPage(pageNum, pageSize, orderBy);
-        PageInfo<Moment> momentPageInfo =
+        PageInfo<top.blogapi.model.vo.Moment> momentPageInfo =
                  new PageInfo<>(momentOrchestrator.getMomentList());
         System.out.println(momentPageInfo.toString());
         return Result.ok("Yêu cầu thành công", momentPageInfo);
@@ -41,7 +41,7 @@ public class MomentAdminController {
 
     @PostMapping("/moment")
     public Result<?> createMoment(@RequestBody Moment  momentReq){
-        return Result.ok("Tạo khoảng khắc thành công!!",momentOrchestrator.saveMoment(momentReq));
+        return Result.ok("Tạo khoảng khắc thành công!!", momentOrchestrator.saveMoment(momentReq));
     }
 
     @PutMapping("/moment")

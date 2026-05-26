@@ -1,8 +1,8 @@
 import { request} from "@/plugins/axios2";
-import type {Moment} from "@/types/momentType";
+import type {Moment, MomentLikeById, MomentLikedByGuestId} from "@/types/momentType";
 import type {ApiResponse, PageResult} from "@/types/commonType";
 
-export function getMomentListByPageNum(pageNum: number): Promise<ApiResponse<PageResult<Moment>>> {
+export function getMomentListByPageNum(pageNum: number): Promise<ApiResponse<PageResult<MomentLikedByGuestId>>> {
     return request({
         url: 'moments',
         method: 'GET',
@@ -12,12 +12,11 @@ export function getMomentListByPageNum(pageNum: number): Promise<ApiResponse<Pag
     })
 }
 
-export function likeMoment(id: number): Promise<ApiResponse<void>> {
+
+export function toggleLikeApi(momentLikeById: MomentLikeById): Promise<ApiResponse<void>>{
     return request({
-        url: 'moment/like',
+        url:'moment/like',
         method: 'PUT',
-        params: {
-            id
-        }
+        data: momentLikeById
     })
 }

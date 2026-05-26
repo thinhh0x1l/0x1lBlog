@@ -16,7 +16,8 @@
         </el-form-item>
 
         <el-form-item label="Số lượt thích" prop="likes" style="width: 50%">
-          <el-input v-model="form.likes" type="number" placeholder="Tùy chọn, mặc định là 0" />
+          <el-input readonly disabled
+              v-model="form.likes" type="number" />
         </el-form-item>
 
         <el-form-item label="Thời gian tạo" prop="createTime">

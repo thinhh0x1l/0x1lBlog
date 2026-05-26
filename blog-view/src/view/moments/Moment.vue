@@ -1,113 +1,232 @@
 <template>
   <div>
-    <div class="ui top attached segment" style="text-align: center">
-      <h2 class="m-text-500">Hoạt động của tôi</h2>
-    </div>
-    <div class="ui attached segment m-padding-bottom-large">
-      <div class="moments">
-        <div class="moment" v-for="(moment, index) in momentList" :key="index">
-          <div class="avatar">
-            <img :src="userAvatar" loading="lazy">
-          </div>
-          <div class="ui card">
-            <div class="content m-top">
-              <span style="font-weight: 700">{{ userName }}</span>
-              <span class="right floated">{{ formatRelativeTimeOrDate(moment.createTime) }}</span>
+    <div>
+      <div class="ui top attached segment" style="text-align: center">
+        <h2 class="m-text-500">Hoạt động của tôi</h2>
+      </div>
+      <div class="ui attached segment m-padding-bottom-large">
+        <div v-if="isLoading" class="moments skeleton-wrapper">
+          <div class="moment" v-for="n in 3" :key="n">
+            <div class="avatar">
+              <Skeleton shape="circle" size="48px" />
             </div>
-            <div class="content typo" :class="{'privacy': !moment.published}"
-                 v-html="moment.content"></div>
-
-            <div class="extra content">
-              <a class="left floated" @click="handleLike(moment.id)">
-                <font-awesome-icon :icon="[(isLiked(moment.id)?'fas':'far'),'heart']"
-                                   style="color: rgb(255, 0, 30);" />
-                {{ moment.likes }}
-              </a>
+            <div class="ui card skeleton-card">
+              <div class="content m-top">
+                <Skeleton width="120px" height="20px" />
+                <span class="right floated">
+                <Skeleton width="80px" height="16px" />
+              </span>
+              </div>
+              <div class="content typo">
+                <Skeleton width="100%" height="20px" class="mb-2" />
+                <Skeleton width="95%" height="20px" class="mb-2" />
+                <Skeleton width="85%" height="20px" class="mb-2" />
+                <Skeleton width="60%" height="20px" />
+              </div>
+              <div class="extra content">
+                <Skeleton width="50px" height="20px" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="pagination-container">
-        <Paginator
-            :rows="pageSize"
-            :totalRecords="totalRecords"
-            @page="handlePageChange"
-            :always-show="false"
-            template="PrevPageLink PageLinks NextPageLink"
-        />
+        <div v-else class="moments">
+          <div class="moment" v-for="(moment, index) in momentList" :key="index">
+            <div class="avatar">
+              <img :src="userAvatar" loading="lazy">
+            </div>
+            <div class="ui card">
+              <div class="content m-top">
+                <span style="font-weight: 700">{{ userName }}</span>
+                <span class="right floated">{{ formatRelativeTimeOrDate(moment.createTime) }}</span>
+              </div>
+              <div class="content typo" v-html="moment.content"></div>
+              <div class="extra content">
+                <a class="left floated" @click="handleLike(moment.id)">
+                  <font-awesome-icon
+                      :icon="[isLiked(moment.id) ? 'fas' : 'far', 'heart']"
+                      style="color: rgb(255, 0, 30);"
+                  />
+                  {{ getLikeCount(moment.id) }}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="isLoading" class="pagination-container skeleton-pagination">
+          <div class="p-skeleton-wrapper">
+            <Skeleton width="300px" height="34px" class="mx-auto" />
+          </div>
+        </div>
+
+        <div v-else class="pagination-container">
+          <Paginator
+              :rows="pageSize"
+              :totalRecords="totalRecords"
+              @page="handlePageChange"
+              :always-show="false"
+              template="PrevPageLink PageLinks NextPageLink"
+          />
+        </div>
       </div>
     </div>
-  </div>
+    </div>
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, computed, onMounted, nextTick, watch} from 'vue'
+import {ref, reactive, computed, onMounted, nextTick, watch, shallowRef, onBeforeUnmount, readonly} from 'vue'
 import Paginator, {type PageState} from 'primevue/paginator'
 import {useAppStore} from "@/store";
 import mediumZoom from "medium-zoom"
 import {formatDate,formatRelativeTimeOrDate} from "@/util/dateTimeFormatUtils.js";
-import type {Moment} from "@/types/momentType";
+import type {Moment, MomentLikedByGuestId} from "@/types/momentType";
 import {useScrollToTop} from "@/util/ScrollToTop.js";
-import {getMomentListByPageNum} from "@/api/moment";
+import {getMomentListByPageNum, toggleLikeApi} from "@/api/moment";
 import type {ApiResponse, PageResult} from "@/types/commonType";
-
+// :class="{'privacy': !moment.published}"
 const {scrollToTop} = useScrollToTop()
 
 const store = useAppStore()
 
-const momentList = ref<Moment[]>([])
 const pageNum = ref(1)
 const pageSize = ref(5)
 const totalRecords = ref(0)
-const likedMoments = ref(new Set(JSON.parse(localStorage.getItem('likedMomentIds')||'[]')))
+const isLoading = ref(false)
+
+const momentList = ref<MomentLikedByGuestId[]>([])
 
 const userAvatar = computed(() => store.introduction?.avatar || 'https://via.placeholder.com/45')
 const userName = computed(() => store.introduction?.name || 'Thjnk')
 
+const momentLikes = reactive<Record<number, number>>({}) // show
+const momentLiked = reactive<Record<number, boolean>>({}) // show
+const originLiked = reactive<Record<number, boolean>>({}) // equal
 
-const handleLike = (momentId: number) => {
-  const moment = momentMap.value.get(momentId)
-  if (!moment) return
-  const newSet = new Set(likedMoments.value)
-  if (newSet.has(momentId)) {
-    newSet.delete(momentId)
-    moment.likes = Math.max(0, moment.likes - 1)
-  } else {
-    newSet.add(momentId)
-    moment.likes++
-  }
-  likedMoments.value = newSet
-  localStorage.setItem(
-      'likedMomentIds',
-      JSON.stringify([...newSet])
-  )
-}
-const momentMap = computed(() => {
-  const map = new Map<number, Moment>()
-  momentList.value.forEach(m => map.set(m.id, m))
-  return map;
-})
+const likeTimers = new Map<number, ReturnType<typeof setTimeout>>()
+
+const LIKE_DELAY = 800
 
 const isLiked = (momentId: number) => {
-  return likedMoments.value.has(momentId)
+  return momentLiked[momentId];
 }
 
-const handlePageChange = (event: PageState) => {
-  pageNum.value = event.page+1
-  fetchMoments()
+const getLikeCount = (momentId: number) => {
+  return momentLikes[momentId];
 }
+
+const handleLike = (momentId: number) => {
+
+  const previousLiked = momentLiked[momentId]
+  const previousLikes = momentLikes[momentId]
+
+  // Tính toán state mới
+  const newLiked = !previousLiked
+  const newLikes = newLiked
+      ? previousLikes + 1
+      : Math.max(0, previousLikes - 1)
+
+  momentLiked[momentId] = newLiked;
+  momentLikes[momentId] = newLikes
+
+  // console.log(`${momentId}:\n
+  //             original: ${originLiked[momentId]}\n
+  //             prev: ${previousLiked}\n
+  //             newLiked: ${newLiked}
+  //             `)
+
+  // Clear timer cũ nếu có
+  const oldTimer = likeTimers.get(momentId)
+  if (oldTimer) {
+    clearTimeout(oldTimer)
+  }
+
+  //Debounce request
+  const timer = setTimeout(async () => {
+    const finalLiked = momentLiked[momentId]
+
+    // ct = hành động mới (newLiked) - hành động ban đầu (origin)
+    // = 0 : không thây đổi => không gửi req
+    // = +-1: gửi req
+    const isFetch = Number(finalLiked) - Number(originLiked[momentId])
+
+    // = 0 : không thây đổi => không gửi req
+    if (isFetch === 0)
+      return
+
+    try {
+      // = +-1: gửi req
+        await toggleLikeApi({
+          id: momentId,
+          liked: isFetch
+        })
+        originLiked[momentId] = !originLiked[momentId]
+
+
+    } catch (error) {
+      console.error('Lỗi update Like:', error)
+
+      // không thây đổi thì return
+      if(momentLiked[momentId] === originLiked[momentId])
+        return
+      else{
+        momentLiked[momentId] = originLiked[momentId]
+
+        // ex: false -> true ở UI: 77->78 => isFetch = +1
+        // roll back 78 += -(+1) = 77
+        momentLikes[momentId] += -isFetch
+      }
+
+    } finally {
+      likeTimers.delete(momentId)
+    }
+  }, LIKE_DELAY)
+
+  likeTimers.set(momentId, timer)
+}
+
 
 const fetchMoments = async () => {
   scrollToTop()
- try{
-   const res: ApiResponse<PageResult<Moment>> = await getMomentListByPageNum(pageNum.value)
-   if(res.code === 200){
-     momentList.value = res.data.items;
-     totalRecords.value = res.data.totalElements
-   }
- }catch (error){}
+  isLoading.value = true
+
+  try {
+    const res: ApiResponse<PageResult<MomentLikedByGuestId>> =
+        await getMomentListByPageNum(pageNum.value)
+
+    if (res.code === 200) {
+      momentList.value = res.data.items
+      res.data.items.forEach(m => {
+        momentLikes[m.id] = m.likes
+        originLiked[m.id] = m.liked
+        momentLiked[m.id] = m.liked
+      })
+      totalRecords.value = res.data.totalElements
+    }
+
+  } catch (error) {
+    console.error('Lỗi lấy moments:', error)
+  } finally {
+    isLoading.value = false
+  }
 }
+
+const handlePageChange = (event: PageState) => {
+  pageNum.value = event.page + 1
+  fetchMoments()
+}
+
+const refreshMoments = () => {
+  fetchMoments()
+}
+
+onBeforeUnmount(() => {
+  // Clear all timers
+  likeTimers.forEach(timer => {
+    clearTimeout(timer)
+  })
+  likeTimers.clear()
+})
 
 
 let zoom;
