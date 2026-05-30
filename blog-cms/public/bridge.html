@@ -1,184 +1,37 @@
-<!--<script>-->
-<!--    const STORAGE_KEY = "guest_token";-->
-<!--    const params =-->
-<!--        new URLSearchParams(location.search)-->
-<!--    const allowedOrigin =-->
-<!--        params.get("origin")-->
-<!--    console.log(allowedOrigin)-->
-<!--    const ALLOWED_ORIGINS = new Set([allowedOrigin]);-->
-
-<!--    function getToken() {-->
-<!--        return localStorage.getItem(STORAGE_KEY);-->
-<!--    }-->
-
-<!--    // Nhận message từ FE khác-->
-<!--    window.addEventListener("message",(event) => {-->
-<!--            console.log(event)-->
-<!--            // Chặn domain lạ-->
-<!--            if (!ALLOWED_ORIGINS.has(event.origin))-->
-<!--                return;-->
-
-<!--            const data = event.data;-->
-
-<!--            // FE khác yêu cầu token-->
-<!--            if (data.type ==="GET_TOKEN"  ) {-->
-<!--                const token =  getToken();-->
-<!--                // Trả token về-->
-<!--                event.source.postMessage(-->
-<!--                    {-->
-<!--                        type:"TOKEN_RESPONSE",-->
-<!--                        token-->
-<!--                    },-->
-<!--                    event.origin-->
-<!--                );-->
-<!--            }-->
-<!--        }-->
-<!--    );-->
-<!--</script>-->
-
-<!--<script>-->
-<!--    const STORAGE_KEY = "guest_token";-->
-<!--    const params =-->
-<!--        new URLSearchParams(location.search)-->
-<!--    const allowedOrigin =-->
-<!--        params.get("origin")-->
-<!--    console.log(allowedOrigin)-->
-<!--    const ALLOWED_ORIGINS = new Set([allowedOrigin]);-->
-
-<!--    function getToken() {-->
-<!--        return localStorage.getItem(STORAGE_KEY);-->
-<!--    }-->
-
-<!--    // Nhận message từ FE khác-->
-<!--    window.addEventListener("message",(event) => {-->
-<!--            console.log(event)-->
-<!--            // Chặn domain lạ-->
-<!--            if (!ALLOWED_ORIGINS.has(event.origin))-->
-<!--                return;-->
-
-<!--            const data = event.data;-->
-
-<!--            // FE khác yêu cầu token-->
-<!--            if (data.type ==="GET_TOKEN"  ) {-->
-<!--                const token =  getToken();-->
-<!--                // Trả token về-->
-<!--                event.source.postMessage(-->
-<!--                    {-->
-<!--                        type:"TOKEN_RESPONSE",-->
-<!--                        token-->
-<!--                    },-->
-<!--                    event.origin-->
-<!--                );-->
-<!--            }-->
-<!--        }-->
-<!--    );-->
-<!--</script>-->
 <script>
     const STORAGE_KEY = "guest_token";
-    const params = new URLSearchParams(location.search);
-    const allowedOrigin = params.get("origin");
-
-    // Debug: Log tất cả parameters
-    console.log("=== BRIDGE PAGE DEBUG ===");
-    console.log("Full URL:", window.location.href);
-    console.log("All params:", Object.fromEntries(params.entries()));
-    console.log("allowedOrigin from URL:", allowedOrigin);
-    console.log("Current origin:", window.location.origin);
-
-    // Tạo Set các origins được phép
-    const ALLOWED_ORIGINS = new Set();
-
-    // Thêm origin từ URL parameter
-    if (allowedOrigin) {
-        // Decode URL encoding
-        const decodedOrigin = decodeURIComponent(allowedOrigin);
-        ALLOWED_ORIGINS.add(decodedOrigin);
-        console.log("✅ Added allowed origin:", decodedOrigin);
-    } else {
-        console.error("❌ Missing 'origin' parameter in URL!");
-    }
-
-    // Optional: Thêm các origins mặc định (cho phép cả admin domain)
-    const DEFAULT_ORIGINS = [
-        "https://0x1l-blog.vercel.app",
-        "https://0x1l-blog-admin.vercel.app"
-    ];
-
-    DEFAULT_ORIGINS.forEach(origin => {
-        ALLOWED_ORIGINS.add(origin);
-        console.log("✅ Added default origin:", origin);
-    });
-
-    console.log("Final ALLOWED_ORIGINS:", Array.from(ALLOWED_ORIGINS));
+    const params =
+        new URLSearchParams(location.search)
+    const allowedOrigin =
+        params.get("origin")
+    console.log(allowedOrigin)
+    const ALLOWED_ORIGINS = new Set([allowedOrigin]);
 
     function getToken() {
-        const token = localStorage.getItem(STORAGE_KEY);
-        console.log("getToken() called, token exists:", !!token);
-        return token;
+        return localStorage.getItem(STORAGE_KEY);
     }
 
     // Nhận message từ FE khác
-    window.addEventListener("message", (event) => {
-        console.log("📨 Bridge received message:", {
-            origin: event.origin,
-            source: event.source?.location?.href || "unknown",
-            data: event.data,
-            timestamp: new Date().toISOString()
-        });
+    window.addEventListener("message",(event) => {
+            console.log(event)
+            // Chặn domain lạ
+            // if (!ALLOWED_ORIGINS.has(event.origin))
+            //     return;
 
-        // Kiểm tra origin có được phép không
-        const isAllowed = ALLOWED_ORIGINS.has(event.origin);
-        console.log(`Origin ${event.origin} is allowed:`, isAllowed);
-
-        if (!isAllowed) {
-            console.warn("⚠️ Blocked message from unauthorized origin:", event.origin);
-            return;
-        }
-
-        const data = event.data;
-
-        // FE khác yêu cầu token
-        if (data && data.type === "GET_TOKEN") {
-            console.log("🔑 Processing GET_TOKEN request");
-            const token = getToken();
-
-            // Trả token về
-            const response = {
-                type: "TOKEN_RESPONSE",
-                token: token,
-                timestamp: Date.now(),
-                success: !!token
-            };
-
-            console.log("📤 Sending response:", {
-                ...response,
-                token: token ? "***HIDDEN***" : null
-            });
-
-            try {
-                event.source.postMessage(response, event.origin);
-                console.log("✅ Response sent successfully to", event.origin);
-            } catch (error) {
-                console.error("❌ Error sending response:", error);
+            const data = event.data;
+        console.log('token: '+getToken())
+            // FE khác yêu cầu token
+            if (data.type ==="GET_TOKEN"  ) {
+                const token =  getToken();
+                // Trả token về
+                event.source.postMessage(
+                    {
+                        type:"TOKEN_RESPONSE",
+                        token
+                    },
+                    event.origin
+                );
             }
-        } else {
-            console.log("ℹ️ Received non-GET_TOKEN message:", data?.type);
         }
-    });
-
-    // Thông báo bridge đã sẵn sàng
-    window.addEventListener("load", () => {
-        console.log("✅ Bridge page fully loaded and ready");
-
-        // Gửi thông báo ready đến tất cả origins được phép
-        ALLOWED_ORIGINS.forEach(origin => {
-            window.parent.postMessage({
-                type: "BRIDGE_READY",
-                timestamp: Date.now()
-            }, origin);
-            console.log("📢 Sent BRIDGE_READY to", origin);
-        });
-    });
-
-    console.log("✅ Bridge script initialized");
+    );
 </script>
