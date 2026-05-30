@@ -29,7 +29,7 @@ export async function initGuestToken() {
             console.warn("Lấy token từ FE khác thành công");
         }
     } catch (e) {
-        console.error("Lỗi:FE khác không có token");
+        console.error("Lỗi:FE khác không có token",e);
     }
 
     // fallback BE
