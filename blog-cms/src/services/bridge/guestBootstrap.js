@@ -5,7 +5,9 @@ import {createGuestToken} from "@/api/index.js";
 import {createBridgeFrame } from "@/services/bridge/createBridgeFrame.js";
 
 export async function initGuestToken() {
-
+    if (window.self !== window.top) {
+        return
+    }
     const guestStore =
         useGuestStore();
 
