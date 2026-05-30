@@ -1,5 +1,4 @@
-const BRIDGE_ORIGIN =
-    "http://localhost:5173";
+const BRIDGE_ORIGIN =import.meta.env.VITE_BRIDGE_FE ;
 
 export function getGuestToken() {
 
