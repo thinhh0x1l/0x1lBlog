@@ -2,6 +2,7 @@ package top.blogapi.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.maxmind.geoip2.model.CityResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,9 +15,10 @@ import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.mapper.CommentMapper;
 import top.blogapi.model.entity.Comment;
-import top.blogapi.model.vo.CommentTree;
+import top.blogapi.dto.internal.CommentTreeInternal;
 import top.blogapi.repository.CommentRepository;
 import top.blogapi.service.CommentService;
+import top.blogapi.util.IpAddressUtils;
 import top.blogapi.util.StringUtils;
 
 import java.util.*;
@@ -28,13 +30,27 @@ import java.util.*;
 public class CommentServiceImpl implements CommentService {
     CommentRepository commentRepository;
     CommentMapper commentMapper;
+    GeoIpService geoIpService;
 
     @Override
     @Transactional(readOnly = true)
-    public List<Comment> getListByPageAndParentCommentId(Integer page, Long parentCommentId, Long blogId) {
+    public List<Comment> getListByPageAndParentCommentId(Integer page, Long parentCommentId, Long blogId) throws Exception {
         List<Comment> comments = commentRepository.getListByPageAndParentCommentId(page, parentCommentId, blogId);
 
         for (Comment c: comments) {
+            if(!StringUtils.isEmpty(c.getIp()) && IpAddressUtils.isValidIp(c.getIp())){
+                try{
+                    if(IpAddressUtils.isLocalhost(c.getIp())){
+                        c.setIp("Local");
+                    }else{
+                        CityResponse city = geoIpService.getCity(c.getIp());
+                        c.setIp(city.country().name()+" / "+city.mostSpecificSubdivision().name());
+                    }
+
+                }catch (Exception e){
+                    log.error(String.valueOf(e.getCause()));
+                }
+            }
             c.setReplyComments(commentRepository.getListByPageAndParentCommentId(page, c.getId(), blogId));
         }
         return comments;
@@ -75,23 +91,30 @@ public class CommentServiceImpl implements CommentService {
             throw new AppException(ErrorCode.COMMENT_NOT_FOUND);
     }
 
-    @SuppressWarnings("resource")
     @Transactional(readOnly = true)
-    public PageInfo<CommentByBlogIdResponse.CommentNode> commentRootTrees (int pageNum, int pageSize,Long blogId, Integer page){
+    public PageInfo<CommentByBlogIdResponse.CommentNode> commentRootTrees (int pageNum, int pageSize,
+                                                                           Long blogId, Integer page,
+                                                                           Long guessId){
         PageHelper.startPage(pageNum, pageSize, "id desc");
-        List<CommentTree> commentRootTrees = commentRepository.findRootComments(blogId,page);
-        return new PageInfo<>(commentRootTrees).convert(commentMapper::toCommentNode);
+        List<CommentTreeInternal> commentRootTrees = commentRepository.findRootComments(blogId,page);
+        if(commentRootTrees.isEmpty()) return PageInfo.emptyPageInfo();
+        return new PageInfo<>(commentRootTrees).convert(c ->
+                commentMapper.toCommentNode(c).setEditAble(c.getGuessId(),guessId));
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, List<CommentByBlogIdResponse.CommentNode>> commentChildTrees(List<Long> commentRootIds){
-        List<CommentTree> commentChildTrees = commentRepository.findRepliesByRootIds(commentRootIds);
+    public Map<Long, List<CommentByBlogIdResponse.CommentNode>> commentChildTrees(List<Long> commentRootIds, Long guessId){
+        List<CommentTreeInternal> commentChildTrees = commentRepository.findRepliesByRootIds(commentRootIds);
 
         Map<Long, List<CommentByBlogIdResponse.CommentNode>> map = new HashMap<>();
-        for(int i = commentRootIds.size() ; i < commentChildTrees.size() ;i++)
-            map.computeIfAbsent(commentChildTrees.get(i).getThreadRoot(),
-                    key -> new LinkedList<>())
-                    .add(commentMapper.toCommentNode(commentChildTrees.get(i)));
+        for(CommentTreeInternal c: commentChildTrees){
+            Long key = c.getThreadRoot();
+            if(map.containsKey(key))
+                map.get(key).add(commentMapper.toCommentNode(c).setEditAble(c.getGuessId(),guessId));
+            else
+                map.put(key, new ArrayList<>());
+        }
+
         return map;
     }
 
@@ -101,5 +124,11 @@ public class CommentServiceImpl implements CommentService {
         if(r == 0)
             throw new AppException(ErrorCode.INTERNAL_ERROR,"Viết bình luận không thành công");
         return comment.getId();
+    }
+
+    @Override
+    public void editComment(Long id, String content) {
+        if(commentRepository.editComment(id, content) == 0)
+            log.debug("Id comment {} này tồn tại", id);
     }
 }

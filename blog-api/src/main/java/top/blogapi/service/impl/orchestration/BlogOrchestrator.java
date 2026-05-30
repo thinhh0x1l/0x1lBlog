@@ -1,42 +1,43 @@
 package top.blogapi.service.impl.orchestration;
 
 
-import com.alibaba.fastjson2.JSONObject;
-import com.github.pagehelper.Page;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.blogapi.client.zing_mp3.Mp3Service;
+import top.blogapi.dto.internal.*;
+import top.blogapi.dto.response._page.PageResult;
+import top.blogapi.service.cacheService.BlogCacheService;
+import top.blogapi.service._zing_mp3.MusicService;
+import top.blogapi.constant.CacheNameConstant;
 import top.blogapi.dto.request.blog.BlogQueryRequest;
 import top.blogapi.dto.response.blog.ArchiveBlogResponse;
+import top.blogapi.dto.response.blog.BlogInfo;
 import top.blogapi.dto.response.blog.BlogSummaryResponse;
-import top.blogapi.dto.response.category.CategoryResponse;
 import top.blogapi.dto.response._page.BlogListPageResponse;
+import top.blogapi.dto.response.category.CategorySlug;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.*;
 import top.blogapi.mapper.BlogMapper;
 import top.blogapi.mapper.CategoryMapper;
-import top.blogapi.model.vo.ArchiveBlog;
-import top.blogapi.model.vo.BlogDetail;
-import top.blogapi.model.vo.BlogInfo;
 import top.blogapi.service.BlogService;
 import top.blogapi.service.CategoryService;
-import top.blogapi.service.SiteSettingService;
 import top.blogapi.service.TagService;
+import top.blogapi.util.SlugUtils;
 import top.blogapi.util.StringUtils;
-import top.blogapi.model.vo.BlogIdAndTitle;
-import top.blogapi.util.markdown.MarkdownUtils;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 @Service
@@ -47,12 +48,13 @@ public class BlogOrchestrator {
     BlogService blogService;
     CategoryService categoryService;
     TagService tagService;
-    SiteSettingService siteSettingService;
-    Mp3Service mp3Service;
-    ExecutorService executorService = Executors.newFixedThreadPool(4);
+    BlogCacheService blogCacheService;
+    MusicService musicService;
+
     BlogMapper blogMapper;
     CategoryMapper categoryMapper;
 
+    ObjectMapper objectMapper;
 
     public BlogListPageResponse getListByTitleOrCategory(BlogQueryRequest blogQueryRequest) {
         validateBlogQuery(blogQueryRequest);
@@ -60,8 +62,10 @@ public class BlogOrchestrator {
         PageInfo<BlogSummaryResponse> pageInfoResponse =
                 blogService.getListByTitleOrCategory(blogQueryRequest).convert(blogMapper::toBlogSummaryResponse);
 
-        List<CategoryResponse> categoryResponses =
-                categoryService.getCategoryList().stream().map(categoryMapper::toCategoryResponse).toList();
+        List<CategorySlug> categoryResponses =
+                categoryService.getCategoryList().stream().map(c ->
+                        new CategorySlug(SlugUtils.convertSpaceToHyphen(c.getName()),c.getName())
+                ).toList();
 
         return new BlogListPageResponse(pageInfoResponse, categoryResponses);
 
@@ -76,8 +80,7 @@ public class BlogOrchestrator {
 
     public String getResult(Map<String, Object> map, String type) {
         Map<String, Object> blogMap = (Map<String, Object>) map.get("blog");
-        JSONObject blogJsonObject = new JSONObject(blogMap);
-        Blog blog = blogJsonObject.toJavaObject(Blog.class);
+        Blog blog = objectMapper.convertValue(blogMap,Blog.class);
         System.out.println(blog);
         // Xác minh các thuộc tính
         if (StringUtils.isEmpty(
@@ -145,93 +148,121 @@ public class BlogOrchestrator {
         }
         return "Cập nhật Blog thành công !!";
     }
+
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = CacheNameConstant.BLOG_DETAILS, key = "#id"),
+            @CacheEvict(cacheNames = CacheNameConstant.CATEGORY_BLOG_INFO_LIST, allEntries = true),
+            @CacheEvict(cacheNames = CacheNameConstant.TAG_BLOG_INFO_LIST, allEntries = true),
+            @CacheEvict(cacheNames = CacheNameConstant.HOME_BLOG_INFO_LIST, allEntries = true),
+            @CacheEvict(cacheNames = CacheNameConstant.ARCHIVE_BLOG_MAP, allEntries = true)
+    })
     public void deleteBlogById(Long id){
         blogService.deleteBlogTagByBlogId(id);
         blogService.deleteBlogById(id);
     }
-    public List<BlogIdAndTitle> getIdAndTitleList() {
+    public List<BlogIdAndTitleInternal> getIdAndTitleList() {
         return blogService.getIdAndTitleList();
     }
 
-    public List<BlogInfo> getBlogInfoListByIsPublished(){
-        List<BlogInfo> blogInfos = blogService.getBlogInfoListByIsPublished();
-        blogInfos.forEach(blogInfo -> {
-            blogInfo.setTags(tagService.getTagListByBlogId(blogInfo.getId()));
-            blogInfo.setDescription(MarkdownUtils.markdownToHtmlExtensions(blogInfo.getDescription()));
-        });
-        return blogInfos;
+    public PageResult<BlogInfo> getBlogInfoListByIsPublished(Integer pageNum){
+
+        PageResult<BlogInfo> result = blogCacheService.getFromCacheOrDb(pageNum);
+
+        for (BlogInfo blog : result.getItems()) {
+            blog.setViews(blogCacheService.getViews(blog.getId())); // ALWAYS realtime
+        }
+
+        return result;
     }
 
     public void updateBlogTopById(Long blogId, Boolean top){
         blogService.updateBlogTopById(blogId, top);
     }
 
-    public List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend(){
-        try(Page<Object> page1 = PageHelper.startPage(1, 3)) {
-            List<BlogIdAndTitle> blogIdAndTitles = blogService.getIdAndTitleListByIsPublishedAndIsRecommend();
-            return blogIdAndTitles;
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return List.of();
+    @Cacheable(
+            value = CacheNameConstant.NEW_BLOG_LIST,
+            key = "'default'"
+    )
+    public List<BlogIdAndTitleInternal> getIdAndTitleListByIsPublishedAndIsRecommend() {
+        PageHelper.startPage(1, 3);
+        return blogService.getIdAndTitleListByIsPublishedAndIsRecommend();
     }
 
-    public Map<String, Object> getArchiveBlogListIsPublished(){
+    @Cacheable(
+            value = CacheNameConstant.ARCHIVE_BLOG_MAP
+    )
+    public Map<String, Object> getArchiveBlogListIsPublished() {
         List<String> groupYearMonth = blogService.getGroupYearMonthAndIsPublished();
-        List<ArchiveBlog> archiveBlogsBatch = blogService.getArchiveBlogListByYearMonthAndIsPublished(groupYearMonth);
+        List<ArchiveBlogInternal> archiveBlogsBatchInternals = blogService.getArchiveBlogListByYearMonthAndIsPublished(groupYearMonth);
         Map<String, List<ArchiveBlogResponse>> blogMap = new LinkedHashMap<>();
-        for(int i = archiveBlogsBatch.size() -1 ; i>=0 ;i--){
-            ArchiveBlog a = archiveBlogsBatch.get(i);
-            blogMap.computeIfAbsent(a.getYM(), k -> new ArrayList<>())
+
+        for (int i = archiveBlogsBatchInternals.size() - 1; i >= 0; i--) {
+            ArchiveBlogInternal a = archiveBlogsBatchInternals.get(i);
+            blogMap
+                    .computeIfAbsent(a.getYM(), k -> new ArrayList<>())
                     .add(blogMapper.toArchiveBlogResponse(a));
         }
         return Map.of(
-                "blogMap",blogMap,
-                "count", archiveBlogsBatch.size()
+                "blogMap", blogMap,
+                "count", archiveBlogsBatchInternals.size()
         );
     }
 
-    public BlogDetail getBlogByIdAndIsPublished(Long id){
-        BlogDetail blogDetail =  blogService.getBlogByIdAndIsPublished(id);
-        if(blogDetail.getMusicId() != null){
-            blogDetail.setMusicInfo(getCompleteSongData(blogDetail.getMusicId()));
+    public BlogDetailInternal getBlogDetail(Long id){
+        BlogDetailInternal cache = blogCacheService.getBlogByIdAndIsPublished(id);
+        long views = blogCacheService.getViews(id);
+        return BlogDetailInternal.cloneBlogDetail(cache,views);
+    }
+
+    public List<SearchBlog> searchBlogs(String search){
+        if (StringUtils.isEmpty(search) || StringUtils.hasSpecialChar(search) || search.trim().length() > 20) {
+            throw new AppException(ErrorCode.INVALID_INPUT,("Nội dung tìm kiếm không hợp lệ"));
         }
-        return blogDetail;
+        List<SearchBlog> searchBlogs = blogService.searchBlogs(search);
+        for (SearchBlog searchBlog : searchBlogs) {
+            String content = searchBlog.getContent();
+            int contentLength = content.length();
+            int index = content.indexOf(search) - 10;
+            index = Math.max(index, 0);
+            int end = index + 21;//Trả về 21 ký tự, căn giữa chuỗi từ khóa
+            end = Math.min(end, contentLength - 1);
+            searchBlog.setContent(content.substring(index, end));
+        }
+        return searchBlogs;
     }
 
 
-    private BlogDetail.MusicInfo getCompleteSongData(String songId) {
-        try {
-            CompletableFuture<Map<String, String>> infoFuture = CompletableFuture
-                    .supplyAsync(() -> mp3Service.getSongInfo(songId), executorService);
+    @Scheduled(fixedDelay = 60000)
+    public void flushViews() {
+        Map<Long, Long> mapViews = new HashMap<>();
+        Map<Long, AtomicLong> cache = blogCacheService.getAllPending();
 
-            CompletableFuture<String> streamingFuture = CompletableFuture
-                    .supplyAsync(() -> mp3Service.getSongStreaming(songId), executorService);
+        for (Map.Entry<Long, AtomicLong> entry : cache.entrySet()) {
+            long blogId = entry.getKey();
+            long delta = entry.getValue().getAndSet(0);
 
-            CompletableFuture<String> lyricFuture = CompletableFuture
-                    .supplyAsync(() -> {
-                        try {
-                            return mp3Service.getLyric(songId);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }, executorService);
+            if (delta > 0)
+                mapViews.put(blogId, delta);
+        }
 
-            CompletableFuture.allOf(infoFuture, streamingFuture, lyricFuture).join();
-            BlogDetail.MusicInfo musicInfo = new BlogDetail.MusicInfo(
-                    infoFuture.get().get("title"),
-                    lyricFuture.get(),
-                    infoFuture.get().get("name"),
-                    streamingFuture.get(),
-                    "#46718b",
-                    infoFuture.get().get("thumbnail")
+        if (!mapViews.isEmpty()) {
+            try {
+                blogService.flushViewsAllBlogs(mapViews);
 
-            );
-            return musicInfo;
-        } catch (Exception e) {
-            throw new RuntimeException("Lấy dữ liệu bài hát thất bại", e);
+                // Update DB Cache
+                for (Map.Entry<Long, Long> entry : mapViews.entrySet())
+                    blogCacheService.addDbViews(entry.getKey(), entry.getValue());
+
+            } catch (Exception e) {
+                // Rollback
+                for (Map.Entry<Long, Long> entry : mapViews.entrySet())
+                    cache.get(entry.getKey()).addAndGet(entry.getValue());
+
+            }
         }
     }
+
 }
 
 

@@ -1,6 +1,11 @@
 package top.blogapi.exception;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,6 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -30,12 +36,22 @@ public class GlobalExceptionHandler {
                 error.getHttpStatus().value(),
                 request.getRequestURI(),
                 StringUtils.isEmpty(request.getHeader("X-Trace-Id"))
-                        ?UUID.randomUUID().toString():request.getHeader("X-Trace-Id"),
+                        ? UUID.randomUUID().toString()
+                        : request.getHeader("X-Trace-Id"),
                 LocalDateTime.now(),
                 ex.getContext()
         );
 
-        return ResponseEntity.status(error.getHttpStatus()).body(response);
+        log.warn(
+                "Business exception. path={}, code={}, details={}",
+                request.getRequestURI(),
+                error.getCode(),
+                ex.getContext()
+        );
+
+        return ResponseEntity
+                .status(error.getHttpStatus())
+                .body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -48,8 +64,8 @@ public class GlobalExceptionHandler {
                 .getFieldErrors()
                 .stream()
                 .collect(Collectors.toMap(
-                        err -> err.getField(),
-                        err -> err.getDefaultMessage(),
+                        FieldError::getField,
+                        DefaultMessageSourceResolvable::getDefaultMessage,
                         (oldVal, newVal) -> oldVal
                 ));
 
@@ -62,9 +78,26 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 details
         );
-
+        log.error("Request URL : {}", request.getRequestURL(), ex);
         return ResponseEntity.status(ErrorCode.INVALID_INPUT.getHttpStatus()).body(response);
     }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> usernameNotFoundExceptionHandler(HttpServletRequest request,
+                                                                             UsernameNotFoundException e) {
+        log.error("Request URL : {}", request.getRequestURL(), e);
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.UNAUTHORIZED.toString(),
+                e.getMessage(),
+                HttpStatus.UNAUTHORIZED.value(),
+                request.getRequestURI(),
+                UUID.randomUUID().toString(),
+                LocalDateTime.now(),
+                Map.of()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleUnknownException(
@@ -78,9 +111,13 @@ public class GlobalExceptionHandler {
                 request.getRequestURI(),
                 UUID.randomUUID().toString(),
                 LocalDateTime.now(),
-                Map.of("error", ex.getClass().getSimpleName())
+                Map.of(
+                        "error", ex.getClass().getSimpleName(),
+                        "messageCause", ex.getCause() != null ? ex.getCause().getMessage() : "null")
         );
-
+        log.error("Request URL : {}", request.getRequestURL(), ex);
         return ResponseEntity.status(ErrorCode.INTERNAL_ERROR.getHttpStatus()).body(response);
     }
+
+
 }

@@ -58,6 +58,10 @@ class BlogApiApplicationTests {
 //		List<TagIdGetBlogsResponse.BlogInfo> blogInfoList = tagService.getBlogInfoListByTagIdAndIsPublished(30L);
 //		System.out.println(blogInfoList);
 //	}
+	@Test
+	void test17(){
+	System.out.println(blogRepository.searchBlogs("lo"));
+	}
 
 	@Test
 	void test16(){

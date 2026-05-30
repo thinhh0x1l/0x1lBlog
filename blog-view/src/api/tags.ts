@@ -1,9 +1,10 @@
-import {request, type ApiResponse} from '@/plugins/axios2'
-import type {Tag, TagIdGetBlogsResponse} from "@/types/tagType";
+import {request,} from '@/plugins/axios2'
+import type {Tag, TagIdGetBlogsResponse, TagSlug} from "@/types/tagType";
+import type {ApiResponse} from "@/types/commonType";
 
 
 
-export const getTags = (): Promise<ApiResponse<Tag[]>> =>
+export const getTags = (): Promise<ApiResponse<TagSlug[]>> =>
     request({
         url: 'tags',
         method: 'get'
@@ -11,12 +12,11 @@ export const getTags = (): Promise<ApiResponse<Tag[]>> =>
 
 
 export const getBlogListByTagId =
-    (tagId: number, pageNum: number, pageSize: number): Promise<ApiResponse<TagIdGetBlogsResponse>> =>
+    (slug: string, pageNum: number, pageSize: number): Promise<ApiResponse<TagIdGetBlogsResponse>> =>
     request({
-        url: 'tag',
+        url: `tag/${slug}`,
         method: 'GET',
         params: {
-            tagId,
             pageNum,
             pageSize
         }

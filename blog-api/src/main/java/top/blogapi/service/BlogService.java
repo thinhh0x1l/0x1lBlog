@@ -1,16 +1,14 @@
 package top.blogapi.service;
 
 import com.github.pagehelper.PageInfo;
+import top.blogapi.dto.internal.*;
 import top.blogapi.dto.request.blog.BlogQueryRequest;
 import top.blogapi.dto.request.blog.BlogUpdatePublishedRequest;
 import top.blogapi.dto.request.blog.BlogUpdateRecommendRequest;
 import top.blogapi.model.entity.Blog;
-import top.blogapi.model.vo.ArchiveBlog;
-import top.blogapi.model.vo.BlogDetail;
-import top.blogapi.model.vo.BlogIdAndTitle;
-import top.blogapi.model.vo.BlogInfo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface BlogService {
     PageInfo<Blog> getListByTitleOrCategory(BlogQueryRequest blogQueryRequest);
@@ -37,17 +35,23 @@ public interface BlogService {
 
     void countBlogByTagId(Long tagId);
 
-    List<BlogIdAndTitle> getIdAndTitleList();
+    List<BlogIdAndTitleInternal> getIdAndTitleList();
 
-    List<BlogInfo> getBlogInfoListByIsPublished();
+    List<BlogTagsInfoInternal> getBlogInfoListByIsPublished();
 
-    List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend();
+    List<BlogIdAndTitleInternal> getIdAndTitleListByIsPublishedAndIsRecommend();
 
     List<String> getGroupYearMonthAndIsPublished();
 
-    List<ArchiveBlog> getArchiveBlogListByYearMonthAndIsPublished(List<String> yearMonths);
+    List<ArchiveBlogInternal> getArchiveBlogListByYearMonthAndIsPublished(List<String> yearMonths);
 
-    BlogDetail getBlogByIdAndIsPublished(Long id);
+    BlogDetailInternal getBlogByIdAndIsPublished(Long id);
 
     Boolean getCommentEnabledByBlogId(Long blogId);
+
+    List<SearchBlog> searchBlogs(String search);
+
+    void flushViewsAllBlogs(Map<Long, Long> map);
+
+    Long getViewsByBlogId(Long blogId);
 }

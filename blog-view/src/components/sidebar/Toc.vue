@@ -1,6 +1,16 @@
 <template>
   <div class="toc-container" ref="tocRef" v-if="toc.length > 0">
-    <h3 class="toc-title">📑 Mục lục</h3>
+    <div class="toc-header">
+      <div class="toc-icon-wrapper">
+        <svg class="toc-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 6H20M4 12H20M4 18H20M8 6V6.01M8 12V12.01M8 18V18.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M12 6H20M12 12H20M12 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3 class="toc-title">Mục lục</h3>
+      <span class="toc-count">{{ flattenedToc.length }}</span>
+    </div>
+
     <nav class="toc-nav">
       <ul class="toc-list">
         <li
@@ -11,14 +21,15 @@
             `toc-level-${item.level}`,
             { 'is-active': activeId === item.id }
           ]"
-            :style="{ paddingLeft: (item.level - 1) * 9 + 'px' }"
+            :style="{ paddingLeft: (item.level - 1) * 12 + 'px' }"
         >
           <a
               :href="`#${item.id}`"
               @click.prevent="scrollToHeading(item.id)"
               class="toc-link"
           >
-            {{ item.text }}
+            <span class="toc-link-indicator"></span>
+            <span class="toc-link-text">{{ item.text }}</span>
           </a>
         </li>
       </ul>
@@ -29,6 +40,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
 import {onBeforeRouteLeave, useRoute} from "vue-router";
+
 const route = useRoute()
 const props = defineProps({
   contentSelector: {
@@ -53,7 +65,6 @@ let isScrolling = false
 let scrollTimer = null
 let observer = null
 
-
 const flattenedToc = computed(() => {
   const result = []
   const flatten = (items) => {
@@ -64,14 +75,13 @@ const flattenedToc = computed(() => {
       }
     })
   }
-
   flatten(toc.value)
   return result
 })
+
 function buildHierarchy(headingsList) {
   const root = []
   const stack = []
-
   headingsList.forEach(heading => {
     const level = heading.level
     const item = {
@@ -82,7 +92,7 @@ function buildHierarchy(headingsList) {
       stack.pop()
     if (stack.length === 0)
       root.push(item)
-     else
+    else
       stack[stack.length - 1].children.push(item)
     stack.push(item)
   })
@@ -101,7 +111,6 @@ function hashString(str) {
 function generateToc() {
   if (!headings.length) return
   const items = headings.map((heading, index) => {
-    console.log(heading.tagName)
     if (!heading.id)
       heading.id ||= `h-${hashString(heading.innerText+index)}`
     return {
@@ -113,14 +122,11 @@ function generateToc() {
     }
   })
   toc.value = buildHierarchy(items)
-  // console.log('TOC generated:', toc.value)
 }
 
-// Tìm heading active dựa trên vị trí scroll
 function findActiveHeading() {
   if (!headings.length) return null
   const scrollPosition = window.scrollY
-  // Tìm heading cuối cùng mà top của nó <= scrollPosition
   let activeHeading = null
   for (let i = headings.length - 1; i >= 0; i--) {
     const heading = headings[i]
@@ -130,23 +136,19 @@ function findActiveHeading() {
       break
     }
   }
-  // Nếu không tìm thấy, lấy heading đầu tiên
   if (!activeHeading && headings.length > 0)
     activeHeading = headings[0]
   return activeHeading
 }
 
-// Cập nhật active heading
 function updateActiveHeading() {
   if (isScrolling) return
   const activeHeading = findActiveHeading()
   if (activeHeading && activeHeading.id !== activeId.value) {
     activeId.value = activeHeading.id
-    // console.log('Active heading:', activeHeading.id, activeHeading.innerText) // Debug
   }
 }
 
-// Scroll đến heading
 function scrollToHeading(id) {
   const element = document.getElementById(id)
   if (!element) return
@@ -158,16 +160,13 @@ function scrollToHeading(id) {
     behavior: 'smooth'
   })
   activeId.value = id
-  // Reset isScrolling sau khi scroll xong
   if (scrollTimer) clearTimeout(scrollTimer)
   scrollTimer = setTimeout(() => {
     isScrolling = false
-    // Cập nhật lại active heading sau khi scroll
     setTimeout(updateActiveHeading, 100)
   }, 800)
 }
 
-// Handle scroll event với debounce
 function handleScroll() {
   if (isScrolling) return
   if (scrollTimer) clearTimeout(scrollTimer)
@@ -176,18 +175,13 @@ function handleScroll() {
   }, 50)
 }
 
-// Khởi tạo Intersection Observer
 function initObserver() {
   if (!headings.length) return
   observer = new IntersectionObserver(
       (entries) => {
         if (isScrolling) return
-        // Chỉ xét headings đang thực sự visible
         const visibleHeadings = entries
             .filter(entry => {
-              // Heading được coi là visible khi:
-              // 1. Intersecting với viewport
-              // 2. Đã scroll qua một phần (không còn ở quá cao)
               const rect = entry.target.getBoundingClientRect()
               const isPastTop = rect.top <= props.scrollOffset
               const isVisible = entry.isIntersecting && isPastTop
@@ -195,7 +189,6 @@ function initObserver() {
             })
             .map(entry => entry.target)
         if (visibleHeadings.length > 0) {
-          // Lấy heading trên cùng
           const topHeading = visibleHeadings.reduce((prev, current) => {
             return prev.offsetTop < current.offsetTop ? prev : current
           })
@@ -212,15 +205,12 @@ function initObserver() {
   headings.forEach(heading => observer.observe(heading))
 }
 
-
 watch(activeId, (newId) => {
   if (newId && tocRef.value) {
     const activeLink = tocRef.value.querySelector(`a[href="#${newId}"]`)
     if (activeLink) {
-
       const linkRect = activeLink.getBoundingClientRect()
       const containerRect = tocRef.value.getBoundingClientRect()
-
       if (linkRect.top < containerRect.top || linkRect.bottom > containerRect.bottom) {
         activeLink.scrollIntoView({
           behavior: 'smooth',
@@ -254,8 +244,6 @@ function refreshToc() {
     headings = Array.from(document.querySelectorAll(selector))
     generateToc()
     if (headings.length) {
-      console.log(headings)
-
       initObserver()
       updateActiveHeading()
       window.addEventListener(
@@ -269,22 +257,6 @@ function refreshToc() {
   }
 }
 
-// watch(
-//     () => route.fullPath,
-//     async () => {
-//       cleanup()
-//       if (route.name !== 'blog') return
-//       await nextTick()
-//       refreshToc()
-//       window.addEventListener(
-//           'scroll',
-//           handleScroll,
-//           { passive: true }
-//       )
-//     },
-//     { immediate: true }
-// )
-
 onUnmounted(cleanup)
 
 defineExpose({
@@ -296,22 +268,96 @@ defineExpose({
 
 <style scoped>
 .toc-container {
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border-left: 3px solid #42b883;
+  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   max-height: calc(100vh - 100px);
   overflow-y: auto;
-  font-size: 0.95rem;
+  backdrop-filter: blur(10px);
+}
+
+.toc-container:hover {
+  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+/* Header styles */
+.toc-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid rgba(59, 130, 246, 0.15);
+  position: relative;
+}
+
+.toc-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, #3b82f6, #1e40af);
+  border-radius: 2px;
+}
+
+.toc-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  border-radius: 10px;
+  color: white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.toc-icon-wrapper:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.toc-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .toc-title {
-  margin: 0 0 1rem 0;
+  margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #2c3e50;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -0.3px;
 }
 
+.toc-count {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 2px 8px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.toc-count:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: scale(1.05);
+}
+
+/* Navigation */
 .toc-nav {
   position: relative;
 }
@@ -320,72 +366,257 @@ defineExpose({
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .toc-item {
-  margin: 2px 0;
+  position: relative;
+  margin: 0;
+  animation: slideIn 0.3s ease backwards;
+  animation-delay: calc(var(--index, 0) * 0.02s);
 }
 
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Link styles */
 .toc-link {
-  display: block;
-  padding: 6px 8px;
-  color: #4a5568;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: #4b5563;
   text-decoration: none;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  border-radius: 10px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  word-break: break-word;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   line-height: 1.4;
+  position: relative;
+  overflow: hidden;
+}
+
+.toc-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.08), transparent);
+  transition: width 0.3s ease;
+}
+
+.toc-link:hover::before {
+  width: 100%;
 }
 
 .toc-link:hover {
-  background: #e9ecef;
-  color: #42b883;
-  padding-left: 12px;
+  background: rgba(59, 130, 246, 0.08);
+  color: #3b82f6;
+  transform: translateX(4px);
 }
 
-
-.toc-item.is-active > .toc-link {
-  background: #42b883;
-  color: white;
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(66, 184, 131, 0.2);
-}
-
-
-.toc-level-2 .toc-link {
-  font-weight: 500;
-}
-
-.toc-level-3 .toc-link {
-  font-size: 0.85rem;
-}
-
-.toc-level-4 .toc-link {
-  font-size: 0.8rem;
-  color: #666;
-}
-
-
-.toc-container::-webkit-scrollbar {
+.toc-link-indicator {
   width: 4px;
+  height: 4px;
+  background: #cbd5e0;
+  border-radius: 50%;
+  transition: all 0.25s ease;
+}
+
+.toc-link:hover .toc-link-indicator {
+  background: #3b82f6;
+  transform: scale(1.5);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.toc-link-text {
+  flex: 1;
+  font-weight: 400;
+}
+
+/* Active state */
+.toc-item.is-active {
+  animation: pulse 0.4s ease;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.toc-item.is-active .toc-link {
+  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+}
+
+.toc-item.is-active .toc-link-indicator {
+  background: white;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  box-shadow: none;
+}
+
+.toc-item.is-active .toc-link-text {
+  font-weight: 500;
+}
+
+/* Level styles */
+.toc-level-1 .toc-link-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.toc-level-2 .toc-link-text {
+  font-weight: 500;
+}
+
+.toc-level-3 .toc-link-text {
+  font-size: 0.8125rem;
+  opacity: 0.9;
+}
+
+.toc-level-4 .toc-link-text {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Custom scrollbar */
+.toc-container::-webkit-scrollbar {
+  width: 5px;
 }
 
 .toc-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: 10px;
 }
 
 .toc-container::-webkit-scrollbar-thumb {
-  background: #42b883;
-  border-radius: 4px;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  border-radius: 10px;
+  transition: all 0.2s ease;
 }
 
+.toc-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #2563eb, #1e3a8a);
+}
 
+/* Responsive */
 @media (max-width: 768px) {
   .toc-container {
-    max-height: 300px;
+    max-height: 350px;
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .toc-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .toc-icon-wrapper {
+    width: 28px;
+    height: 28px;
+  }
+
+  .toc-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .toc-title {
+    font-size: 1rem;
+  }
+
+  .toc-link {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.8125rem;
+  }
+
+  .toc-link-indicator {
+    width: 3px;
+    height: 3px;
+  }
+
+  .toc-item.is-active .toc-link-indicator {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .toc-container {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-color: rgba(59, 130, 246, 0.2);
+  }
+
+  .toc-title {
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  .toc-link {
+    color: #cbd5e1;
+  }
+
+  .toc-link:hover {
+    background: rgba(59, 130, 246, 0.12);
+    color: #60a5fa;
+  }
+
+  .toc-link-indicator {
+    background: #64748b;
+  }
+
+  .toc-container::-webkit-scrollbar-track {
+    background: rgba(59, 130, 246, 0.1);
+  }
+
+  .toc-count {
+    background: rgba(59, 130, 246, 0.15);
+  }
+}
+
+/* Print styles */
+@media print {
+  .toc-container {
+    background: white;
+    box-shadow: none;
+    border: 1px solid #ddd;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .toc-link {
+    color: black;
+  }
+
+  .toc-link:hover {
+    transform: none;
+  }
+
+  .toc-icon-wrapper {
+    background: #3b82f6;
   }
 }
 </style>

@@ -7,9 +7,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.blogapi.dto.internal.*;
 import top.blogapi.dto.request.blog.BlogQueryRequest;
 import top.blogapi.dto.request.blog.BlogUpdatePublishedRequest;
 import top.blogapi.dto.request.blog.BlogUpdateRecommendRequest;
@@ -17,16 +17,13 @@ import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.Blog;
 import top.blogapi.model.entity.Tag;
-import top.blogapi.model.vo.ArchiveBlog;
-import top.blogapi.model.vo.BlogDetail;
-import top.blogapi.model.vo.BlogInfo;
 import top.blogapi.repository.BlogRepository;
 import top.blogapi.service.BlogService;
-import top.blogapi.model.vo.BlogIdAndTitle;
 import top.blogapi.util.markdown.MarkdownUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -143,19 +140,19 @@ public class BlogServiceImpl implements BlogService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BlogIdAndTitle> getIdAndTitleList() {
+    public List<BlogIdAndTitleInternal> getIdAndTitleList() {
         return blogRepository.getIdAndTitleList();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<BlogInfo> getBlogInfoListByIsPublished() {
+    public List<BlogTagsInfoInternal> getBlogInfoListByIsPublished() {
         return blogRepository.getBlogInfoListByIsPublished();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend() {
+    public List<BlogIdAndTitleInternal> getIdAndTitleListByIsPublishedAndIsRecommend() {
         return blogRepository.getIdAndTitleListByIsPublishedAndIsRecommend();
     }
 
@@ -167,23 +164,42 @@ public class BlogServiceImpl implements BlogService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ArchiveBlog> getArchiveBlogListByYearMonthAndIsPublished(List<String> yearMonths) {
+    public List<ArchiveBlogInternal> getArchiveBlogListByYearMonthAndIsPublished(List<String> yearMonths) {
         return blogRepository.getArchiveBlogListByYearMonthAndIsPublished(yearMonths);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public BlogDetail getBlogByIdAndIsPublished(Long id) {
-        BlogDetail blogDetail =  blogRepository.getBlogWithCategory(id)
+    public BlogDetailInternal getBlogByIdAndIsPublished(Long id) {
+        BlogDetailInternal blogDetailInternal =  blogRepository.getBlogWithCategory(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_FOUND,"Blog không tồn tại"));
-        blogDetail.setTags(blogRepository.findTagsByBlogId(id));
-        blogDetail.setContent(MarkdownUtils.markdownToHtmlExtensions(blogDetail.getContent()));
-        return blogDetail;
+        blogDetailInternal.setTags(blogRepository.findTagsByBlogId(id));
+        blogDetailInternal.setContent(MarkdownUtils.markdownToHtmlExtensions(blogDetailInternal.getContent()));
+        return blogDetailInternal;
     }
 
     @Override
     public Boolean getCommentEnabledByBlogId(Long blogId) {
         return blogRepository.getCommentEnabledByBlogId(blogId);
+    }
+
+
+    @Override
+    public List<SearchBlog> searchBlogs(String search) {
+        return blogRepository.searchBlogs(search);
+    }
+
+    @Override
+    public void flushViewsAllBlogs(Map<Long, Long> map) {
+        int r = blogRepository.flushViews(map);
+        if(map.size() != r)
+            log.info("update bị thiếu {}-{}={}",map.size(),r, map.size()-r);
+    }
+
+
+    @Override
+    public Long getViewsByBlogId(Long blogId) {
+        return blogRepository.queryViewsByBlogId(blogId);
     }
 
 

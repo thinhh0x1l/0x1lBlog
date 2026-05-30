@@ -1,5 +1,7 @@
 package top.blogapi.service.impl;
 
+import com.maxmind.geoip2.exception.AddressNotFoundException;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.AsnResponse;
 import com.maxmind.geoip2.model.CityResponse;
 import lombok.AccessLevel;
@@ -12,6 +14,7 @@ import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 @Service
 @Slf4j
@@ -19,6 +22,7 @@ import java.net.InetAddress;
 public class GeoIpService {
     DatabaseReader cityReader;
     DatabaseReader asnReader;
+
     @PostConstruct
     public void init() throws Exception {
         cityReader = buildReader("ipdb/City.mmdb");
@@ -59,6 +63,23 @@ public class GeoIpService {
         return cityReader.city(ipAddress);
     }
 
+    public String getProvince(String ip) {
+        try {
+            CityResponse response = getCity(ip);
+            return response.country().name()+"/"+response.mostSpecificSubdivision().name();
+
+        } catch (UnknownHostException e) {
+            return "Unknown";
+
+        } catch (AddressNotFoundException e) {
+            // IP không tồn tại trong database GeoLite
+            return "Unknown";
+
+        } catch (Exception e) {
+            log.error("GeoIP lookup failed. ip={}", ip, e);
+            return "Unknown";
+        }
+    }
     public AsnResponse getAsn(String ip) throws Exception {
         InetAddress ipAddress = InetAddress.getByName(ip);
         return asnReader.asn(ipAddress);

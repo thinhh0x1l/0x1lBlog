@@ -1,7 +1,7 @@
 <template>
   <div >
     <Comment/>
-    <Pagination/>
+    <Pagination v-if="commentStore.pageInfo.totalPages>1"/>
   </div>
 </template>
 
@@ -15,24 +15,19 @@ import {useRoute} from "vue-router";
 const route = useRoute()
 const commentStore = useCommentStore()
 
-const props = defineProps({
-  page: {
-    type: Number,
-    required: true,
-  },
-  blogId: {
-    type: Number,
-    required: true,
-  }
-})
+const props = defineProps<{
+  page: number
+  blogId: number|null
+}>()
 const init =  () => {
   commentStore.setCommentQueryPage(props.page)
   commentStore.setCommentQueryBlogId(props.blogId)
   commentStore.setCommentQueryPageNum(1)
   commentStore.getCommentList()
 }
-watch(() => route.params.id,
+watch(() => route.path,
     (newId) => {
+  commentStore.clearCommentData()
   init()
 },{ immediate: true})
 

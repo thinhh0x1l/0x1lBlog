@@ -8,7 +8,7 @@ import { inject } from 'vue'
 import 'primeicons/primeicons.css' // Chỉ cần 1 lần
 import 'primeflex/themes/primeone-light.css'
 import 'primeflex/primeflex.css'
-
+import Tooltip from 'primevue/tooltip'
 // Import PrimeVue components
 import Textarea from 'primevue/textarea'
 import FloatLabel from 'primevue/floatlabel'
@@ -39,6 +39,7 @@ import Popover from 'primevue/popover'
 import ToggleSwitch  from 'primevue/toggleswitch'
 import Form from '@primevue/forms/form';
 import FormField from '@primevue/forms/formfield';
+import AutoComplete from 'primevue/autocomplete';
 import {SimplePreset} from "@/plugins/primevueConfig/primeThemeConfig.js";
 
 
@@ -56,7 +57,7 @@ const PrimeVuePlugin = {
         })
         app.use(ToastService)
         app.use(ConfirmationService)
-
+        app.directive('tooltip', Tooltip)
         const components = {
             'Button': Button,
             'InputText': InputText,
@@ -87,6 +88,7 @@ const PrimeVuePlugin = {
             'Form': Form,
             'Accordion': Accordion,
             'FormField': FormField,
+            'AutoComplete': AutoComplete,
         }
 
         Object.entries(components).forEach(([name, component]) => {

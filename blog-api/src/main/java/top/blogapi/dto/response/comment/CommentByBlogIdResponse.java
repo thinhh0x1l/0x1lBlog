@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.pagehelper.PageInfo;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import top.blogapi.dto.response._page.PageResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,19 +14,10 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentByBlogIdResponse {
-
-    PageInfo<CommentNode> comments;
-    CommentStats commentStats;
-
-    public CommentByBlogIdResponse(PageInfo<CommentNode> comments,Integer totalComments){
-        this.comments = comments;
-        this.commentStats = new CommentStats();
-        this.commentStats.totalComments = totalComments;
-    }
+    PageResult<CommentNode> comments;
 
     public CommentByBlogIdResponse(PageInfo<CommentNode> comments){
-        this.comments = comments;
-        this.commentStats = new CommentStats(0,0);
+        this.comments = PageResult.from(comments);
     }
 
     @Data
@@ -42,15 +34,16 @@ public class CommentByBlogIdResponse {
         Boolean adminComment;
         String reply;
         String website;
+        boolean editAble = false;
+        boolean isEdited;
         Long threadRoot;
+        Long parentCommentId;
         List<CommentNode> replyComment;
+
+        public CommentNode setEditAble(Long id1, Long prId){
+            this.editAble = prId != null && id1 == prId;
+            return this;
+        }
     }
-    @Data
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CommentStats {
-        Integer totalComments;
-        Integer uniqueCommenters ;
-    }
+
 }

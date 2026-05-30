@@ -5,6 +5,7 @@ import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.ext.gfm.tables.TableBlock;
 import org.commonmark.ext.gfm.tables.TablesExtension;
 import org.commonmark.ext.task.list.items.TaskListItemsExtension;
+import org.commonmark.node.Image;
 import org.commonmark.node.Link;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
@@ -84,10 +85,13 @@ public class MarkdownUtils {
             // Thay đổi thuộc tính target của thẻ a thành _blank
             if (node instanceof Link) {
                 attributes.put("target", "_blank");
+                attributes.put("rel", "noreferrer nofollow noopener");
             }
             if (node instanceof TableBlock) {
                 attributes.put("class", "ui celled table");
             }
+            if(node instanceof Image)
+                attributes.put("loading", "lazy");
         }
     }
 

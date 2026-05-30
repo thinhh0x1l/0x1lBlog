@@ -3,11 +3,10 @@ package top.blogapi.controller;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import top.blogapi.model.vo.Result;
+import org.springframework.web.bind.annotation.*;
+import top.blogapi.dto.response._common.Result;
+import top.blogapi.service._zing_mp3.MusicService;
+import top.blogapi.service.cacheService.BlogCacheService;
 import top.blogapi.service.impl.orchestration.BlogOrchestrator;
 
 
@@ -17,9 +16,21 @@ import top.blogapi.service.impl.orchestration.BlogOrchestrator;
 @FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
 public class BlogController {
     BlogOrchestrator blogOrchestrator;
-
+    BlogCacheService blogViewCacheService;
+    MusicService musicService;
     @GetMapping("/blog")
     public Result<?> getBlog(@RequestParam Long id){
-        return Result.ok("Yêu cầu thành công", blogOrchestrator.getBlogByIdAndIsPublished(id));
+        blogViewCacheService.increase(id);
+        return Result.ok("Yêu cầu thành công", blogOrchestrator.getBlogDetail(id));
+    }
+
+    @GetMapping("/music/{songId}")
+    public Result<?> getMusic(@PathVariable String songId) {
+        return Result.ok("Yêu cầu thành công", musicService.getMusic(songId));
+    }
+
+    @GetMapping("/search-blog")
+    public Result<?> searchBlog(@RequestParam("query") String search){
+        return Result.ok("Yêu cầu thành công",blogOrchestrator.searchBlogs(search));
     }
 }

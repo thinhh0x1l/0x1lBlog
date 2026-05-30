@@ -6,7 +6,19 @@
         <span><img src="/img/logo.svg" alt="Logo" height="60">
            Hệ thống quản lý Blog</span>
       </div>
-      <el-button type="info" @click="logout">Đăng xuất</el-button>
+
+      <el-dropdown>
+        <div class="avatar-wrapper">
+          <img :src="user?.avatar? user.avatar: '/img/avatar.jpg'" class="user-avatar">
+        </div>
+
+        <template #dropdown>
+          <el-dropdown-menu class="el-dropdown-link1  ">
+            <el-dropdown-item>
+              <el-button type="info" @click="logout">Đăng xuất</el-button></el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </el-header>
 
     <!-- Main Content -->
@@ -64,7 +76,13 @@
         </el-menu>
       </el-aside>
 
-      <!-- Right Content Area -->
+<!--      <el-main :class="isCollapse?'m-el-main-width-64':'m-el-main-width-190'">-->
+<!--        <router-view v-slot="{ Component }">-->
+<!--          <keep-alive include="WriteBlog,WriteMoment">-->
+<!--            <component :is="Component" />-->
+<!--          </keep-alive>-->
+<!--        </router-view>-->
+<!--      </el-main>-->
       <el-main :class="isCollapse?'m-el-main-width-64':'m-el-main-width-190'">
         <router-view :key="route.fullPath"/>
       </el-main>
@@ -74,7 +92,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted} from "vue";
+import {ref, onMounted, reactive, watch} from "vue";
 import {useRouter ,useRoute } from "vue-router";
 import { getCurrentInstance } from "vue";
 import { useAppStore } from '@/store/index.js'
@@ -88,7 +106,7 @@ const route = useRoute()
 const router = useRouter()
 
 //Reactive data
-const isCollapse = ref(false)
+const isCollapse = ref(true)
 const defaultOpeneds = ref(['1','2','3'])
 
 const menuList = [
@@ -110,18 +128,30 @@ const menuList = [
       },
       {
         id: 13,
+        title: 'Quản lý khoảng khắc',
+        children: [],
+        path: '/moments'
+      },
+      {
+        id: 14,
+        title: 'Viết khoảng khắc',
+        children: [],
+        path: '/moments/write'
+      },
+      {
+        id: 15,
         title: 'Quản lý thể loại',
         children: [],
         path: '/categories'
       },
       {
-        id: 14,
+        id: 16,
         title: 'Quản lý Tags',
         children: [],
         path: '/tags'
       },
       {
-        id: 15,
+        id: 17,
         title: 'Quản lý bình luận',
         children: [],
         path: '/comments'
@@ -143,6 +173,12 @@ const menuList = [
         title: 'Quản lý trang Web',
         children: [],
         path: '/siteSettings'
+      },
+      {
+        id: 23,
+        title: 'Quản lý Giới thiệu',
+        children: [],
+        path: '/about'
       }
     ]
   },
@@ -206,10 +242,12 @@ const iconsObj = {
   '33': Document,
 }
 
+const user = ref({})
 const toast = useToast()
 // Lifecycle
 onMounted(() => {
-
+  const userData = sessionStorage.getItem('user')
+  user.value = userData ? JSON.parse(userData) : null
 })
 
 // Các phương thức
@@ -265,6 +303,7 @@ const toggleCollapse = () => {
   bottom: 0;
   right: 0;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .m-el-main-width-190 {
@@ -293,4 +332,19 @@ const toggleCollapse = () => {
 .toggle-button:hover {
   background-color: #5a6074;
 }
+
+.el-dropdown-link1 {
+  cursor: pointer;
+  color: #368FD3;
+  background: #368FD3;
+  display: flex;
+  align-items: center;
+}
+.user-avatar {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
 </style>

@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 import top.blogapi.dto.request.category.CategoryQueryRequest;
 import top.blogapi.service.impl.orchestration.CategoryOrchestrator;
-import top.blogapi.model.vo.Result;
+import top.blogapi.dto.response._common.Result;
 
 @RestController
 @RequiredArgsConstructor

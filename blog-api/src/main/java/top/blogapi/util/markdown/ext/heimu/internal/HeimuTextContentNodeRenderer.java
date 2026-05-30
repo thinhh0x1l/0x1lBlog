@@ -8,7 +8,7 @@ import org.commonmark.renderer.text.TextContentWriter;
  * Description: Kết xuất ra text thuần
  * */
 
-public class HeimuTextContentNodeRenderer extends HeimuNodeRenderer {
+public class HeimuTextContentNodeRenderer extends AbstractHeimuNodeRenderer {
     private final TextContentNodeRendererContext context;
     private final TextContentWriter textContext;
 

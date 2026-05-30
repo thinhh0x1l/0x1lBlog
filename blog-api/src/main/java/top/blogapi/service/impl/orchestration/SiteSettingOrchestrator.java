@@ -1,25 +1,28 @@
 package top.blogapi.service.impl.orchestration;
 
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.blogapi.client.zing_mp3.Mp3Service;
-import top.blogapi.model.TypeSetting;
+import top.blogapi.dto.internal.BadgeInternal;
+import top.blogapi.dto.internal.FavoriteInternal;
+import top.blogapi.dto.internal.IntroductionInternal;
+import top.blogapi.dto.request.siteSetting.SiteSettingUpdateReq;
+import top.blogapi.service._zing_mp3.Mp3Service;
+import top.blogapi.constant.CacheNameConstant;
+import top.blogapi.model.enums.TypeSetting;
 import top.blogapi.model.entity.SiteSetting;
-import top.blogapi.model.vo.Badge;
-import top.blogapi.model.vo.Copyright;
-import top.blogapi.model.vo.Favorite;
-import top.blogapi.model.vo.Introduction;
+import top.blogapi.dto.internal.CopyrightInternal;
 import top.blogapi.service.SiteSettingService;
 
 import java.util.*;
@@ -27,112 +30,135 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static top.blogapi.model.TypeSetting.*;
+import static top.blogapi.model.enums.TypeSetting.*;
 
+@Slf4j
 @Service
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class SiteSettingOrchestrator {
     SiteSettingService siteSettingService;
-    ObjectMapper objectMapper;
+
     Mp3Service mp3Service;
+
+    ObjectMapper objectMapper;
 
    public Map<String, List<SiteSetting>> getList(){
        return siteSettingService.getList().stream()
                .collect(Collectors.groupingBy(siteSetting -> "type" + siteSetting.getType()));
    }
 
-   public Map<String, Object> getSiteInfo(){
-       List<SiteSetting> siteSettings = siteSettingService.getList();
+    @Cacheable(value = CacheNameConstant.SITE_INFO_MAP)
+    public Map<String, Object> getSiteInfo() {
+        List<SiteSetting> siteSettings = siteSettingService.getList();
 
-       // Phân nhóm theo type
-       Map<Integer, List<SiteSetting>> groupedByType = siteSettings.stream()
-               .collect(Collectors.groupingBy(SiteSetting::getType));
+        Map<Integer, List<SiteSetting>> groupedByType =
+                siteSettings.stream()
+                        .collect(Collectors.groupingBy(SiteSetting::getType));
 
-       // Xử lý từng nhóm
-       Map<String, Object> siteInfoMap = processSiteInfo(groupedByType.getOrDefault(TYPE_SITE_INFO.getType(), List.of()));
-       List<Badge> badges = processBadges(groupedByType.getOrDefault(TypeSetting.TYPE_BADGE.getType(), List.of()));
-       Introduction introduction = processIntroduction(groupedByType.getOrDefault(TYPE_INTRODUCTION.getType(), List.of()));
-      // processMp3 (groupedByType.getOrDefault(TYPE_MP3.getType(), List.of()));
-       Map<String, Object> map = new HashMap<>();
-       map.put("siteInfo", siteInfoMap);
-       map.put("badges", badges);
-       map.put("introduction", introduction);
-       return map;
-   }
+        Map<String, Object> siteInfoMap =
+                processSiteInfo(groupedByType.getOrDefault(TYPE_SITE_INFO.getType(), List.of()));
+
+        List<BadgeInternal> badgeInternals =
+                processBadges(groupedByType.getOrDefault(TypeSetting.TYPE_BADGE.getType(), List.of()));
+
+        IntroductionInternal introductionInternal =
+                processIntroduction(groupedByType.getOrDefault(TYPE_INTRODUCTION.getType(), List.of()));
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("siteInfo", siteInfoMap);
+        result.put("badges", badgeInternals);
+        result.put("introduction", introductionInternal);
+
+        return result;
+    }
 
 
     /// Xử lý thông tin site (type 1)
-    private Map<String, Object> processSiteInfo(List<SiteSetting> siteInfos){
+    private Map<String, Object> processSiteInfo(List<SiteSetting> siteInfos)  {
         Map<String, Object> result = new HashMap<>();
         for(SiteSetting info : siteInfos){
             if("copyright".equals(info.getNameEn()))
-                result.put(info.getNameEn(), JSON.parseObject(info.getValue(), Copyright.class));
+                try {
+                    result.put(info.getNameEn(), objectMapper.readValue(info.getValue(), CopyrightInternal.class));
+                }catch (JsonProcessingException ex){
+                    log.warn("Lỗi parse info: {}", info.getValue());
+                }
             else
                 result.put(info.getNameEn(), info.getValue());
         }
         return result;
     }
 
-    /// Xử lý Badge (type 2)
-    private List<Badge> processBadges(List<SiteSetting> badgeSettings){
+    /// Xử lý BadgeInternal (type 2)
+    private List<BadgeInternal> processBadges(List<SiteSetting> badgeSettings){
         return badgeSettings.stream()
-                .map(setting -> JSON.parseObject(setting.getValue(), Badge.class))
+                .map(setting -> {
+                    try {
+                        return objectMapper.readValue(setting.getValue(), BadgeInternal.class);
+                    } catch (JsonProcessingException e) {
+                        log.warn("Lỗi parse BadgeInternal: {}", setting.getValue());
+                    }
+                    return null;
+                })
                 .collect(Collectors.toList());
     }
 
     /// Xử lý thông tin giới thiệu (type 3)
-    private Introduction processIntroduction(List<SiteSetting> introSettings){
-        Introduction introduction = new Introduction();
-        List<Favorite> favorites = new ArrayList<>();
+    private IntroductionInternal processIntroduction(List<SiteSetting> introSettings){
+        IntroductionInternal introductionInternal = new IntroductionInternal();
+        List<FavoriteInternal> favoriteInternals = new ArrayList<>();
         List<String> rollTexts = new ArrayList<>();
         for (SiteSetting info : introSettings) {
-            processIntroField(info, introduction, favorites, rollTexts);
+            processIntroField(info, introductionInternal, favoriteInternals, rollTexts);
         }
-        introduction.setFavorites(favorites);
-        introduction.setRollText(rollTexts);
-        return introduction;
+        introductionInternal.setFavorites(favoriteInternals);
+        introductionInternal.setRollText(rollTexts);
+        return introductionInternal;
     }
 
-    private Map<String, Map<String, Object>> processMp3(List<SiteSetting> mp3Settings){
+    public Map<String, Map<String, Object>> loadConfig() {
         Map<String, Map<String, Object>> map = new HashMap<>();
-        mp3Settings.forEach((siteSetting) -> {
-            try {
-                JsonNode jsonNode = objectMapper.readTree(siteSetting.getValue());
-                Map<String, Object> nodeMap = objectMapper.convertValue(jsonNode, Map.class);
-                map.put(siteSetting.getNameEn(),nodeMap);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        System.out.println(map);
-        mp3Service.setConfigFromDb(map);
 
+        siteSettingService.getMp3Setting(TYPE_MP3.getType())
+                .forEach(siteSetting -> {
+                    try {
+                        JsonNode jsonNode = objectMapper.readTree(siteSetting.getValue());
+                        Map<String, Object> nodeMap = objectMapper.convertValue(jsonNode, new TypeReference<Map<String, Object>>() {});
+                        map.put(siteSetting.getNameEn(), nodeMap);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
         return map;
     }
 
     @PostConstruct
-    private void configMp3Setting(){
-        Map<String, Map<String, Object>> map = new HashMap<>();
-        siteSettingService.getMp3Setting(TYPE_MP3.getType()).forEach((siteSetting) -> {
-            try {
-                JsonNode jsonNode = objectMapper.readTree(siteSetting.getValue());
-                Map<String, Object> nodeMap = objectMapper.convertValue(jsonNode, Map.class);
-                map.put(siteSetting.getNameEn(),nodeMap);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        System.out.println(map);
+    private void init() {
+        Map<String, Map<String, Object>> map = loadConfig();
         mp3Service.setConfigFromDb(map);
     }
-
-    /// Xử lý từ Field trong Introduction
-    private void processIntroField(SiteSetting siteSetting, Introduction intro,
-                                   List<Favorite> favorites, List<String> rollTexts){
+    public void reloadConfig() {
+        Map<String, Map<String, Object>> map = loadConfig();
+        mp3Service.setConfigFromDb(map);
+    }
+    /// Xử lý từ Field trong IntroductionInternal
+    private void processIntroField(SiteSetting siteSetting, IntroductionInternal intro,
+                                   List<FavoriteInternal> favoriteInternals, List<String> rollTexts){
         String nameEn = siteSetting.getNameEn();
         String value = siteSetting.getValue();
+        FavoriteInternal favoriteInternal = null;
+        if(nameEn.equals("favorite")){
+            try {
+                favoriteInternal = objectMapper.readValue(value, FavoriteInternal.class);
+            }catch (JsonProcessingException ex){
+                log.warn("Lỗi parse favorite: {}", value);
+                nameEn = "";
+            }
+        }
+
+
         switch (nameEn){
             case "avatar" -> intro.setAvatar(value);
             case "name" -> intro.setName(value);
@@ -141,7 +167,7 @@ public class SiteSettingOrchestrator {
             case "facebook" -> intro.setFacebook(value);
             case "leetCode" -> intro.setLeetCode(value);
             case "instagram" -> intro.setInstagram(value);
-            case "favorite" -> favorites.add(JSON.parseObject(value, Favorite.class));
+            case "favorite" -> favoriteInternals.add(favoriteInternal);
             case "rollText" -> rollTexts.addAll(extractRollTexts(value));
         }
     }
@@ -156,20 +182,24 @@ public class SiteSettingOrchestrator {
         return texts;
     }
 
-    public void updateAll(Map<String, Object> map){
-        List<LinkedHashMap> siteSettings = (List<LinkedHashMap>) map.get("settings");
-        List<Integer> deleteIds = (List<Integer>) map.get("deleteIds");
-        System.out.println(deleteIds);
-        for(Integer id : deleteIds)
-            siteSettingService.deleteSettingById(Long.parseLong( id+""));
-        for (LinkedHashMap s : siteSettings){
-            JSONObject siteSettingJsonObject  = new JSONObject(s);
-            SiteSetting siteSetting = siteSettingJsonObject .toJavaObject(SiteSetting.class);
-            if(siteSetting.getId() != null)
-                siteSettingService.updateSiteSetting(siteSetting);
-            else
-                siteSettingService.saveSiteSetting(siteSetting);
-        }
+    @CacheEvict(value = CacheNameConstant.SITE_INFO_MAP, allEntries = true)
+    public void updateAll(SiteSettingUpdateReq req){
+        List<SiteSetting> siteSettings =
+                Optional.ofNullable(req.getSettings())
+                        .orElse(Collections.emptyList());
+        List<Long> deleteIds =
+                Optional.ofNullable(req.getDeleteIds())
+                        .orElse(Collections.emptyList());
+        List<SiteSetting> updates = new ArrayList<>();
+        List<SiteSetting> saves = new ArrayList<>();
+
+        for (SiteSetting s : siteSettings)
+            if(s.getId() != null) updates.add(s);
+            else saves.add(s);
+
+        siteSettingService.saveSiteSetting(saves);
+        siteSettingService.updateSiteSetting(updates);
+        siteSettingService.deleteSettingById(deleteIds);
     }
 
 

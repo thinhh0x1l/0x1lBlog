@@ -12,7 +12,7 @@ import java.util.Map;
  * Description: Kết xuất ra Html
  * */
 
-public class HeimuHtmlNodeRenderer extends HeimuNodeRenderer{
+public class HeimuHtmlNodeRenderer extends AbstractHeimuNodeRenderer {
     private final HtmlWriter html;
     private final HtmlNodeRendererContext context;
 

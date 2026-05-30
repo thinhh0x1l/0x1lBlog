@@ -1,4 +1,4 @@
-import type {PageInfo} from "@/plugins/axios2";
+import type {PageResult} from '@/types/commonType'
 import type {BlogInfo} from "@/types/blogType";
 
 export interface Tag{
@@ -6,7 +6,12 @@ export interface Tag{
     name: string,
     color: string
 }
+export interface TagSlug{
+    slug: string,
+    name: string,
+    color: string
+}
 export interface TagIdGetBlogsResponse {
-    queryTag: Tag,
-    blogInfos: PageInfo<BlogInfo>;
+    queryTag: TagSlug,
+    blogInfos: PageResult<BlogInfo>;
 }

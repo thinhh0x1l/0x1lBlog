@@ -8,11 +8,11 @@ import java.util.Map;
 public interface SiteSettingService {
     List<SiteSetting> getList();
 
-    void updateSiteSetting(SiteSetting siteSetting);
+    void updateSiteSetting(List<SiteSetting> siteSetting);
 
-    void deleteSettingById(Long id);
+    void deleteSettingById(List<Long> ids);
 
-    void saveSiteSetting(SiteSetting siteSetting);
+    void saveSiteSetting(List<SiteSetting> siteSetting);
 
     List<SiteSetting> getMp3Setting(int type);
 }

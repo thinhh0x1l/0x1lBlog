@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -24,12 +26,16 @@ public class User implements UserDetails {
     LocalDateTime createTime;
     LocalDateTime updateTime;
     // 1: admin; 2: user
-    Integer role;
+    String role;
 
-    @JsonIgnore
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return List.of(
+                new SimpleGrantedAuthority(
+                        "ROLE_" + role
+                )
+        );
     }
 
     @JsonIgnore

@@ -1,13 +1,11 @@
 package top.blogapi.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Jwts;
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,9 +19,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import top.blogapi.service.impl.UserServiceImpl;
+import top.blogapi.filter.GuestTokenFilter;
+import top.blogapi.filter.JwtAuthenticationFilter;
+import top.blogapi.service.auth.UserServiceImpl;
 
-import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.util.List;
 
@@ -31,29 +30,17 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
 public class SecurityConfig {
+
+    //filter
+    JwtAuthenticationFilter jwtAuthenticationFilter;
+    GuestTokenFilter guestTokenFilter;
+
     UserServiceImpl userService;
     MyAuthenticationEntryPoint myAuthenticationEntryPoint;
-    ObjectMapper objectMapper;
+    MyAccessDeniedHandler myAccessDeniedHandler;
 
-
-    //SecretKey cho jwt
     @Bean
-    public SecretKey secretKey(){
-        return Jwts.SIG.HS512.key().build();
-    }
-    @Bean
-    public JwtFilter jwtFilter() {
-        return new JwtFilter(secretKey(), objectMapper);
-    }
-    @Bean
-    public JwtLoginFilter jwtLoginFilter(AuthenticationManager authenticationManager) {
-        long EXPIRE_TIME = 3600 * 6;
-        return new JwtLoginFilter("/admin/login",authenticationManager,secretKey(),objectMapper, EXPIRE_TIME);
-    }
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   JwtLoginFilter jwtLoginFilter,
-                                                   JwtFilter jwtFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -62,27 +49,34 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-
-                        .requestMatchers("/admin/**").authenticated()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/admin/auth/**", "/admin/guest/bootstrap").permitAll()
+                        .requestMatchers("/admin/dashboard").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/admin/**").hasAnyRole("admin", "visitor")
+                        .requestMatchers("/admin/**").hasRole("admin")
                         .anyRequest().permitAll()
                 )
                 //filter JWT tùy chỉnh
-                .addFilterBefore(jwtLoginFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtFilter, JwtLoginFilter.class)
+                .addFilterBefore(guestTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
-                .exceptionHandling(ex->ex
+                .exceptionHandling(ex -> ex
+                        // 401 - AuthenticationEntryPoint
                         .authenticationEntryPoint(myAuthenticationEntryPoint)
+                        // 403 - AccessDeniedHandler
+                        .accessDeniedHandler(myAccessDeniedHandler)
                 );
         return http.build();
     }
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         configuration.setMaxAge(Duration.ofSeconds(3600)); //cache preflight 1h
+        configuration.addExposedHeader("X-Guest-Token");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 

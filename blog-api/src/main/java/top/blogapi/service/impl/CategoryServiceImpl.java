@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.blogapi.dto.internal.BlogTagsInfoInternal;
 import top.blogapi.dto.request.category.CategoryQueryRequest;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
@@ -74,5 +75,10 @@ public class CategoryServiceImpl implements CategoryService {
     public void updateCategory(Category category) {
         if( categoryRepository.updateCategory(category)==0)
             throw new AppException(ErrorCode.COMMENT_NOT_FOUND,"Thể loại này không tồn tại");
+    }
+
+    @Override
+    public List<BlogTagsInfoInternal> getBlogInfoListByCategoryNameAndIsPublished(String categoryName) {
+        return categoryRepository.getBlogInfoListByCategoryNameAndIsPublished(categoryName);
     }
 }

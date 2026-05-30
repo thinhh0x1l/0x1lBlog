@@ -1,6 +1,6 @@
 import axios from '@/plugins/axios'
-import type {CommentByBlogIdResponse, SaveCommentReq} from "@/types/commentType";
-import type {ApiResponse} from "@/plugins/axios2";
+import type {CommentByBlogIdResponse, EditCommentReq, SaveCommentReq} from "@/types/commentType";
+import type {ApiResponse} from "@/types/commonType";
 
 export function getCommentListByQuery(query: any):Promise<ApiResponse<CommentByBlogIdResponse>> {
     return axios({
@@ -12,10 +12,24 @@ export function getCommentListByQuery(query: any):Promise<ApiResponse<CommentByB
     })
 }
 
-export function submitComment(req: SaveCommentReq):Promise<ApiResponse<null>>{
+export function submitComment(req: SaveCommentReq, token: string):Promise<ApiResponse<null>>{
     return axios({
         url: 'comment',
         method: 'POST',
+        headers: {
+            "Authorization": token
+        },
+        data: req,
+    })
+}
+
+export function editComment(req: EditCommentReq, token: string):Promise<ApiResponse<null>>{
+    return axios({
+        url: 'comment',
+        method: 'PUT',
+        headers: {
+            "Authorization": token
+        },
         data: req,
     })
 }

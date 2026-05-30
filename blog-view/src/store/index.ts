@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import {computed, ref, watch} from "vue";
+import router from "@/router";
+import {useRoute} from "vue-router";
 
 // Interfaces
 export interface SiteInfo {
@@ -24,7 +26,6 @@ export const useAppStore = defineStore('app', () => {
     // Site info state
     const siteInfo = ref<SiteInfo>(getStorage<SiteInfo>('siteInfo', {}));
     const introduction = ref<Introduction>(getStorage<Introduction>('introduction', getDefaultIntro()));
-
 
     // Getters
     const webTitleSuffix = computed(() => siteInfo.value?.webTitleSuffix || '');

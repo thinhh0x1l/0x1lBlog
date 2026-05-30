@@ -174,6 +174,7 @@ const addBadge = () => {
     }
   })
   toast.info('Đã thêm huy hiệu mới')
+  console.log(typeMap.value)
 }
 
 const addFavorite = () => {

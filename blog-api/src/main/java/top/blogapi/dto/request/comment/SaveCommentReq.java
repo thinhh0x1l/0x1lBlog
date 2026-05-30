@@ -16,4 +16,5 @@ public class SaveCommentReq {
     boolean notice;
     Long blogId;
     Long parentCommentId;
+    Integer page;
 }

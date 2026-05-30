@@ -93,7 +93,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="queryInfo.pageNum"
-          :page-sizes="[5, 10, 15, 20]"
+          :page-sizes="[5, 10, 20, 50]"
           :page-size="queryInfo.pageSize"
           :total="total"
           layout="total, sizes, prev, pager, next, jumper"
@@ -110,8 +110,7 @@ import { Search, Edit, Delete } from '@element-plus/icons-vue'
 import {
   getDataQuery, deleteBlogById, getCategoryAndTag,
   saveBlog, updateBlogRecommendById, updateBlogPublishedById, updateTop
-}
-  from '@/api/blog.js'
+} from '@/api/blog.js'
 import { formatDate } from '@/util/dateTimeFormatUtils.js'
 import  { getCurrentInstance } from 'vue'
 import Breadcrumb from "@/components/Breadcrumb.vue";

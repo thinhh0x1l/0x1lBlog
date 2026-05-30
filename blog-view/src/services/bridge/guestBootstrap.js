@@ -1,0 +1,41 @@
+import {useGuestStore} from "@/store/guessStore.js";
+
+import {getGuestToken} from "@/services/bridge/bridge.js";
+import {createGuestToken} from "@/api/index.js";
+import {createBridgeFrame } from "@/services/bridge/createBridgeFrame.js";
+
+export async function initGuestToken() {
+
+    const guestStore =
+        useGuestStore();
+
+    if (guestStore.isTokenExist)
+        return;
+
+    // tạo iframe bridge
+    await createBridgeFrame();
+
+    try {
+        // hỏi FE khác
+        const token = await getGuestToken();
+
+        if (token) {
+            guestStore.setToken(token);
+            console.log("Lấy token từ FE khác thành công");
+            return;
+        }
+    } catch (e) {
+        console.log("FE khác không có token");
+    }
+
+    // fallback BE
+    console.log("Yêu cầu backend cấp token");
+    try{
+        const res = await createGuestToken()
+        console.log(res)
+    }catch (e){
+        console.error(e)
+    }
+
+
+}

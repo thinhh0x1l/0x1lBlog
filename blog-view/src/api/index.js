@@ -22,3 +22,10 @@ export function getSite(){
         method: 'GET'
     })
 }
+
+export function createGuestToken(){
+    return axios({
+        url: 'guest/bootstrap',
+        method: 'GET'
+    })
+}

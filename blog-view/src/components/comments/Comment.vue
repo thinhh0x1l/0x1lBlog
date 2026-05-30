@@ -1,8 +1,8 @@
 <template>
-    <h3 class="dividing">Comments | Tổng {{ commentStats.totalComments }} bình luận</h3>
+    <h3 class="dividing">Comments | Tổng {{pageInfo?.totalElements }} bình luận</h3>
     <CommentInfoUser ref="infoRef" :form-validate-message="formValidateMessage"/>
-    <CommentForm v-if="!replyCmId"
-                 @submit="handleSubmit"/>
+    <CommentForm v-if="!replyCmId && commentEditForm.id == -1"
+                 @submit="throttledSubmit"/>
     <div class="comments-list">
       <div v-for="cm in comments"
            :key="cm.id"
@@ -11,24 +11,48 @@
           <div class="comment-item">
             <Avatar
                 :shape="'circle'"
-                :image="'https://raw.githubusercontent.com/thinhh0x1l/0x1lBlog/refs/heads/main/blog-view/src/assets/img/comment-avatar/'+cm.avatar"
+                :image="cm.adminComment ? cm.avatar : `/img/comment-avatar/${cm.avatar}`"
                 :size="'large'"
             />
-            <div class="comment"  :ref="el => setItemRef(el,cm.id)">
-              <div class="comment-header">
-                <a class="nickname" :href="cm.website?.trim() || '#'"
-                   target="_blank" rel="external nofollow noopener">{{cm.nickname}}</a>
-                <span class="owner-tag" :style="{background:  '#fa2745'}"
-                      v-if="cm.adminComment">
-                  {{siteInfo.commentAdminFlag}}</span>
-                <span class="metadata">
-                  {{ ` ${formatDate(cm.createTime,'YYYY-MM-DD HH:mm')}`}}
-                </span>
-                <span class="replying" :style="{background: replyCmId ===cm.id? '#fa2745' : '#48a5ff'}"
-                      @click="setReplyComment(cm.threadRoot,cm.id,cm.nickname)">
+             <div
+                 v-show="commentEditForm.id != cm.id"
+             >
+               <div style="display: flex; flex-direction: column">
+                 <div :id="`comment-${cm.id}`" class="comment"  :ref="el => setItemRef(el,cm.id)">
+                   <div class="comment-header">
+                     <a class="nickname" :href="cm.website?.trim() || '#'"
+                        target="_blank" rel="external nofollow noopener">{{cm.nickname}}</a>
+                     <span class="owner-tag"  v-if="cm.adminComment"> {{siteInfo.commentAdminFlag}}</span>
+                     <span class="owner-tag" v-else-if="cm.editAble"> {{siteInfo.commentGuess}}</span>
+
+                     <span class="replying" :style="{background: replyCmId ===cm.id? '#fa2745' : '#48a5ff'}"
+                           @click="setReplyComment(cm.threadRoot,cm.id,cm.nickname)">
                   {{replyCmId ===cm.id ? 'Hủy': 'Trả lời'}}</span>
+                   </div>
+                   <div  class="content">{{cm.content}}</div>
+
+                 </div>
+                 <div class="metadata">
+                   {{ ` ${formatDate(cm.createTime,'YYYY-MM-DD HH:mm')}`}}
+                   <span v-if="cm.isEdited"> Đã chỉnh sửa</span>
+                 </div>
+               </div>
+             </div >
+            <div v-show="commentEditForm.id == cm.id">
+              <CommentForm @submit="handleSubmit" />
+              <div @click="removeEdit">Hủy</div>
+            </div>
+
+            <div v-if="cm.editAble || cm.adminComment&&adminToken" class="edit-circle" @click.stop="toggleMenu(cm.id)">
+              ⋯
+              <div v-if="openedMenu === cm.id" class="comment-menu">
+                <div class="menu-item" @click.stop="editComment(cm)">
+                  Sửa
+                </div>
+                <div class="menu-item delete" @click.stop="deleteComment(cm.id)">
+                  Xóa
+                </div>
               </div>
-              <div>{{cm.content}}</div>
             </div>
           </div>
           <div class="">
@@ -40,27 +64,55 @@
                 <Avatar
                     class="avt-l"
                     :shape="'circle'"
-                    :image="'/src/assets/img/comment-avatar/'+replyCm.avatar"
+                    :image="replyCm.adminComment ? replyCm.avatar : `/img/comment-avatar/${replyCm.avatar}`"
                     :size="'normal'"
                 />
-                <div class="comment" :ref="el => setItemRef(el,replyCm.id)">
-                  <div class="comment-header">
-                    <a class="nickname"  :href="cm.website?.trim() || '#'"
-                          target="_blank" rel="external nofollow noopener">{{replyCm.nickname}}</a>
-                    <span class="owner-tag" v-if="replyCm.adminComment">{{siteInfo.commentAdminFlag}}</span>
-                    <div class="metadata">
-                      {{ ` ${formatDate(replyCm.createTime,'YYYY-MM-DD HH:mm')}`}}
+                <div
+                    v-show="commentEditForm.id != replyCm.id"
+                >
+                  <div style="display: flex; flex-direction: column">
+                    <div
+                        :id="`comment-${replyCm.id}`"
+                        class="comment"
+                        :ref="el => setItemRef(el,replyCm.id)">
+                      <div class="comment-header">
+                        <a class="nickname"  :href="cm.website?.trim() || '#'"
+                              target="_blank" rel="external nofollow noopener">{{replyCm.nickname}}</a>
+                        <span class="owner-tag" v-if="replyCm.adminComment">{{siteInfo.commentAdminFlag}}</span>
+                        <span class="owner-tag" v-else-if="replyCm.editAble"> {{siteInfo.commentGuess}}</span>
+
+                        <span class="replying" :style="{background: replyCmId ===replyCm.id? '#fa2745' : '#48a5ff'}"
+                                @click="setReplyComment(cm.threadRoot,replyCm.id,replyCm.nickname)">
+                          {{replyCmId ===replyCm.id ? 'Hủy': 'Trả lời'}}</span>
+                      </div>
+                      <div><span  @click="scrollToComment(replyCm.parentCommentId)"
+                                  class="reply">{{`${replyCm.reply}`}}</span>{{ ` ${replyCm.content} `}}</div>
                     </div>
-                    <span class="replying" :style="{background: replyCmId ===replyCm.id? '#fa2745' : '#48a5ff'}"
-                            @click="setReplyComment(cm.threadRoot,replyCm.id,replyCm.nickname)">
-                      {{replyCmId ===replyCm.id ? 'Hủy': 'Trả lời'}}</span>
+                    <div class="metadata">
+                      <span v-if="!replyCm.isEdited">{{ ` ${formatDate(replyCm.createTime,'YYYY-MM-DD HH:mm')}`}}</span>
+                      <span v-else>{{ ` ${formatDate(replyCm.createTime,'YYYY-MM-DD HH:mm')}  Đã chỉnh sửa `}}</span>
+                    </div>
                   </div>
-                  <div><span class="reply">{{`${replyCm.reply}`}}</span>{{ ` ${replyCm.content} `}}</div>
+                </div>
+                <div v-show="commentEditForm.id == replyCm.id">
+                  <CommentForm @submit="handleSubmit" />
+                  <div @click="removeEdit">Hủy</div>
+                </div>
+                <div v-if="replyCm.editAble ||replyCm.adminComment&&adminToken" class="edit-circle" @click.stop="toggleMenu(replyCm.id)">
+                  ⋯
+                  <div v-if="openedMenu === replyCm.id" class="comment-menu">
+                    <div class="menu-item" @click.stop="editComment(replyCm)">
+                      Sửa
+                    </div>
+                    <div class="menu-item delete" @click.stop="deleteComment(replyCm.id)">
+                      Xóa
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div v-if="threadRoot === cm.threadRoot && replyCmId" class="comment-item comment-reply">
+          <div v-if="threadRoot === cm.threadRoot && replyCmId " class="comment-item comment-reply">
             <CommentForm @submit="handleSubmit" />
           </div>
           <div v-if="cm.replyComment"  class="thread-line"/>
@@ -73,18 +125,22 @@
 <script setup lang="ts">
 import {formatDate} from "@/util/dateTimeFormatUtils.js";
 import CommentForm from "@/components/comments/CommentForm.vue";
-import {ref, watch} from "vue";
+import {onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useCommentStore} from "@/store/commentStore";
 import {storeToRefs} from "pinia";
 import CommentInfoUser from "@/components/comments/CommentInfoUser.vue";
 import {useAppStore} from "@/store";
 
+import {toast} from "@/plugins/primevueConfig/primePluginVue";
+import {throttle} from "lodash-es";
+
 const commentStore = useCommentStore()
 const store = useAppStore()
 
 const {siteInfo} = storeToRefs(store)
-const {comments,threadRoot,commentStats,commentForm} = storeToRefs(commentStore)
+const {comments,threadRoot,commentForm, pageInfo, commentEditForm, isEditing} = storeToRefs(commentStore)
 
+const adminToken = sessionStorage.getItem('adminToken') ||''
 const commentRefs = ref<Record<any,any>>({})
 let currentEl: any = null
 const replyCmId = ref<number|null>(null)
@@ -112,16 +168,36 @@ const formValidateMessage = ref<Record<string, string>>({
   email:'',
 })
 const handleSubmit = async () => {
-  const { valid, firstErrorKey } = commentStore.validateAll()
-  formValidateMessage.value = {}
-  if (!valid && firstErrorKey) {
-    formValidateMessage.value[firstErrorKey[0]] = firstErrorKey[1]
-    infoRef.value?.scrollToField(firstErrorKey[0] as any)
-    return
+  console.log(isEditing.value)
+  if(sessionStorage.getItem('adminToken')){
+    if(!isEditing.value&&commentForm.value.content==='' || commentForm.value.content.length >250)
+      toast.warn('Nội dung bình luận không hợp lê!')
+    else{
+      replyCmId.value = null
+      if(   currentEl&& !isEditing.value)
+        currentEl.classList.remove('is-reply')
+      await commentStore.handleSubmitComment()
+    }
+    return;
   }
-  await commentStore.postComment()
-
+  if(!isEditing.value) {
+    const { valid, firstErrorKey } = commentStore.validateAll()
+    formValidateMessage.value = {}
+    if (!valid && firstErrorKey) {
+      formValidateMessage.value[firstErrorKey[0]] = firstErrorKey[1]
+      infoRef.value?.scrollToField(firstErrorKey[0] as any)
+      console.log('aaa')
+      return
+    }
+  }
+  replyCmId.value = null
+  if(  currentEl&&  !isEditing.value)
+    currentEl.classList.remove('is-reply')
+  await commentStore.handleSubmitComment()
 }
+
+const throttledSubmit = throttle(handleSubmit, 10000)
+
 const setItemRef= (el: any, index: number) =>{
   if(el&&!commentRefs.value[index])
     commentRefs.value[index]=el
@@ -132,6 +208,61 @@ const setItemRef= (el: any, index: number) =>{
 watch(()=> comments.value , () =>{
   commentRefs.value = {}
   replyCmId.value = null
+})
+
+
+const openedMenu = ref<any>(null)
+
+const toggleMenu = (id :any) => {
+  openedMenu.value =
+      openedMenu.value === id ? null : id
+}
+
+const editComment = (cm :any) => {
+  console.log('edit', cm)
+  commentEditForm.value.content = cm.content
+  commentEditForm.value.id = cm.id
+  openedMenu.value = null
+  isEditing.value = true
+}
+const removeEdit = () => {
+  commentEditForm.value.content = ''
+  commentEditForm.value.id = -1
+  isEditing.value = false;
+}
+const deleteComment = (id :any) => {
+  console.log('delete', id)
+
+  openedMenu.value = null
+}
+
+const closeMenu = () => {
+  openedMenu.value = null
+}
+
+const scrollToComment = async (id: number) => {
+  const el = document.getElementById(`comment-${id}`)
+
+  if (!el) return
+
+  el.scrollIntoView({
+    behavior: 'smooth',
+    block: 'center'
+  })
+
+  el.classList.remove('comment-highlight')
+
+  void el.offsetWidth
+
+  el.classList.add('comment-highlight')
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeMenu)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeMenu)
 })
 </script>
 
@@ -157,6 +288,8 @@ watch(()=> comments.value , () =>{
 }
 .comment-item{
   display: flex;
+  align-items: flex-start;
+  gap: 5px;
   flex-direction: row;
   margin: 10px  ;
 }
@@ -166,8 +299,21 @@ watch(()=> comments.value , () =>{
   border-radius: 10px;
   padding: 0.4rem 1rem;
   margin: 0 3px;
+  min-width: 0;
 }
-
+.content{
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.edit-circle{
+  flex-shrink: 0;
+  background: #c1d7df;
+  padding: 5px 10px;
+  border-radius: 10px 10px ;
+  top: 10px;
+  font-weight: bolder;
+  cursor: pointer;
+}
 .comment-header{
   display: flex;
   align-items: center;
@@ -183,7 +329,9 @@ watch(()=> comments.value , () =>{
 .metadata {
   font-weight: 700;
   color: rgba(0, 0, 0, 0.51);
-  font-size: 1em;
+  font-size: 14px;
+  margin-left: 20px;
+  margin-top: 5px;
 }
 .owner-tag{
   cursor: default;
@@ -224,9 +372,27 @@ watch(()=> comments.value , () =>{
   margin-left: 4.57rem  ;
 }
 .reply{
-  background: #8fede8;
+  color: #0f766e;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
 }
+.reply:before {
+   content: '';
+   position: absolute;
+   bottom: -2px;
+   height: 1px;
+   width: 0;
+   background-color: #1abc9c;
+   transform: translateX(50%);
+   right: 50%;
+   transition: width .25s ease-in-out;
+ }
 
+.reply:hover::before {
+  width: 100%;
+}
 
 .avt-l{
   position: relative;
@@ -267,5 +433,61 @@ watch(()=> comments.value , () =>{
     box-shadow: 0 0 0 10px rgba(0, 167, 224, 0);
     border-width: 3px;
   }
+}
+
+
+
+.edit-circle{
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.comment-menu{
+  position: absolute;
+  top: 30px;
+  right: 0;
+
+  width: 80px;
+  background: white;
+
+  border-radius: 10px;
+  box-shadow:
+      0 4px 12px rgba(0,0,0,.12);
+
+  overflow: hidden;
+  z-index: 20;
+}
+
+.menu-item{
+  padding: 10px 14px;
+  font-size: 14px;
+  transition: .2s;
+}
+
+.menu-item:hover{
+  background: #f5f5f5;
+}
+
+.menu-item.delete{
+  color: #ff4d4f;
+}
+
+.comment-highlight {
+  animation: highlightFade 3s ease;
+}
+
+@keyframes highlightFade {
+  0% {
+    background: #8ceeff;
+  }
+
+  100% {
+    background: #e0fff1;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
 }
 </style>

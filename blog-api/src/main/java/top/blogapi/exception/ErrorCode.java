@@ -6,6 +6,19 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
+    /**
+     *  400 - BAD REQUEST
+     * */
+    ABOUT_UPDATE_PARTIAL("ABOUT_UPDATE_PARTIAL", HttpStatus.BAD_REQUEST,"Update thiếu row"),
+
+    INVALID_INPUT("INVALID_INPUT", HttpStatus.BAD_REQUEST, "Dữ liệu không đúng"),
+
+    CONTENT_REQUIRED("CONTENT_REQUIRED", HttpStatus.BAD_REQUEST, "Nội dung cần phải được điền"),
+
+    /**
+     *  404 - NOT FOUND
+     * */
+
     USER_NOT_FOUND("USER_NOT_FOUND", HttpStatus.NOT_FOUND, "Không tìm thấy User"),
 
     COMMENT_NOT_FOUND("COMMENT_NOT_FOUND", HttpStatus.NOT_FOUND, "Comment not found"),
@@ -20,11 +33,10 @@ public enum ErrorCode {
 
     SITE_SETTINGS_NOT_FOUND("SITE_SETTINGS_NOT_FOUND", HttpStatus.NOT_FOUND, "SiteSetting not found"),
 
-
-
-    INVALID_INPUT("INVALID_INPUT", HttpStatus.BAD_REQUEST, "Dữ liệu không đúng"),
+    MOMENT_NOT_FOUND("MOMENT_NOT_FOUND", HttpStatus.NOT_FOUND,"MomentInternal not found"),
 
     UNAUTHORIZED("UNAUTHORIZED", HttpStatus.UNAUTHORIZED, "Bạn cần phải đăng nhập"),
+    DATA_CONFLICT("DATA_CONFLICT", HttpStatus.CONFLICT, "Xung đột dữ liệu"),
     FORBIDDEN("FORBIDDEN", HttpStatus.FORBIDDEN, "Bạn không được phép truy cập"),
     INTERNAL_ERROR("INTERNAL_ERROR", HttpStatus.INTERNAL_SERVER_ERROR, "Hệ thống gặp sự cố");
 

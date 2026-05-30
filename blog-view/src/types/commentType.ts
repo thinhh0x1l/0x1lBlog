@@ -1,4 +1,4 @@
-import type {PageInfo} from "@/plugins/axios2";
+import type {PageResult} from '@/types/commonType'
 
 export interface SaveCommentReq{
     content: string,
@@ -6,8 +6,14 @@ export interface SaveCommentReq{
     email: string,
     notice: boolean,
     blogId: number | null,
+    page: number // 0-1
     website?: string,
     parentCommentId: number | null
+}
+
+export interface EditCommentReq{
+    id: number
+    content: string,
 }
 
 export interface CommentQuery {
@@ -26,19 +32,18 @@ export interface CommentNode {
     createTime: string
     adminComment: boolean
     reply: string
+    editAble: boolean,
+    isEdited: boolean,
     threadRoot: number
     website: string
+    parentCommentId: number
     replyComment: CommentNode[]
 }
 
 // CommentStats
-export interface CommentStats {
-    totalComments: number
-    uniqueCommenters: number
-}
+
 
 // Main response
 export interface CommentByBlogIdResponse {
-    comments: PageInfo<CommentNode>
-    commentStats: CommentStats
+    comments: PageResult<CommentNode>
 }

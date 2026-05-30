@@ -1,12 +1,11 @@
 <template>
   <div class="" style="text-align: center">
     <Paginator
-        :rows="pageSize"
-        :totalRecords="totalRecords"
+        :rows="pageInfo.pageSize"
+        :totalRecords="pageInfo.totalElements"
         @page="handlePageChange"
         :template="{
           layout: 'PrevPageLink PageLinks NextPageLink',
-
         }"
         class="custom-paginator"
     />
@@ -19,27 +18,19 @@ import {useScrollToTop} from "@/util/ScrollToTop.js";
 const {scrollToTop} = useScrollToTop()
 
 const props = defineProps({
-  getBlogList: {
-    type: Function,
+  pageInfo:{
+    type: Object,
     required: true
   },
-  totalPage: {
-    type: Number,
+  getBlogList: {
+    type: Function,
     required: true
   }
 })
 
-const pageNum = ref(1)
-const first = ref(0)
-const pageSize = ref(5)
-
-const totalRecords = computed(() => props.totalPage * pageSize.value)
-
-
 
 const handlePageChange = (event) => {
   scrollToTop()
-  pageNum.value = event.page
   props.getBlogList(event.page+1)
 }
 </script>

@@ -22,7 +22,7 @@
               ]"
           >
               <font-awesome-icon icon="lightbulb" class="mr-2"/>
-              Thể loai
+              Phân loại
               <Menu ref="menu" :model="categoryItems"
                     :pt="{root: { class: 'custom-menu-nav' }}"
                       @mouseleave="menu?.hide()"
@@ -36,15 +36,15 @@
             <font-awesome-icon icon="archive" class="mr-2 pi" />Lưu trữ
           </router-link>
             <router-link :class="[mobileMenuOpen? 'm-mobile-show':'m-mobile-hide',
-                $route.name==='moment'?'active':'']"
+                $route.name==='moments'?'active':'']"
                 class=" nav-line  no-underline t-m-bold
-                 transition-colors transition-duration-200 p-3" to="">
+                 transition-colors transition-duration-200 p-3" to="/moments">
               <font-awesome-icon icon="comment-dots" class="mr-2" />Khoảng khắc
             </router-link>
             <router-link :class="[mobileMenuOpen? 'm-mobile-show':'m-mobile-hide',
                $route.name==='about'?'active':'']"
                 class=" nav-line no-underline t-m-bold
-                transition-colors transition-duration-200 p-3" to="">
+                transition-colors transition-duration-200 p-3" to="/about">
               <font-awesome-icon icon="info-circle" class="mr-2" />Về tôi
             </router-link>
 
@@ -52,13 +52,31 @@
                >
             <div >
               <div class="m-search">
-                <input
-                    type="text"
+                <div class="card flex justify-center">
+                  <AutoComplete
+                      v-model="queryString"
+                      :suggestions="suggestions"
+                      @complete="debounceSearch"
+                      optionLabel="title"
+                      placeholder="Search..."
+                      :forceSelection="false"
+                      :loading="loading"
+                      @item-select="handleSelect"
+                  >
+                    <template #option="slotProps">
+                      <div v-if="slotProps.option.loading" class="p-2 text-center">
+                        <i class="pi pi-spin pi-spinner mr-2"></i>
+                        Đang tìm kiếm...
+                      </div>
 
-                    placeholder="Search..."
-                    class="search-input"
+                      <div v-else>
+                         <div class="title" >{{ slotProps.option.title }}</div>
+                        <span class="content">{{ slotProps.option.content }}</span>
+                      </div>
+                    </template>
+                  </AutoComplete>
+                </div>
 
-                />
                 <font-awesome-icon icon="search" class="search icon t-m-bold"></font-awesome-icon>
 
                 <!-- Suggestions dropdown -->
@@ -82,9 +100,10 @@
 import {computed, onMounted, ref} from 'vue'
 import {useRouter} from "vue-router";
 import type {Category} from "@/types/categoryType.ts";
-import type {ApiResponse} from "@/plugins/axios2";
 import {fGetCategoryList} from "@/api/category";
-
+import {fSearchBlog} from "@/api/blog";
+import type { AutoCompleteCompleteEvent } from 'primevue/autocomplete';
+import type {ApiResponse} from "@/types/commonType";
 
 const router = useRouter()
 const menu = ref()
@@ -115,7 +134,7 @@ const categoryRoute = (name: string) => {
 const categoryItems = computed(() =>
     categoryList.value.map(category => ({
       label: category.name,
-      command: () => categoryRoute(category.name)
+      command: () => categoryRoute(category.slug)
     }))
 )
 
@@ -123,15 +142,65 @@ const getCategoryList = async () => {
   try{
     const res: ApiResponse<Category[]> = await fGetCategoryList();
     if(res.code === 200){
-      console.log('success')
       categoryList.value = res.data
+      console.log(categoryList.value)
     }
 
   }catch (e){
     console.log('error')
   }
 }
+const queryString = ref<string>('')
+const suggestions = ref<any>([])
+let timer: any = null
 
+const debounceSearch = (event: AutoCompleteCompleteEvent) => {
+  clearTimeout(timer)
+  const query = event.query
+  if (
+      !query ||
+      query.trim() === '' ||
+      /[%_\[#*]/.test(query) ||
+      query.trim().length > 20
+  ) {
+    suggestions.value = [] // thay callback([])
+    return
+  }
+  loading.value = true
+  suggestions.value = [{ title: 'Đang tìm kiếm...', loading: true }]
+  timer = setTimeout(() => {
+    search(event)
+  }, 1000) // nên 300–500ms
+}
+
+const loading = ref(false)
+const search = async (event: AutoCompleteCompleteEvent) => {
+  const query = event.query
+  try {
+    const res: any = await fSearchBlog(query)
+    if (res.code / 100 === 2) {
+      let data = res.data
+      if (!data.length) {
+        data = [{ title: 'Không tìm thấy kết quả phù hợp' }]
+      }
+      suggestions.value = data // thay callback
+      console.log(suggestions.value)
+    }
+  } catch (e) {
+    suggestions.value = []
+  }finally {
+    loading.value = false
+  }
+}
+
+const handleSelect = (event: any) => {
+  const blog = event.value
+  if (blog?.loading) return
+  if (blog?.id) {
+    queryString.value = ''
+    router.push(`/blog/${blog.id}`)
+  }
+}
 onMounted(() => {
   getCategoryList()
 })
@@ -310,7 +379,23 @@ onMounted(() => {
   background: #023d67 !important;
   color: #93c5fd!important;
 }
-
+.title {
+  line-height: normal !important;
+  padding: 8px 10px !important;
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+.m-search-item {
+  min-width: 350px !important;
+}
+.content {
+  line-height: normal !important;
+  padding: 8px 10px !important;
+  text-overflow: ellipsis !important;
+  font-size: 12px !important;
+  color: rgba(0, 0, 0, .70) !important;
+}
 .m-search.loading .search.icon::after {
   content: "";
   position: absolute;

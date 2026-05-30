@@ -7,7 +7,7 @@ import org.commonmark.renderer.html.HtmlWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CoverHtmlNodeRenderer extends CoverNodeRenderer {
+public class CoverHtmlNodeRenderer extends AbstractCoverNodeRenderer {
 
     private final HtmlWriter html;
     private final HtmlNodeRendererContext context;

@@ -14,6 +14,21 @@ body,
   font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 
+.emoji-text {
+
+  font-family:
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Noto Color Emoji",
+          sans-serif;
+  font-size: 20px;
+  line-height: 1.6;
+  letter-spacing: 2px;
+  display: inline-block;
+  vertical-align: middle;
+
+}
+
 h1,h2, h3, h4,a {
   /*scroll-behavior: smooth;*/
   /*scroll-margin-top: 80px;*/
@@ -146,7 +161,7 @@ footer {
   );
   background-size: 400% 100%;
   color: transparent;
-
+  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
   animation: shimmer 3s ease-in-out infinite;
   font-weight: 700;
 }
@@ -287,7 +302,13 @@ footer {
 .m-common-black i {
   margin-right: 3px !important;
 }
+.m-common-black * * {
+  vertical-align: middle !important;
+}
 
+.m-big-fontsize p, .m-big-fontsize ul, .m-big-fontsize ol {
+  font-size: 17px !important;
+}
 
 /*-----------------------Button--------------------------*/
 .color-btn {

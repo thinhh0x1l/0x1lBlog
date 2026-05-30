@@ -1,15 +1,14 @@
 package top.blogapi.repository;
 
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Result;
 import org.springframework.stereotype.Repository;
+import top.blogapi.dto.internal.*;
 import top.blogapi.model.entity.Blog;
 import top.blogapi.model.entity.Tag;
-import top.blogapi.model.vo.ArchiveBlog;
-import top.blogapi.model.vo.BlogDetail;
-import top.blogapi.model.vo.BlogIdAndTitle;
-import top.blogapi.model.vo.BlogInfo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Mapper
@@ -67,6 +66,7 @@ public interface BlogRepository {
             is_comment_enabled,
             create_time,
             update_time,
+            music_id,
             views,
             words,
             read_time,
@@ -83,6 +83,7 @@ public interface BlogRepository {
             #{commentEnabled},
             #{createTime},
             #{updateTime},
+            #{musicId},
             #{views},
             #{words},
             #{readTime},
@@ -128,6 +129,7 @@ public interface BlogRepository {
                 b.views,
                 b.words,
                 b.read_time,
+                b.music_id,
                 b.is_top,
                 c.id as category_id,
                 c.name as category_name
@@ -163,6 +165,7 @@ public interface BlogRepository {
             is_appreciation = #{appreciation},
             is_comment_enabled = #{commentEnabled},
             create_time = #{createTime},
+            music_id = #{musicId},
             update_time = #{updateTime},
             views = #{views},
             words = #{words},
@@ -179,23 +182,52 @@ public interface BlogRepository {
     int countBlogByTagId(Long tagId);
 
     @Select("SELECT b.title, b.id FROM blog b ORDER BY create_time DESC ")
-    List<BlogIdAndTitle> getIdAndTitleList();
+    List<BlogIdAndTitleInternal> getIdAndTitleList();
 
-    @Select("SELECT b.id, b.title, b.description, b.create_time, b.views, b.words, b.read_time," +
-            "   b.is_top, c.id AS category_id, c.name AS category_name  " +
-            "FROM blog b LEFT JOIN category c ON b.category_id = c.id " +
-            "WHERE b.is_published = TRUE")
+    @Select("""
+        WITH
+            blog_base AS (
+                SELECT
+                    b.id,
+                    b.title,
+                    b.description,
+                    b.create_time,
+                    b.views,
+                    b.words,
+                    b.read_time,
+                    b.is_top,
+                    c.name AS category_name
+                FROM category c
+                JOIN blog b
+                ON c.id = b.category_id
+                WHERE b.is_published
+            ),
+            blog_tags AS (
+                SELECT
+                    bt.blog_id,
+                    GROUP_CONCAT(t.name SEPARATOR '||') AS allTagNames,
+                    GROUP_CONCAT(t.color SEPARATOR '||') AS allTagColors
+                FROM blog_tag bt
+                JOIN tag t
+                ON t.id = bt.tag_id
+                GROUP BY bt.blog_id
+            )
+        SELECT
+            b.*,
+            bt.allTagNames,
+            bt.allTagColors
+        FROM blog_base b
+        LEFT JOIN blog_tags bt ON bt.blog_id = b.id;
+""")
     @Results({
-            @Result(property = "top", column = "is_top"),
-            @Result(property = "category.id", column = "category_id"),
-            @Result(property = "category.name", column = "category_name")
+            @Result(property = "top", column = "is_top")
     })
-    List<BlogInfo> getBlogInfoListByIsPublished();
+    List<BlogTagsInfoInternal> getBlogInfoListByIsPublished();
 
     @Select("SELECT id, title FROM blog " +
             "WHERE is_published = TRUE AND is_recommend = TRUE " +
             "ORDER BY create_time DESC ")
-    List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend();
+    List<BlogIdAndTitleInternal> getIdAndTitleListByIsPublishedAndIsRecommend();
 
     @Select("SELECT DISTINCT DATE_FORMAT(create_time,'%m/%Y') as day " +
             "FROM blog " +
@@ -221,11 +253,11 @@ public interface BlogRepository {
             </foreach>
         </script>
     """)
-    List<ArchiveBlog> getArchiveBlogListByYearMonthAndIsPublished(List<String> yearMonths);
+    List<ArchiveBlogInternal> getArchiveBlogListByYearMonthAndIsPublished(List<String> yearMonths);
 
     @Select("""
         SELECT b.id, b.title, b.content,  b.is_appreciation, b.music_id,
-               b.is_comment_enabled, b.is_top, b.create_time, b.update_time, b.views, b.words ,
+               b.is_comment_enabled, b.is_top, b.create_time, b.update_time, b.words ,
                b.read_time,c.id AS category_id, c.name AS category_name
         FROM blog AS b
         LEFT JOIN category AS c ON b.category_id = c.id
@@ -238,8 +270,12 @@ public interface BlogRepository {
             @Result(property = "commentEnabled", column = "is_comment_enabled"),
             @Result(property = "top", column = "is_top"),
     })
-    Optional<BlogDetail> getBlogWithCategory(Long id);
+    Optional<BlogDetailInternal> getBlogWithCategory(Long id);
 
+    @Select("""
+        SELECT views FROM blog WHERE id = #{id}
+""")
+    Long queryViewsByBlogId(Long id);
 //    int getAmountOfCommentIs
 
     @Select("""
@@ -259,4 +295,31 @@ public interface BlogRepository {
             @Result(property = "category.id", column = "category_id"),
     })
     List<Blog> getRandomBlogListByLimitNumAndIsPublished(int limitNum);
+
+    @Select("""
+    SELECT id, title, content FROM blog WHERE title LIKE CONCAT('%',#{search},'%') AND is_published = TRUE
+""")
+    List<SearchBlog> searchBlogs(String search);
+
+    @Update("""
+    <script>
+        UPDATE blog
+        SET views = views +
+        CASE id
+            <foreach collection="map" index="key" item="value">
+                WHEN #{key} THEN #{value}
+            </foreach>
+        END
+        WHERE id IN
+        <foreach collection="map.keySet()" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </script>
+""")
+    int flushViews(@Param("map") Map<Long, Long> map);
+
+    @Select("""
+        SELECT COUNT(*) FROM blog
+""")
+    int totalBlogs();
 }

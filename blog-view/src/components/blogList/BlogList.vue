@@ -1,11 +1,15 @@
 <template>
   <div>
-   <BlogItem :blog-list="blogList"/>
+   <BlogItem
+       :blog-list="blogList"
+       :loading="loading"
+       :skeletonCount="5"
+   />
 
-    <Pagination :getBlogList="getBlogList" :totalPage="totalPage"/>
+    <Pagination v-if="pageInfo.totalPages>1" :getBlogList="getBlogList" :page-info="pageInfo"/>
   </div>
 </template>
-<script setup >
+<script setup lang="ts">
  import BlogItem from "@/components/blogList/BlogItem.vue";
  import Pagination from "@/components/blogList/Pagination.vue";
  import {useToast} from "@/plugins/primevueConfig/primePluginVue.js";
@@ -13,6 +17,10 @@
  const toast = useToast()
 
  const props = defineProps({
+   pageInfo:{
+     type: Object,
+     required: true
+   },
    getBlogList:{
      type: Function,
      required: true
@@ -21,9 +29,9 @@
      type: Array,
      required: true,
    },
-   totalPage:{
-     type: Number,
-     required: true,
-   }
+   loading: {
+     type: Boolean,
+     default: false
+   },
  })
 </script>

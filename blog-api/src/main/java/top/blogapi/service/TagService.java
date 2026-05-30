@@ -1,11 +1,9 @@
 package top.blogapi.service;
 
 import com.github.pagehelper.PageInfo;
-import org.apache.ibatis.annotations.Param;
+import top.blogapi.dto.internal.BlogTagsInfoInternal;
 import top.blogapi.dto.request.tag.TagQueryRequest;
-import top.blogapi.dto.response.tag.TagIdGetBlogsResponse;
 import top.blogapi.model.entity.Tag;
-import top.blogapi.model.vo.BlogTagsInfo;
 
 import java.util.List;
 
@@ -28,5 +26,5 @@ public interface TagService {
 
     List<Tag> getTagListByBlogId(Long blogId);
 
-    List<BlogTagsInfo> getBlogInfoListByTagIdAndIsPublished(Long tagId);
+    List<BlogTagsInfoInternal> getBlogInfoListByTagNameAndIsPublished(String name);
 }
