@@ -25,9 +25,11 @@ export async function initGuestToken() {
             guestStore.setToken(token);
             console.log("Lấy token từ FE khác thành công");
             return;
+        }else{
+            console.warn("Lấy token từ FE khác thành công");
         }
     } catch (e) {
-        console.log("FE khác không có token");
+        console.error("Lỗi:FE khác không có token");
     }
 
     // fallback BE
