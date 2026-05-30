@@ -2,9 +2,9 @@ package top.blogapi.repository;
 
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+import top.blogapi.dto.internal.BlogTagsInfoInternal;
 import top.blogapi.model.entity.Tag;
-import top.blogapi.model.vo.BlogInfo;
-import top.blogapi.model.vo.BlogTagsInfo;
+import top.blogapi.dto.internal.TagBlogCount;
 
 import java.util.List;
 import java.util.Optional;
@@ -72,5 +72,15 @@ public interface TagRepository {
     @Results({
             @Result(property = "top", column = "is_top"),
     })
-    List<BlogTagsInfo> getBlogInfoListByTagNameAndIsPublished(String tagName);
+    List<BlogTagsInfoInternal> getBlogInfoListByTagNameAndIsPublished(String tagName);
+
+    @Select("""
+        SELECT t.id, t.name, t.color,
+               SUM(CASE WHEN bt.blog_id IS NOT NULL THEN 1 ELSE 0 END)AS value
+        FROM tag t
+        LEFT JOIN blog_tag bt
+        ON t.id = bt.tag_id
+        GROUP BY t.id
+""")
+    List<TagBlogCount> getListTagBlogCount();
 }

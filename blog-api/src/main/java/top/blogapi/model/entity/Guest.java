@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@ToString
 public class Guest {
     Long id;
     String tokenHash; // String hash = DigestUtils.sha256Hex(token);
@@ -20,5 +19,15 @@ public class Guest {
         this.tokenHash = tokenHash;
         this.createAt = LocalDateTime.now();
         this.lastSeenAt = LocalDateTime.now();
+    }
+
+    @Override
+    public String toString() {
+        return "Guest{" +
+                "\nid=" + id +
+                "\n, tokenHash='" + tokenHash + '\'' +
+                "\n, createAt=" + createAt +
+                "\n, lastSeenAt=" + lastSeenAt +
+                "\n}";
     }
 }

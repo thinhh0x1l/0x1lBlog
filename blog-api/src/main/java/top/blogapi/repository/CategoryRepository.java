@@ -3,7 +3,8 @@ package top.blogapi.repository;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 import top.blogapi.model.entity.Category;
-import top.blogapi.model.vo.BlogTagsInfo;
+import top.blogapi.dto.internal.BlogTagsInfoInternal;
+import top.blogapi.dto.internal.CategoryBlogCountInternal;
 
 import java.util.List;
 import java.util.Optional;
@@ -72,6 +73,16 @@ public interface CategoryRepository {
     @Results({
             @Result(property = "top", column = "is_top"),
     })
-    List<BlogTagsInfo> getBlogInfoListByCategoryNameAndIsPublished(String categoryName);
+    List<BlogTagsInfoInternal> getBlogInfoListByCategoryNameAndIsPublished(String categoryName);
+
+    @Select("""
+        SELECT c.id, c.name,
+           SUM(CASE WHEN b.id IS NOT NULL THEN 1 ELSE 0 END)AS value
+        FROM category c
+        LEFT JOIN blog b
+        ON c.id = b.category_id
+        GROUP BY c.id
+""")
+    List<CategoryBlogCountInternal> getListCategoryBlogCount();
 
 }

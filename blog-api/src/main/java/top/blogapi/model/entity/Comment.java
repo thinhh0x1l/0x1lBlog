@@ -2,11 +2,10 @@ package top.blogapi.model.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import top.blogapi.model.vo.BlogIdAndTitle;
+import top.blogapi.dto.internal.BlogIdAndTitleInternal;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -29,7 +28,7 @@ public class Comment {
     Long guessId;
     Boolean adminComment; // Bình luận của quản trị viên (chủ blog)m r
     Integer page; // 0: bài viết thông thường, 1: trang "Giới thiệu về tôi"
-    BlogIdAndTitle blog; // Bài viết mà bình luận này thuộc về
+    BlogIdAndTitleInternal blog; // Bài viết mà bình luận này thuộc về
     Long parentCommentId; // Bình luận cha (nếu là trả lời)
     List<Comment> replyComments = new ArrayList<>(); // Danh sách các bình luận trả lời bình luận này
 

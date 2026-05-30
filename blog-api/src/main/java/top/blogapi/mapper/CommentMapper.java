@@ -1,12 +1,9 @@
 package top.blogapi.mapper;
 
-import com.github.pagehelper.Page;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import top.blogapi.dto.request.comment.SaveCommentReq;
+import top.blogapi.dto.internal.CommentTreeInternal;
 import top.blogapi.dto.response.comment.CommentByBlogIdResponse;
-import top.blogapi.model.entity.Comment;
-import top.blogapi.model.vo.CommentTree;
 
 import java.util.List;
 
@@ -14,8 +11,8 @@ import java.util.List;
 public interface CommentMapper {
 
     @Mapping(target = "replyComment", ignore = true)
-    CommentByBlogIdResponse.CommentNode toCommentNode(CommentTree commentTree);
+    CommentByBlogIdResponse.CommentNode toCommentNode(CommentTreeInternal commentTreeInternal);
 
-    List<CommentByBlogIdResponse.CommentNode> toCommentNodeList(List<CommentTree> commentTrees);
+    List<CommentByBlogIdResponse.CommentNode> toCommentNodeList(List<CommentTreeInternal> commentTreeInternals);
 
 }

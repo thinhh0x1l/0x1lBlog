@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import top.blogapi.model.entity.About;
-import top.blogapi.model.vo.Result;
+import top.blogapi.dto.response._common.Result;
 import top.blogapi.service.impl.orchestration.AboutOrchestrator;
 
 import java.util.List;

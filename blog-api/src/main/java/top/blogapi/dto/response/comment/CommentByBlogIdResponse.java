@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.pagehelper.PageInfo;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import top.blogapi.model.vo.PageResult;
+import top.blogapi.dto.response._page.PageResult;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -7,11 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import top.blogapi.model.entity.Tag;
-import top.blogapi.model.vo.Result;
+import top.blogapi.dto.response._common.Result;
 import top.blogapi.service.impl.orchestration.TagOrchestrator;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

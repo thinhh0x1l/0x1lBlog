@@ -1,8 +1,6 @@
 package top.blogapi.controller;
 
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -10,9 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import top.blogapi.model.vo.BlogInfo;
-import top.blogapi.model.vo.PageResult;
-import top.blogapi.model.vo.Result;
+import top.blogapi.dto.response._common.Result;
 import top.blogapi.service.impl.orchestration.BlogOrchestrator;
 import top.blogapi.service.impl.orchestration.SiteSettingOrchestrator;
 

@@ -14,15 +14,15 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.blogapi.dto.internal.BadgeInternal;
+import top.blogapi.dto.internal.FavoriteInternal;
+import top.blogapi.dto.internal.IntroductionInternal;
 import top.blogapi.dto.request.siteSetting.SiteSettingUpdateReq;
 import top.blogapi.service._zing_mp3.Mp3Service;
 import top.blogapi.constant.CacheNameConstant;
-import top.blogapi.model.TypeSetting;
+import top.blogapi.model.enums.TypeSetting;
 import top.blogapi.model.entity.SiteSetting;
-import top.blogapi.model.vo.Badge;
-import top.blogapi.model.vo.Copyright;
-import top.blogapi.model.vo.Favorite;
-import top.blogapi.model.vo.Introduction;
+import top.blogapi.dto.internal.CopyrightInternal;
 import top.blogapi.service.SiteSettingService;
 
 import java.util.*;
@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static top.blogapi.model.TypeSetting.*;
+import static top.blogapi.model.enums.TypeSetting.*;
 
 @Slf4j
 @Service
@@ -60,16 +60,16 @@ public class SiteSettingOrchestrator {
         Map<String, Object> siteInfoMap =
                 processSiteInfo(groupedByType.getOrDefault(TYPE_SITE_INFO.getType(), List.of()));
 
-        List<Badge> badges =
+        List<BadgeInternal> badgeInternals =
                 processBadges(groupedByType.getOrDefault(TypeSetting.TYPE_BADGE.getType(), List.of()));
 
-        Introduction introduction =
+        IntroductionInternal introductionInternal =
                 processIntroduction(groupedByType.getOrDefault(TYPE_INTRODUCTION.getType(), List.of()));
 
         Map<String, Object> result = new HashMap<>();
         result.put("siteInfo", siteInfoMap);
-        result.put("badges", badges);
-        result.put("introduction", introduction);
+        result.put("badges", badgeInternals);
+        result.put("introduction", introductionInternal);
 
         return result;
     }
@@ -81,7 +81,7 @@ public class SiteSettingOrchestrator {
         for(SiteSetting info : siteInfos){
             if("copyright".equals(info.getNameEn()))
                 try {
-                    result.put(info.getNameEn(), objectMapper.readValue(info.getValue(), Copyright.class));
+                    result.put(info.getNameEn(), objectMapper.readValue(info.getValue(), CopyrightInternal.class));
                 }catch (JsonProcessingException ex){
                     log.warn("Lỗi parse info: {}", info.getValue());
                 }
@@ -91,14 +91,14 @@ public class SiteSettingOrchestrator {
         return result;
     }
 
-    /// Xử lý Badge (type 2)
-    private List<Badge> processBadges(List<SiteSetting> badgeSettings){
+    /// Xử lý BadgeInternal (type 2)
+    private List<BadgeInternal> processBadges(List<SiteSetting> badgeSettings){
         return badgeSettings.stream()
                 .map(setting -> {
                     try {
-                        return objectMapper.readValue(setting.getValue(), Badge.class);
+                        return objectMapper.readValue(setting.getValue(), BadgeInternal.class);
                     } catch (JsonProcessingException e) {
-                        log.warn("Lỗi parse Badge: {}", setting.getValue());
+                        log.warn("Lỗi parse BadgeInternal: {}", setting.getValue());
                     }
                     return null;
                 })
@@ -106,16 +106,16 @@ public class SiteSettingOrchestrator {
     }
 
     /// Xử lý thông tin giới thiệu (type 3)
-    private Introduction processIntroduction(List<SiteSetting> introSettings){
-        Introduction introduction = new Introduction();
-        List<Favorite> favorites = new ArrayList<>();
+    private IntroductionInternal processIntroduction(List<SiteSetting> introSettings){
+        IntroductionInternal introductionInternal = new IntroductionInternal();
+        List<FavoriteInternal> favoriteInternals = new ArrayList<>();
         List<String> rollTexts = new ArrayList<>();
         for (SiteSetting info : introSettings) {
-            processIntroField(info, introduction, favorites, rollTexts);
+            processIntroField(info, introductionInternal, favoriteInternals, rollTexts);
         }
-        introduction.setFavorites(favorites);
-        introduction.setRollText(rollTexts);
-        return introduction;
+        introductionInternal.setFavorites(favoriteInternals);
+        introductionInternal.setRollText(rollTexts);
+        return introductionInternal;
     }
 
     public Map<String, Map<String, Object>> loadConfig() {
@@ -143,17 +143,17 @@ public class SiteSettingOrchestrator {
         Map<String, Map<String, Object>> map = loadConfig();
         mp3Service.setConfigFromDb(map);
     }
-    /// Xử lý từ Field trong Introduction
-    private void processIntroField(SiteSetting siteSetting, Introduction intro,
-                                   List<Favorite> favorites, List<String> rollTexts){
+    /// Xử lý từ Field trong IntroductionInternal
+    private void processIntroField(SiteSetting siteSetting, IntroductionInternal intro,
+                                   List<FavoriteInternal> favoriteInternals, List<String> rollTexts){
         String nameEn = siteSetting.getNameEn();
         String value = siteSetting.getValue();
-        Favorite favorite = null;
+        FavoriteInternal favoriteInternal = null;
         if(nameEn.equals("favorite")){
             try {
-                favorite = objectMapper.readValue(value, Favorite.class);
+                favoriteInternal = objectMapper.readValue(value, FavoriteInternal.class);
             }catch (JsonProcessingException ex){
-                log.warn("Lỗi parse Favorite: {}", value);
+                log.warn("Lỗi parse favorite: {}", value);
                 nameEn = "";
             }
         }
@@ -167,7 +167,7 @@ public class SiteSettingOrchestrator {
             case "facebook" -> intro.setFacebook(value);
             case "leetCode" -> intro.setLeetCode(value);
             case "instagram" -> intro.setInstagram(value);
-            case "favorite" -> favorites.add(favorite);
+            case "favorite" -> favoriteInternals.add(favoriteInternal);
             case "rollText" -> rollTexts.addAll(extractRollTexts(value));
         }
     }

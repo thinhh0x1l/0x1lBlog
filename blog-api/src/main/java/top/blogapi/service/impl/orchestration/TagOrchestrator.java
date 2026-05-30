@@ -20,8 +20,8 @@ import top.blogapi.dto.response.tag.TagSlugs;
 import top.blogapi.mapper.BlogMapper;
 import top.blogapi.mapper.TagMapper;
 import top.blogapi.model.entity.Tag;
-import top.blogapi.model.vo.BlogTagsInfo;
-import top.blogapi.model.vo.PageResult;
+import top.blogapi.dto.internal.BlogTagsInfoInternal;
+import top.blogapi.dto.response._page.PageResult;
 import top.blogapi.service.TagService;
 import top.blogapi.util.SlugUtils;
 
@@ -81,7 +81,7 @@ public class TagOrchestrator {
 
         String orderBy = "is_top desc, create_time desc";
         PageHelper.startPage(pageNum, pageSize, orderBy);
-        PageInfo<BlogTagsInfo> blogTagsInfos =
+        PageInfo<BlogTagsInfoInternal> blogTagsInfos =
                 new PageInfo<>(
                         tagService.getBlogInfoListByTagNameAndIsPublished(tagName)
                 );

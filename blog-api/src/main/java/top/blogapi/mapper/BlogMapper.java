@@ -8,8 +8,8 @@ import top.blogapi.dto.response.blog.BlogInfo;
 import top.blogapi.dto.response.blog.BlogSummaryResponse;
 import top.blogapi.dto.response.tag.TagSlugs;
 import top.blogapi.model.entity.Blog;
-import top.blogapi.model.vo.ArchiveBlog;
-import top.blogapi.model.vo.BlogTagsInfo;
+import top.blogapi.dto.internal.ArchiveBlogInternal;
+import top.blogapi.dto.internal.BlogTagsInfoInternal;
 import top.blogapi.util.SlugUtils;
 import top.blogapi.util.StringUtils;
 import top.blogapi.util.markdown.MarkdownUtils;
@@ -23,13 +23,13 @@ public interface BlogMapper {
     BlogSummaryResponse toBlogSummaryResponse(Blog blog);
 
 
-    ArchiveBlogResponse toArchiveBlogResponse(ArchiveBlog archiveBlog);
+    ArchiveBlogResponse toArchiveBlogResponse(ArchiveBlogInternal archiveBlogInternal);
 
     @Mapping(target = "tags", source = ".", qualifiedByName = "convertTagToList")
     @Mapping(target = "description", source = "description", qualifiedByName = "convertMarkdownToHtml")
     @Mapping(target = "category.slug", source = "categoryName", qualifiedByName = "convertSlug")
     @Mapping(target = "category.name", source = "categoryName")
-    BlogInfo toBlogsResponse (BlogTagsInfo blogTagsInfo);
+    BlogInfo toBlogsResponse (BlogTagsInfoInternal blogTagsInfoInternal);
 
     @Named("convertSlug")
     default String convertSlug(String name){
@@ -44,7 +44,7 @@ public interface BlogMapper {
     }
 
     @Named("convertTagToList")
-    default List<TagSlugs> convertToTagList(BlogTagsInfo source){
+    default List<TagSlugs> convertToTagList(BlogTagsInfoInternal source){
         if (source.getAllTagNames() == null || source.getAllTagNames().isEmpty())
             return List.of();
 

@@ -6,8 +6,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import top.blogapi.dto.internal.MomentInternal;
 import top.blogapi.model.entity.Moment;
-import top.blogapi.model.vo.Result;
+import top.blogapi.dto.response._common.Result;
 import top.blogapi.service.impl.orchestration.MomentOrchestrator;
 
 @RestController
@@ -22,7 +23,7 @@ public class MomentAdminController {
                              @RequestParam(defaultValue = "5") Integer pageSize){
         String orderBy = "create_time desc";
         PageHelper.startPage(pageNum, pageSize, orderBy);
-        PageInfo<top.blogapi.model.vo.Moment> momentPageInfo =
+        PageInfo<MomentInternal> momentPageInfo =
                  new PageInfo<>(momentOrchestrator.getMomentList());
         System.out.println(momentPageInfo.toString());
         return Result.ok("Yêu cầu thành công", momentPageInfo);

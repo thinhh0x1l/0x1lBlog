@@ -3,7 +3,7 @@ package top.blogapi.dto.response.tag;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import top.blogapi.dto.response.blog.BlogInfo;
-import top.blogapi.model.vo.PageResult;
+import top.blogapi.dto.response._page.PageResult;
 
 @AllArgsConstructor
 @NoArgsConstructor

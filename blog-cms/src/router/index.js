@@ -13,6 +13,7 @@ import TsTest from "@/view/TsTest.vue";
 import Moments from "@/view/moment/Moments.vue";
 import WriteMoment from "@/view/moment/WriteMoment.vue";
 import About from "@/view/about/About.vue";
+import Visit from "@/view/log/Visit.vue";
 
 const routes = [
     {
@@ -115,7 +116,14 @@ const routes = [
                 meta: {
                     title: 'Quản lý About'
                 }
-            }
+            },
+            {
+                path: '/visit',
+                component: Visit,
+                meta: {
+                    title: 'Quản lý trang Web'
+                }
+            },
         ]
     }
 ]

@@ -43,7 +43,7 @@
               <div @click="removeEdit">Hủy</div>
             </div>
 
-            <div v-if="cm.editAble" class="edit-circle" @click.stop="toggleMenu(cm.id)">
+            <div v-if="cm.editAble || cm.adminComment&&adminToken" class="edit-circle" @click.stop="toggleMenu(cm.id)">
               ⋯
               <div v-if="openedMenu === cm.id" class="comment-menu">
                 <div class="menu-item" @click.stop="editComment(cm)">
@@ -98,7 +98,7 @@
                   <CommentForm @submit="handleSubmit" />
                   <div @click="removeEdit">Hủy</div>
                 </div>
-                <div v-if="replyCm.editAble" class="edit-circle" @click.stop="toggleMenu(replyCm.id)">
+                <div v-if="replyCm.editAble ||replyCm.adminComment&&adminToken" class="edit-circle" @click.stop="toggleMenu(replyCm.id)">
                   ⋯
                   <div v-if="openedMenu === replyCm.id" class="comment-menu">
                     <div class="menu-item" @click.stop="editComment(replyCm)">
@@ -140,6 +140,7 @@ const store = useAppStore()
 const {siteInfo} = storeToRefs(store)
 const {comments,threadRoot,commentForm, pageInfo, commentEditForm, isEditing} = storeToRefs(commentStore)
 
+const adminToken = sessionStorage.getItem('adminToken') ||''
 const commentRefs = ref<Record<any,any>>({})
 let currentEl: any = null
 const replyCmId = ref<number|null>(null)
@@ -169,7 +170,7 @@ const formValidateMessage = ref<Record<string, string>>({
 const handleSubmit = async () => {
   console.log(isEditing.value)
   if(sessionStorage.getItem('adminToken')){
-    if(commentForm.value.content==='' || commentForm.value.content.length >250)
+    if(!isEditing.value&&commentForm.value.content==='' || commentForm.value.content.length >250)
       toast.warn('Nội dung bình luận không hợp lê!')
     else{
       replyCmId.value = null

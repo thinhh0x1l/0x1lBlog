@@ -15,7 +15,7 @@ import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.mapper.CommentMapper;
 import top.blogapi.model.entity.Comment;
-import top.blogapi.model.vo.CommentTree;
+import top.blogapi.dto.internal.CommentTreeInternal;
 import top.blogapi.repository.CommentRepository;
 import top.blogapi.service.CommentService;
 import top.blogapi.util.IpAddressUtils;
@@ -96,7 +96,7 @@ public class CommentServiceImpl implements CommentService {
                                                                            Long blogId, Integer page,
                                                                            Long guessId){
         PageHelper.startPage(pageNum, pageSize, "id desc");
-        List<CommentTree> commentRootTrees = commentRepository.findRootComments(blogId,page);
+        List<CommentTreeInternal> commentRootTrees = commentRepository.findRootComments(blogId,page);
         if(commentRootTrees.isEmpty()) return PageInfo.emptyPageInfo();
         return new PageInfo<>(commentRootTrees).convert(c ->
                 commentMapper.toCommentNode(c).setEditAble(c.getGuessId(),guessId));
@@ -104,10 +104,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional(readOnly = true)
     public Map<Long, List<CommentByBlogIdResponse.CommentNode>> commentChildTrees(List<Long> commentRootIds, Long guessId){
-        List<CommentTree> commentChildTrees = commentRepository.findRepliesByRootIds(commentRootIds);
+        List<CommentTreeInternal> commentChildTrees = commentRepository.findRepliesByRootIds(commentRootIds);
 
         Map<Long, List<CommentByBlogIdResponse.CommentNode>> map = new HashMap<>();
-        for(CommentTree c: commentChildTrees){
+        for(CommentTreeInternal c: commentChildTrees){
             Long key = c.getThreadRoot();
             if(map.containsKey(key))
                 map.get(key).add(commentMapper.toCommentNode(c).setEditAble(c.getGuessId(),guessId));

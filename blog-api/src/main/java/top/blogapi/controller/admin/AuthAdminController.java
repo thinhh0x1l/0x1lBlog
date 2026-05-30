@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import top.blogapi.dto.request._common.LoginRequest;
 import top.blogapi.dto.request._common.LoginResponse;
-import top.blogapi.model.vo.Result;
+import top.blogapi.dto.response._common.Result;
 import top.blogapi.service.auth.AuthService;
 
 @RestController

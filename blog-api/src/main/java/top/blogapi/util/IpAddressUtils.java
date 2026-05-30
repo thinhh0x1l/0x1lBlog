@@ -13,6 +13,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class IpAddressUtils {
@@ -22,9 +23,9 @@ public class IpAddressUtils {
     private static final String LOCALHOST_IPV6_SHORT = "::1";
 
     public static final List<String> IP_HEADERS = List.of(
-            "X-Real-IP",              // Nginx
             "X-Forwarded-For",        // Proxy true
             "CF-Connecting-IP",        // Cloudflare
+            "X-Real-IP",              // Nginx
             "True-Client-IP",         // Akamai, Cloudflare
             "Proxy-Client-IP",        // Proxy cũ
             "WL-Proxy-Client-IP",     // WebLogic
@@ -169,11 +170,11 @@ public class IpAddressUtils {
              DatabaseReader reader = new DatabaseReader.Builder(inputStream).build()
 
             ){
-            String ip = "14.186.93.15";
+            String ip = "14.186.68.109";
 
             InetAddress ipAddress = InetAddress.getByName(ip);
             CityResponse response = reader.city(ipAddress);
-
+            System.out.println(response.city());
             System.out.println("Country: " + response.country().name());
             System.out.println("Country: " + response.country().names());
             System.out.println("ISO Code: " + response.country().isoCode());

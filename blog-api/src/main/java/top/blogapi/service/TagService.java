@@ -1,9 +1,9 @@
 package top.blogapi.service;
 
 import com.github.pagehelper.PageInfo;
+import top.blogapi.dto.internal.BlogTagsInfoInternal;
 import top.blogapi.dto.request.tag.TagQueryRequest;
 import top.blogapi.model.entity.Tag;
-import top.blogapi.model.vo.BlogTagsInfo;
 
 import java.util.List;
 
@@ -26,5 +26,5 @@ public interface TagService {
 
     List<Tag> getTagListByBlogId(Long blogId);
 
-    List<BlogTagsInfo> getBlogInfoListByTagNameAndIsPublished(String name);
+    List<BlogTagsInfoInternal> getBlogInfoListByTagNameAndIsPublished(String name);
 }

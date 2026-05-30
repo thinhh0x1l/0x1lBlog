@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 import top.blogapi.dto.request.siteSetting.SiteSettingUpdateReq;
 import top.blogapi.model.entity.SiteSetting;
-import top.blogapi.model.vo.Result;
+import top.blogapi.dto.response._common.Result;
 import top.blogapi.service.impl.orchestration.BlogOrchestrator;
 import top.blogapi.service.impl.orchestration.SiteSettingOrchestrator;
 import top.blogapi.util.markdown.MarkdownUtils;

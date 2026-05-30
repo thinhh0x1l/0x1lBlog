@@ -14,6 +14,8 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.blogapi.dto.internal.*;
+import top.blogapi.dto.response._page.PageResult;
 import top.blogapi.service.cacheService.BlogCacheService;
 import top.blogapi.service._zing_mp3.MusicService;
 import top.blogapi.constant.CacheNameConstant;
@@ -28,7 +30,6 @@ import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.*;
 import top.blogapi.mapper.BlogMapper;
 import top.blogapi.mapper.CategoryMapper;
-import top.blogapi.model.vo.*;
 import top.blogapi.service.BlogService;
 import top.blogapi.service.CategoryService;
 import top.blogapi.service.TagService;
@@ -160,7 +161,7 @@ public class BlogOrchestrator {
         blogService.deleteBlogTagByBlogId(id);
         blogService.deleteBlogById(id);
     }
-    public List<BlogIdAndTitle> getIdAndTitleList() {
+    public List<BlogIdAndTitleInternal> getIdAndTitleList() {
         return blogService.getIdAndTitleList();
     }
 
@@ -183,7 +184,7 @@ public class BlogOrchestrator {
             value = CacheNameConstant.NEW_BLOG_LIST,
             key = "'default'"
     )
-    public List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend() {
+    public List<BlogIdAndTitleInternal> getIdAndTitleListByIsPublishedAndIsRecommend() {
         PageHelper.startPage(1, 3);
         return blogService.getIdAndTitleListByIsPublishedAndIsRecommend();
     }
@@ -193,25 +194,25 @@ public class BlogOrchestrator {
     )
     public Map<String, Object> getArchiveBlogListIsPublished() {
         List<String> groupYearMonth = blogService.getGroupYearMonthAndIsPublished();
-        List<ArchiveBlog> archiveBlogsBatch = blogService.getArchiveBlogListByYearMonthAndIsPublished(groupYearMonth);
+        List<ArchiveBlogInternal> archiveBlogsBatchInternals = blogService.getArchiveBlogListByYearMonthAndIsPublished(groupYearMonth);
         Map<String, List<ArchiveBlogResponse>> blogMap = new LinkedHashMap<>();
 
-        for (int i = archiveBlogsBatch.size() - 1; i >= 0; i--) {
-            ArchiveBlog a = archiveBlogsBatch.get(i);
+        for (int i = archiveBlogsBatchInternals.size() - 1; i >= 0; i--) {
+            ArchiveBlogInternal a = archiveBlogsBatchInternals.get(i);
             blogMap
                     .computeIfAbsent(a.getYM(), k -> new ArrayList<>())
                     .add(blogMapper.toArchiveBlogResponse(a));
         }
         return Map.of(
                 "blogMap", blogMap,
-                "count", archiveBlogsBatch.size()
+                "count", archiveBlogsBatchInternals.size()
         );
     }
 
-    public BlogDetail getBlogDetail(Long id){
-        BlogDetail cache = blogCacheService.getBlogByIdAndIsPublished(id);
+    public BlogDetailInternal getBlogDetail(Long id){
+        BlogDetailInternal cache = blogCacheService.getBlogByIdAndIsPublished(id);
         long views = blogCacheService.getViews(id);
-        return BlogDetail.cloneBlogDetail(cache,views);
+        return BlogDetailInternal.cloneBlogDetail(cache,views);
     }
 
     public List<SearchBlog> searchBlogs(String search){

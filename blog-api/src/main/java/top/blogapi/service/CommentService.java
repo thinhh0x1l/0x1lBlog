@@ -4,7 +4,6 @@ import com.github.pagehelper.PageInfo;
 import top.blogapi.dto.request.comment.CommentUpdateRequest;
 import top.blogapi.dto.response.comment.CommentByBlogIdResponse;
 import top.blogapi.model.entity.Comment;
-import top.blogapi.model.vo.CommentTree;
 
 import java.util.List;
 import java.util.Map;

@@ -1,19 +1,18 @@
 package top.blogapi.service;
 
-import top.blogapi.dto.response.moment.MomentPublished;
+import top.blogapi.dto.internal.MomentInternal;
 import top.blogapi.model.entity.Moment;
-import top.blogapi.model.vo.MomentLikedByGuestId;
-import top.blogapi.model.vo.MomentLikesAndLiked;
+import top.blogapi.dto.internal.MomentLikesAndLikedInternal;
 
 import java.util.List;
 import java.util.Map;
 
 public interface MomentService {
-    List<top.blogapi.model.vo.Moment> getMomentList();
+    List<MomentInternal> getMomentList();
 
     List<Moment> getMomentListByPublished(Integer pageNum);
 
-    Map<Long, MomentLikesAndLiked> getMomentLikedByGuestIdMap(List<Long> momentIds, Long guestId);
+    Map<Long, MomentLikesAndLikedInternal> getMomentLikedByGuestIdMap(List<Long> momentIds, Long guestId);
 
     void handleMomentLikeIncrease(Long momentId, Long guestId);
 
@@ -21,7 +20,7 @@ public interface MomentService {
 
     void updateMomentPublishedById(Long momentId, Boolean published);
 
-    top.blogapi.model.vo.Moment getMomentById(Long id);
+    MomentInternal getMomentById(Long id);
 
     void deleteMomentById(Long id);
 

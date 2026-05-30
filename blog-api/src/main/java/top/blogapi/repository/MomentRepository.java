@@ -2,9 +2,8 @@ package top.blogapi.repository;
 
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
-import top.blogapi.model.vo.Moment;
-import top.blogapi.model.vo.MomentLikedByGuestId;
-import top.blogapi.model.vo.MomentLikesAndLiked;
+import top.blogapi.dto.internal.MomentInternal;
+import top.blogapi.dto.internal.MomentLikesAndLikedInternal;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +23,7 @@ public interface MomentRepository {
            ON m.id = mg.moment_id
         GROUP BY m.id;
 """)
-    List<Moment> getMomentList();
+    List<MomentInternal> getMomentList();
 
     @Select("""
         SELECT
@@ -61,8 +60,8 @@ public interface MomentRepository {
         GROUP BY mg.moment_id
     </script>
 """)
-    List<MomentLikesAndLiked> getMomentLikesAndLikedList(@Param("momentIds") List<Long> momentIds ,
-                                                         Long guestId);
+    List<MomentLikesAndLikedInternal> getMomentLikesAndLikedList(@Param("momentIds") List<Long> momentIds ,
+                                                                 Long guestId);
 
     @Update("""
     INSERT INTO moment_guest (moment_id, guest_id)
@@ -95,7 +94,7 @@ public interface MomentRepository {
         WHERE m.id = #{id}
         GROUP BY m.id;
 """)
-    Optional<Moment> getMomentById(Long id);
+    Optional<MomentInternal> getMomentById(Long id);
 
     @Delete("""
     DELETE FROM moment WHERE id = #{id}

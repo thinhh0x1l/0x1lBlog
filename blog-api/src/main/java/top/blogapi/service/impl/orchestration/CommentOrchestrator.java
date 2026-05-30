@@ -5,12 +5,12 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.blogapi.context.GuestContext;
 import top.blogapi.dto.request.comment.CommentEditReq;
 import top.blogapi.dto.request.comment.CommentQueryRequest;
 import top.blogapi.dto.request.comment.CommentUpdateRequest;
@@ -20,10 +20,9 @@ import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.Comment;
 import top.blogapi.model.entity.User;
-import top.blogapi.model.vo.BlogIdAndTitle;
+import top.blogapi.dto.internal.BlogIdAndTitleInternal;
 import top.blogapi.service.BlogService;
 import top.blogapi.service.CommentService;
-import top.blogapi.service.GuestService;
 import top.blogapi.service.auth.JwtService;
 import top.blogapi.service.auth.UserServiceImpl;
 import top.blogapi.util.IpAddressUtils;
@@ -42,8 +41,6 @@ import java.util.Map;
 public class CommentOrchestrator {
     CommentService commentService;
     BlogService blogService;
-    GuestService guestService;
-
     UserServiceImpl userService;
     JwtService jwtService;
     SecureRandom secureRandom = new SecureRandom();
@@ -79,9 +76,7 @@ public class CommentOrchestrator {
     }
 
     private Long getGuestId(HttpServletRequest request){
-        Long id = guestService.getGuestOrCreateByToken(
-                        (String)request.getAttribute("guestToken"))
-                .getId();
+        Long id = GuestContext.get().getId();
         System.out.println(id);
         return id;
     }
@@ -118,7 +113,7 @@ public class CommentOrchestrator {
         return true;
     }
 
-    public void saveComment(SaveCommentReq req, HttpServletRequest request, HttpServletResponse response) {
+    public void saveComment(SaveCommentReq req, HttpServletRequest request) {
 
         validateRequest(req);
 
@@ -236,7 +231,7 @@ public class CommentOrchestrator {
         comment.setParentCommentId(req.getParentCommentId());
         comment.setPage(req.getPage());
         comment.setBlog(
-                new BlogIdAndTitle(req.getBlogId(), "")
+                new BlogIdAndTitleInternal(req.getBlogId(), "")
         );
 
         comment.setPublished(true);

@@ -1,17 +1,15 @@
 package top.blogapi.controller;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import top.blogapi.annotation.VisitLogger;
 import top.blogapi.dto.request.moment.HandleMomentLike;
-import top.blogapi.dto.response.moment.MomentPublished;
-import top.blogapi.model.vo.MomentLikedByGuestId;
-import top.blogapi.model.vo.PageResult;
-import top.blogapi.model.vo.Result;
+import top.blogapi.dto.internal.MomentLikedByGuestIdInternal;
+import top.blogapi.dto.response._page.PageResult;
+import top.blogapi.dto.response._common.Result;
+import top.blogapi.model.enums.VisitBehavior;
 import top.blogapi.service.impl.orchestration.MomentOrchestrator;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -21,13 +19,13 @@ import top.blogapi.service.impl.orchestration.MomentOrchestrator;
 public class MomentController {
     MomentOrchestrator momentOrchestrator;
 
+    @VisitLogger(VisitBehavior.MOMENT)
     @GetMapping("/moments")
-    public Result<?> listMoments(@RequestParam(defaultValue = "1") Integer pageNum,
-                                 HttpServletRequest request){
+    public Result<?> listMoments(@RequestParam(defaultValue = "1") Integer pageNum){
         long start = System.currentTimeMillis();
 
-        PageResult<MomentLikedByGuestId> p =
-                momentOrchestrator.getMomentListByPublished(request, pageNum);
+        PageResult<MomentLikedByGuestIdInternal> p =
+                momentOrchestrator.getMomentListByPublished( pageNum);
 
         long end = System.currentTimeMillis();
 
@@ -36,8 +34,8 @@ public class MomentController {
     }
 
     @PutMapping("/moment/like")
-    public Result<?> likeMoment(@RequestBody HandleMomentLike handleMomentLike, HttpServletRequest request){
-        momentOrchestrator.handleMomentLike(handleMomentLike, request);
+    public Result<?> likeMoment(@RequestBody HandleMomentLike handleMomentLike){
+        momentOrchestrator.handleMomentLike(handleMomentLike);
         return Result.ok("Like!!!");
     }
 }

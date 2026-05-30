@@ -1,22 +1,16 @@
 package top.blogapi.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.*;
 import top.blogapi.dto.request.comment.CommentEditReq;
 import top.blogapi.dto.request.comment.SaveCommentReq;
 import top.blogapi.dto.response.comment.CommentByBlogIdResponse;
-import top.blogapi.model.vo.Result;
+import top.blogapi.dto.response._common.Result;
 import top.blogapi.service.impl.orchestration.CommentOrchestrator;
-
-import java.time.Duration;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,10 +36,9 @@ public class CommentController {
 
     @PostMapping("/comment")
     public Result<?> createComment (@RequestBody SaveCommentReq req,
-                                    HttpServletRequest request,
-                                    HttpServletResponse response) throws Exception {
+                                    HttpServletRequest request) throws Exception {
 
-        commentOrchestrator.saveComment(req,request, response);
+        commentOrchestrator.saveComment(req,request);
         return Result.ok("Đã viết bình luận");
     }
 

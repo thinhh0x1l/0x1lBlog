@@ -3,9 +3,9 @@ package top.blogapi.repository;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.Result;
 import org.springframework.stereotype.Repository;
+import top.blogapi.dto.internal.*;
 import top.blogapi.model.entity.Blog;
 import top.blogapi.model.entity.Tag;
-import top.blogapi.model.vo.*;
 
 import java.util.List;
 import java.util.Map;
@@ -182,7 +182,7 @@ public interface BlogRepository {
     int countBlogByTagId(Long tagId);
 
     @Select("SELECT b.title, b.id FROM blog b ORDER BY create_time DESC ")
-    List<BlogIdAndTitle> getIdAndTitleList();
+    List<BlogIdAndTitleInternal> getIdAndTitleList();
 
     @Select("""
         WITH
@@ -222,12 +222,12 @@ public interface BlogRepository {
     @Results({
             @Result(property = "top", column = "is_top")
     })
-    List<BlogTagsInfo> getBlogInfoListByIsPublished();
+    List<BlogTagsInfoInternal> getBlogInfoListByIsPublished();
 
     @Select("SELECT id, title FROM blog " +
             "WHERE is_published = TRUE AND is_recommend = TRUE " +
             "ORDER BY create_time DESC ")
-    List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend();
+    List<BlogIdAndTitleInternal> getIdAndTitleListByIsPublishedAndIsRecommend();
 
     @Select("SELECT DISTINCT DATE_FORMAT(create_time,'%m/%Y') as day " +
             "FROM blog " +
@@ -253,7 +253,7 @@ public interface BlogRepository {
             </foreach>
         </script>
     """)
-    List<ArchiveBlog> getArchiveBlogListByYearMonthAndIsPublished(List<String> yearMonths);
+    List<ArchiveBlogInternal> getArchiveBlogListByYearMonthAndIsPublished(List<String> yearMonths);
 
     @Select("""
         SELECT b.id, b.title, b.content,  b.is_appreciation, b.music_id,
@@ -270,7 +270,7 @@ public interface BlogRepository {
             @Result(property = "commentEnabled", column = "is_comment_enabled"),
             @Result(property = "top", column = "is_top"),
     })
-    Optional<BlogDetail> getBlogWithCategory(Long id);
+    Optional<BlogDetailInternal> getBlogWithCategory(Long id);
 
     @Select("""
         SELECT views FROM blog WHERE id = #{id}
@@ -317,4 +317,9 @@ public interface BlogRepository {
     </script>
 """)
     int flushViews(@Param("map") Map<Long, Long> map);
+
+    @Select("""
+        SELECT COUNT(*) FROM blog
+""")
+    int totalBlogs();
 }

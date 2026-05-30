@@ -17,8 +17,8 @@ import top.blogapi.dto.response.category.CategorySlugGetBlogsResponse;
 import top.blogapi.mapper.BlogMapper;
 import top.blogapi.model.entity.Category;
 import top.blogapi.mapper.CategoryMapper;
-import top.blogapi.model.vo.BlogTagsInfo;
-import top.blogapi.model.vo.PageResult;
+import top.blogapi.dto.internal.BlogTagsInfoInternal;
+import top.blogapi.dto.response._page.PageResult;
 import top.blogapi.service.CategoryService;
 import top.blogapi.util.SlugUtils;
 
@@ -86,7 +86,7 @@ public class CategoryOrchestrator {
 
         String orderBy = "is_top desc, create_time desc";
         PageHelper.startPage(pageNum, pageSize, orderBy);
-        PageInfo<BlogTagsInfo> blogTagsInfos =
+        PageInfo<BlogTagsInfoInternal> blogTagsInfos =
                 new PageInfo<>(categoryService.getBlogInfoListByCategoryNameAndIsPublished(categoryName));
 
         PageResult<BlogInfo> pageResult =

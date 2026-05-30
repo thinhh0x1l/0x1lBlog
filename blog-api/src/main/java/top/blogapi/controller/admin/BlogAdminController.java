@@ -14,7 +14,7 @@ import top.blogapi.service.BlogService;
 import top.blogapi.service.TagService;
 import top.blogapi.service.impl.orchestration.BlogOrchestrator;
 import top.blogapi.service.impl.orchestration.CategoryOrchestrator;
-import top.blogapi.model.vo.Result;
+import top.blogapi.dto.response._common.Result;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

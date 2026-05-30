@@ -29,4 +29,6 @@ public class CacheNameConstant {
     public static final String INCREASE_BLOG_VIEWS = "increaseBlogViews";
 
     public static final String GUEST_INFO_BY_TOKEN = "guessInfoByToken";
+
+    public static final String VISIT_LIST = "visitList";
 }

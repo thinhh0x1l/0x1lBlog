@@ -2,28 +2,25 @@ package top.blogapi.service.impl.orchestration;
 
 
 import com.github.pagehelper.PageInfo;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.blogapi.constant.HeaderConstant;
+import top.blogapi.context.GuestContext;
+import top.blogapi.dto.internal.MomentInternal;
 import top.blogapi.dto.request.moment.HandleMomentLike;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.Guest;
 import top.blogapi.model.entity.Moment;
-import top.blogapi.model.vo.MomentLikedByGuestId;
-import top.blogapi.model.vo.MomentLikesAndLiked;
-import top.blogapi.model.vo.PageResult;
-import top.blogapi.service.GuestService;
+import top.blogapi.dto.internal.MomentLikedByGuestIdInternal;
+import top.blogapi.dto.internal.MomentLikesAndLikedInternal;
+import top.blogapi.dto.response._page.PageResult;
 import top.blogapi.service.MomentService;
 import top.blogapi.util.markdown.MarkdownUtils;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,35 +30,32 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MomentOrchestrator {
     MomentService momentService;
-    GuestService guestService;
 
-    public List<top.blogapi.model.vo.Moment> getMomentList() {
+    public List<MomentInternal> getMomentList() {
         return momentService.getMomentList();
     }
 
-    public PageResult<MomentLikedByGuestId> getMomentListByPublished(HttpServletRequest request,
-                                                                     Integer pageNum) {
-        Long guestId = guestService.getGuestOrCreateByToken(
-                (String)request.getAttribute(HeaderConstant.GUEST_HEADER)).getId();
+    public PageResult<MomentLikedByGuestIdInternal> getMomentListByPublished(Integer pageNum) {
+        Long guestId = GuestContext.get().getId();
         List<Moment> ms = momentService.getMomentListByPublished(pageNum);
         List<Long>  momentIds = ms.stream().map(Moment::getId).toList();
-        Map<Long, MomentLikesAndLiked> map = momentService.getMomentLikedByGuestIdMap(momentIds,guestId);
-        PageInfo<MomentLikedByGuestId> result =
+        Map<Long, MomentLikesAndLikedInternal> map = momentService.getMomentLikedByGuestIdMap(momentIds,guestId);
+        PageInfo<MomentLikedByGuestIdInternal> result =
                 new PageInfo<>(ms).convert(
-                        m -> MomentLikedByGuestId.builder()
+                        m -> MomentLikedByGuestIdInternal.builder()
                                 .id(m.getId())
                                 .createTime(m.getCreateTime())
                                 .content(MarkdownUtils.markdownToHtmlExtensions(m.getContent()))
-                                .likes(map.getOrDefault(m.getId(), MomentLikesAndLiked.empty).getLikes())
-                                .liked(map.getOrDefault(m.getId(), MomentLikesAndLiked.empty).isLiked())
+                                .likes(map.getOrDefault(m.getId(), MomentLikesAndLikedInternal.empty).getLikes())
+                                .liked(map.getOrDefault(m.getId(), MomentLikesAndLikedInternal.empty).isLiked())
                                 .build()
                 );
         return PageResult.from(result);
     }
 
-    public void handleMomentLike(HandleMomentLike handleMomentLike, HttpServletRequest request) {
+    public void handleMomentLike(HandleMomentLike handleMomentLike) {
         System.out.println("{{Debug}}: "+handleMomentLike.toString());
-        Guest guest = guestService.getGuestOrCreateByToken((String)request.getAttribute(HeaderConstant.GUEST_HEADER));
+        Guest guest = GuestContext.get();
         if(handleMomentLike.getLiked()>0)
             momentService.handleMomentLikeIncrease(handleMomentLike.getId(),guest.getId());
         else
@@ -72,7 +66,7 @@ public class MomentOrchestrator {
         momentService.updateMomentPublishedById(momentId,published);
     }
 
-    public top.blogapi.model.vo.Moment getMomentById(Long id) {
+    public MomentInternal getMomentById(Long id) {
         return momentService.getMomentById(id);
     }
 

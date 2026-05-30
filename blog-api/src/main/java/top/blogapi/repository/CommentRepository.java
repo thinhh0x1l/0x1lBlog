@@ -2,7 +2,7 @@ package top.blogapi.repository;
 
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
-import top.blogapi.model.vo.CommentTree;
+import top.blogapi.dto.internal.CommentTreeInternal;
 import top.blogapi.model.entity.Comment;
 
 import java.util.List;
@@ -101,7 +101,7 @@ public interface CommentRepository {
             @Result(property = "published" , column = "is_published"),
             @Result(property = "adminComment" , column = "is_admin_comment")
     })
-    List<CommentTree> commentTreeFlat(Long blogId, Integer page);
+    List<CommentTreeInternal> commentTreeFlat(Long blogId, Integer page);
 
     @Select("""
     <script>
@@ -122,7 +122,7 @@ public interface CommentRepository {
     @Results({
             @Result(property = "adminComment" , column = "is_admin_comment")
     })
-    List<CommentTree> findRootComments(@Param("blogId") Long blogId, @Param("page") Integer page);
+    List<CommentTreeInternal> findRootComments(@Param("blogId") Long blogId, @Param("page") Integer page);
 
     @Select("""
     <script>
@@ -153,7 +153,7 @@ public interface CommentRepository {
     @Results({
             @Result(property = "adminComment" , column = "is_admin_comment")
     })
-    List<CommentTree> findRepliesByRootIds(List<Long> rootIds);
+    List<CommentTreeInternal> findRepliesByRootIds(List<Long> rootIds);
 
     @Insert("""
         INSERT INTO comment (
@@ -203,4 +203,9 @@ public interface CommentRepository {
                            WHERE id =#{id}
 """)
     int editComment(Long id, String content);
+
+    @Select("""
+        SELECT COUNT(*) FROM comment
+""")
+    int totalComments();
 }

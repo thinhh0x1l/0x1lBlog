@@ -1,11 +1,11 @@
 package top.blogapi.service;
 
 import com.github.pagehelper.PageInfo;
+import top.blogapi.dto.internal.*;
 import top.blogapi.dto.request.blog.BlogQueryRequest;
 import top.blogapi.dto.request.blog.BlogUpdatePublishedRequest;
 import top.blogapi.dto.request.blog.BlogUpdateRecommendRequest;
 import top.blogapi.model.entity.Blog;
-import top.blogapi.model.vo.*;
 
 import java.util.List;
 import java.util.Map;
@@ -35,17 +35,17 @@ public interface BlogService {
 
     void countBlogByTagId(Long tagId);
 
-    List<BlogIdAndTitle> getIdAndTitleList();
+    List<BlogIdAndTitleInternal> getIdAndTitleList();
 
-    List<BlogTagsInfo> getBlogInfoListByIsPublished();
+    List<BlogTagsInfoInternal> getBlogInfoListByIsPublished();
 
-    List<BlogIdAndTitle> getIdAndTitleListByIsPublishedAndIsRecommend();
+    List<BlogIdAndTitleInternal> getIdAndTitleListByIsPublishedAndIsRecommend();
 
     List<String> getGroupYearMonthAndIsPublished();
 
-    List<ArchiveBlog> getArchiveBlogListByYearMonthAndIsPublished(List<String> yearMonths);
+    List<ArchiveBlogInternal> getArchiveBlogListByYearMonthAndIsPublished(List<String> yearMonths);
 
-    BlogDetail getBlogByIdAndIsPublished(Long id);
+    BlogDetailInternal getBlogByIdAndIsPublished(Long id);
 
     Boolean getCommentEnabledByBlogId(Long blogId);
 

@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import top.blogapi.constant.CacheNameConstant;
 import top.blogapi.dto.response.blog.BlogInfo;
 import top.blogapi.mapper.BlogMapper;
-import top.blogapi.model.vo.BlogDetail;
-import top.blogapi.model.vo.BlogTagsInfo;
-import top.blogapi.model.vo.PageResult;
+import top.blogapi.dto.internal.BlogDetailInternal;
+import top.blogapi.dto.internal.BlogTagsInfoInternal;
+import top.blogapi.dto.response._page.PageResult;
 import top.blogapi.service.BlogService;
 import top.blogapi.service._zing_mp3.MusicService;
 
@@ -75,7 +75,7 @@ public class BlogCacheService {
             value = CacheNameConstant.BLOG_DETAILS,
             key = "#id"
     )
-    public BlogDetail getBlogByIdAndIsPublished(Long id){
+    public BlogDetailInternal getBlogByIdAndIsPublished(Long id){
 
         return blogService.getBlogByIdAndIsPublished(id);
     }
@@ -90,7 +90,7 @@ public class BlogCacheService {
         System.out.println(">>> QUERY DATABASE");
         String orderBy = "is_top desc, create_time desc";
         PageHelper.startPage(pageNum, 5, orderBy);
-        PageInfo<BlogTagsInfo> pageInfo =
+        PageInfo<BlogTagsInfoInternal> pageInfo =
                 new PageInfo<>(blogService.getBlogInfoListByIsPublished());
 
         if (pageInfo.getList().isEmpty())

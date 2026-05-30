@@ -8,11 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.blogapi.dto.internal.BlogTagsInfoInternal;
 import top.blogapi.dto.request.tag.TagQueryRequest;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.Tag;
-import top.blogapi.model.vo.BlogTagsInfo;
 import top.blogapi.repository.TagRepository;
 import top.blogapi.service.TagService;
 
@@ -95,7 +95,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BlogTagsInfo> getBlogInfoListByTagNameAndIsPublished(String name) {
+    public List<BlogTagsInfoInternal> getBlogInfoListByTagNameAndIsPublished(String name) {
         return tagRepository.getBlogInfoListByTagNameAndIsPublished(name);
     }
 }

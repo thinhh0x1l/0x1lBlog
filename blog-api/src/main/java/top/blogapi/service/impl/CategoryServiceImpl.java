@@ -8,11 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.blogapi.dto.internal.BlogTagsInfoInternal;
 import top.blogapi.dto.request.category.CategoryQueryRequest;
 import top.blogapi.exception.AppException;
 import top.blogapi.exception.ErrorCode;
 import top.blogapi.model.entity.Category;
-import top.blogapi.model.vo.BlogTagsInfo;
 import top.blogapi.repository.CategoryRepository;
 import top.blogapi.service.CategoryService;
 
@@ -78,7 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<BlogTagsInfo> getBlogInfoListByCategoryNameAndIsPublished(String categoryName) {
+    public List<BlogTagsInfoInternal> getBlogInfoListByCategoryNameAndIsPublished(String categoryName) {
         return categoryRepository.getBlogInfoListByCategoryNameAndIsPublished(categoryName);
     }
 }

@@ -9,7 +9,7 @@
 
       <el-dropdown>
         <div class="avatar-wrapper">
-<!--          <img :src="user.avatar" class="user-avatar">-->
+          <img :src="user?.avatar? user.avatar: '/img/avatar.jpg'" class="user-avatar">
         </div>
 
         <template #dropdown>
@@ -106,7 +106,7 @@ const route = useRoute()
 const router = useRouter()
 
 //Reactive data
-const isCollapse = ref(false)
+const isCollapse = ref(true)
 const defaultOpeneds = ref(['1','2','3'])
 
 const menuList = [
