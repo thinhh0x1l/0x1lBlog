@@ -18,11 +18,11 @@ import java.util.List;
 @MapperScan(basePackages = "top.blogapi.repository")
 public class DataSourceConfig {
 
-    @Value("${spring.datasource.url}")
+    @Value("${spring.datasource.url:jdbc:mysql://localhost:3306/blog}")
     String datasourceUrl;
-    @Value("${spring.datasource.username}")
+    @Value("${spring.datasource.username:root}")
     String datasourceUsername;
-    @Value("${spring.datasource.password}")
+    @Value("${spring.datasource.password:1820}")
     String datasourcePassword;
 
 
@@ -59,9 +59,9 @@ public class DataSourceConfig {
     private  HikariDataSource getHikariDataSource() {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setJdbcUrl(datasourceUrl);
-        dataSource.setUsername(datasourceUsername);
-        dataSource.setPassword(datasourcePassword);
+        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/blog");
+        dataSource.setUsername("root");
+        dataSource.setPassword("1820");
 
         // ========== CẤU HÌNH HIKARI CP CONNECTION POOL ==========
 

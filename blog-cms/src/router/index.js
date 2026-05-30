@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from "@/view/Login.vue"
 import Home from "@/view/Home.vue";
-import Dashboard from "@/view/dashboard/Dashboard.vue";
+// import Dashboard from "@/view/dashboard/Dashboard.vue";
 import BlogList from "@/view/blog/BlogList.vue";
 import WriteBlog from "@/view/blog/WriteBlog.vue";
 import { useAppStore } from '@/store/index.js'
@@ -35,13 +35,13 @@ const routes = [
         component: Home,
         redirect: '/dashboard',
         children: [
-            {
-                path: '/dashboard',
-                component: Dashboard,
-                meta: {
-                    title: 'Quản lý hệ thống'
-                }
-            },
+            // {
+            //     path: '/dashboard',
+            //     component: Dashboard,
+            //     meta: {
+            //         title: 'Quản lý hệ thống'
+            //     }
+            // },
             {
                 path: '/blogs/write',
                 component: WriteBlog,
