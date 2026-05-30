@@ -4,7 +4,7 @@ export function createBridgeFrame() {
         const iframe = document.createElement("iframe");
         iframe.id = "bridge-frame";
         const bridgeUrl = import.meta.env.VITE_BRIDGE_FE;
-
+        console.log(location.origin)
         iframe.src =
             `${bridgeUrl}/bridge.html?origin=${
                 encodeURIComponent(location.origin)

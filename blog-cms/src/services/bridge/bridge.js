@@ -11,7 +11,8 @@ export function getGuestToken() {
             reject("Không tìm thấy iframe");
             return;
         }
-
+        console.log("origin: "+origin)
+        console.log("BRIDGE_ORIGIN: "+BRIDGE_ORIGIN)
         // timeout
         const timeout =
             setTimeout(() => {
@@ -22,7 +23,8 @@ export function getGuestToken() {
         // nhận message
         function listener(event) {
             // sai origin
-            if (event.origin !== BRIDGE_ORIGIN)
+            if (normalize(event.origin) !==
+                normalize(BRIDGE_ORIGIN))
                 return;
 
             const data = event.data;
@@ -34,7 +36,8 @@ export function getGuestToken() {
                 resolve(data.token);
             }
         }
-
+        const normalize = (url) =>
+            url.replace(/\/$/, "").trim()
         // lắng nghe message
         window.addEventListener("message", listener);
 
