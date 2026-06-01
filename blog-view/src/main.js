@@ -15,6 +15,7 @@ import FontAwesomeIcon from "@/plugins/fontAwesomeIcon.js";
 import tokenBackupPlugin from './plugins/tokenBackup'
 import {initGuestToken} from "@/services/bridge/guestBootstrap.js";
 import {pinia} from "@/store/pinia/pinia.js";
+import {initGuest} from "@/plugins/auth.js";
 const app = createApp(App)
 
 console.log("\n %c Thinhh's Blog %c https://0x1l-blog.vercel.app \n",
@@ -32,4 +33,5 @@ app .use(router)
 
 await initGuestToken();
 app .use(tokenBackupPlugin)
-    .mount('#app')
+if(initGuest())
+    app.mount('#app')

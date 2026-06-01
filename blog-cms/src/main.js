@@ -13,6 +13,7 @@ import 'mavon-editor/dist/css/index.css'
 import './util/dateTimeFormatUtils.js'
 import PrimePluginVue from "@/plugins/primevueConfig/primePluginVue.js";
 import tokenBackupPlugin from './plugins/tokenBackup'
+import {initGuest} from "@/plugins/auth.js";
 const app = createApp(App)
 
 // sử dụng plugins
@@ -35,5 +36,8 @@ app.config.globalProperties.$msgSuccess = (msg) => showMessage('success',msg)
 app.config.globalProperties.$msgError = (msg) => showMessage('error',msg)
 app.config.globalProperties.$msgInfo = (msg) => showMessage('info',msg)
 
+
 app .use(tokenBackupPlugin)
-    .mount('#app')
+
+if(initGuest())
+    app.mount('#app')
