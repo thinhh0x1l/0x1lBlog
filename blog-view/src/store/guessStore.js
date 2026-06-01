@@ -1,6 +1,5 @@
 import {defineStore} from "pinia";
 import {computed, ref, watch} from "vue";
-import {initGuestToken} from "@/services/bridge/guestBootstrap.js";
 
 export const useGuestStore = defineStore('guest', () => {
     const TOKEN_KEY = "guest_token";

@@ -13,7 +13,6 @@ import {PrismPlugin} from '@/plugins/prism/prism.js'
 import PrimeVuePlugin from "@/plugins/primevueConfig/primePluginVue.js";
 import FontAwesomeIcon from "@/plugins/fontAwesomeIcon.js";
 import tokenBackupPlugin from './plugins/tokenBackup'
-import {initGuestToken} from "@/services/bridge/guestBootstrap.js";
 import {pinia} from "@/store/pinia/pinia.js";
 import {initGuest} from "@/plugins/auth.js";
 const app = createApp(App)
@@ -31,7 +30,9 @@ app .use(router)
         error: "/img/error.png"
     })
 
-await initGuestToken();
 app .use(tokenBackupPlugin)
-if(initGuest())
-    app.mount('#app')
+
+router.isReady().then(async () => {
+    if (await initGuest())
+        app.mount('#app')
+})

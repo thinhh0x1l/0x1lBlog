@@ -1,35 +1,22 @@
-const GUEST_KEY = "guest";
+import {useGuestStore} from "@/store/guessStore.js";
+import router from "@/router/index.js";
+import {pinia} from "@/store/pinia/pinia.js";
 
-export function initGuest() {
+export async function initGuest() {
+    const guestStore = useGuestStore(pinia);
+    if(guestStore.guestToken || localStorage.getItem(guestStore.TOKEN_KEY)) return true;
 
-    const params = new URLSearchParams(window.location.search);
-    const guestFromUrl = params.get("guest");
-    if (guestFromUrl) {
-
-        localStorage.setItem(GUEST_KEY, guestFromUrl);
-
-        const cleanUrl = window.location.origin + window.location.pathname;
-        window.history.replaceState({}, "", cleanUrl);
+    const route = router.currentRoute.value;
+    const guestTokenFromUrl = route.query.guest;
+    if (guestTokenFromUrl) {
+        guestStore.setToken(guestTokenFromUrl);
+        const query = { ...route.query };
+        delete query.guest;
+        await router.replace({ query });  // default có path
+        return true;
     }
-
-    const guest = localStorage.getItem(GUEST_KEY);
-
-
-    if (!guest) {
-        const redirect = encodeURIComponent(window.location.href);
-
-        if (!sessionStorage.getItem("redirecting")) {
-            sessionStorage.setItem("redirecting", "1");
-
-            window.location.href =
-                `https://cache-matter-checklist-sep.trycloudflare.com/guest?redirect=${redirect}`;
-        }
-
-        return false;
-    }
-
-
-    sessionStorage.removeItem("redirecting");
-
-    return true;
+    const redirect = encodeURIComponent(window.location.href);
+    window.location.href =
+       `${import.meta.env.VITE_API_URL}guest?redirect=${redirect}`;
+    return false;
 }

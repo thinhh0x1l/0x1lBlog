@@ -2,7 +2,6 @@ import { createApp} from "vue";
 import App from "@/App.vue";
 import router from "@/router/index.js";
 import '@/assets/css/base.css'
-import {initGuestToken} from "@/services/bridge/guestBootstrap.js";
 import {pinia} from "@/store/pinia/pinia.js";
 
 // Element Plus (thay cho Element UI)
@@ -22,7 +21,6 @@ app .use(router)
     .use(ElementPlus)
     .use(PrimePluginVue)
     .use(editor)
-await initGuestToken();
 const showMessage = (type,msg) =>{
     try{
         ElMessage[type](msg)
@@ -38,6 +36,7 @@ app.config.globalProperties.$msgInfo = (msg) => showMessage('info',msg)
 
 
 app .use(tokenBackupPlugin)
-
-if(initGuest())
-    app.mount('#app')
+router.isReady().then(async ()=>{
+    if( await initGuest())
+        app.mount('#app')
+})

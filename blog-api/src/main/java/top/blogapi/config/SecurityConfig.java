@@ -71,8 +71,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowCredentials(false);
+//        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowCredentials(false);
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOrigins(List.of(
+                "https://0x1l-blog.vercel.app",
+                "https://0x1l-blog-admin.vercel.app",
+                "http://localhost:5174",
+                "http://localhost:5173"
+        ));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         configuration.setMaxAge(Duration.ofSeconds(3600)); //cache preflight 1h

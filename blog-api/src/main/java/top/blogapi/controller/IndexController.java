@@ -1,14 +1,18 @@
 package top.blogapi.controller;
 
 import com.github.benmanes.caffeine.cache.Cache;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.blogapi.dto.internal.BlogIdAndTitleInternal;
 import top.blogapi.dto.internal.VisitDto;
@@ -20,6 +24,8 @@ import top.blogapi.service.impl.orchestration.BlogOrchestrator;
 import top.blogapi.service.impl.orchestration.SiteSettingOrchestrator;
 import top.blogapi.util.IpAddressUtils;
 
+import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 
 import static top.blogapi.constant.HeaderConstant.TOKEN_HEADER;
@@ -89,5 +95,50 @@ public class IndexController {
         }
 
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/test")
+    public String test(HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+        String referer = request.getHeader("Referer");
+        String host = request.getHeader("Host");
+
+        System.out.println("Origin: " + origin);
+        System.out.println("Referer: " + referer);
+        System.out.println("Host: " + host);
+
+        return "ok";
+    }
+    @GetMapping("/guest")
+    public void guest(
+            @CookieValue(value = "guest_token", required = false) String guestToken,
+            @RequestParam String redirect,
+            HttpServletResponse response
+    ) throws IOException {
+
+        System.out.println(guestToken);
+
+        if (guestToken == null) {
+            guestToken = guestService.createGuestToken();
+            guestService.getGuestOrCreateByToken(guestToken);
+
+            ResponseCookie cookie = ResponseCookie.from("guest_token", guestToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("Lax")
+                    .path("/")
+                    .maxAge(Duration.ofDays(100*366))
+                    .build();
+
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        }
+        // Redirect về FE
+        String url = redirect
+                + (redirect.contains("?") ? "&" : "?")
+                + "guest=" + guestToken;
+
+        System.out.println(url);
+
+        response.sendRedirect(url);
     }
 }
