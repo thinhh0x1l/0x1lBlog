@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-
     "module": "ESNext",
     // Cho phép giữ nguyên import/export để Vite bundle.
     // Nếu đổi sang CommonJS → build lỗi ngay.
@@ -91,6 +90,11 @@
     }
   },
 
-  "include": ["src/**/*.ts", "src/**/*.vue"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.vue",
+    "src/.d.ts",
+    "src/**/*"
+  ]
   // Nếu thiếu *.vue → vue-tsc vô dụng.
 }
