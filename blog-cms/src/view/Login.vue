@@ -114,11 +114,11 @@ const handleLogin = async () => {
       proxy.$msgSuccess(res.msg)
 
       // Store token
-      sessionStorage.setItem('token', res.data.token)
-      sessionStorage.setItem('user', JSON.stringify(res.data.user))
+      localStorage.setItem('token', res.data.token)
+      localStorage.setItem('user', JSON.stringify(res.data.user))
 
       // Navigate to dashboard
-      await router.push('/home')
+      await router.push('/dashboard')
     } else {
       proxy.$msgError(res.msg)
     }
@@ -135,7 +135,11 @@ const handleLogin = async () => {
 <style scoped>
 .login_container {
   height: 100%;
-  background-color: #2b4b6b;
+  background: linear-gradient(
+      to bottom,
+      #050607,
+      #080b20
+  );
 }
 
 .login_box {

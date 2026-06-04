@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Breadcrumb parent-title="Quản lý bình luận"/>
 
     <el-card>
       <el-row>
@@ -167,7 +166,6 @@
 </template>
 
 <script setup>
-import Breadcrumb from "@/components/Breadcrumb.vue";
 import { getCurrentInstance } from "vue";
 import { ref , reactive , onMounted } from "vue";
 import { formatDate } from '@/util/dateTimeFormatUtils.js'

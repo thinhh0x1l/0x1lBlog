@@ -1,7 +1,6 @@
 <template>
   <div>
-    <!-- Breadcrumb điều hướng -->
-    <Breadcrumb parentTitle="Quản lý blog"/>
+
 
     <el-card>
       <el-table :data="momentList" border stripe>
@@ -49,7 +48,6 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Edit, Delete } from '@element-plus/icons-vue'
-import Breadcrumb from "@/components/Breadcrumb.vue"
 import {deleteMomentById, getMomentListByQuery, updatePublished} from "@/api/moment"
 import {formatDate} from "@/util/dateTimeFormatUtils.js";
 import type {Moment} from "@/types/momentType";
@@ -117,7 +115,7 @@ const momentPublishedChanged = (row: { id: number; published: boolean }) => {
 }
 
 const goMomentEditPage = (id: number) => {
-  router.push(`/moments/edit/${id}`)
+  router.push(`/blog/moment/edit/${id}`)
 }
 
 const deleteMomentId = async (id: number) => {

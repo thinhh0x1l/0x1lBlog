@@ -4,8 +4,8 @@ import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosErr
 // @ts-ignore
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import {useGuestStore} from "@/store/guessStore";
-import {pinia} from "@/store/pinia/pinia";
+import {useGuestStore} from "@/store/guessStore.js";
+import {pinia} from "@/store/pinia/pinia.js";
 
 export interface ApiResponse<T = any>{
     code: number,
@@ -56,7 +56,7 @@ request.interceptors.request.use(
             }
         }
 
-        const token = window.sessionStorage.getItem('token')
+        const token = window.localStorage.getItem('token')
         if (token) {
             config.headers.Authorization = `Bearer ${token}`
         }

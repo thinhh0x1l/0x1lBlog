@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Breadcrumb parentTitle="Quản lý trang" />
 
     <el-card>
       <el-form :model="form" :rules="formRules" ref="formRef" label-position="top">
@@ -41,7 +40,6 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import Breadcrumb from "@/components/Breadcrumb.vue"
 import {fAbout, fUpdateAbout} from "@/api/about"
 import { ElMessage } from 'element-plus'
 import type {About} from "@/types/aboutType";

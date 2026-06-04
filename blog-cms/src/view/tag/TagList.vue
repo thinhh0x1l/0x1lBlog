@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Breadcrumb parent-title="Quản lý Blog"/>
 
     <el-card>
       <el-row :gutter="10">   <!-- :gutter = khoảng cách giữa các cột-->
@@ -115,7 +114,6 @@
 </template>
 
 <script setup>
-import Breadcrumb from "@/components/Breadcrumb.vue";
 import { ref, reactive, onMounted } from "vue";
 import {createTag, deleteTagById, getData, updateTag} from "@/api/tag.js";
 import { getCurrentInstance } from "vue";

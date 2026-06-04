@@ -1,18 +1,12 @@
 <template>
   <div>
-    <!-- Breadcrumb điều hướng -->
-    <Breadcrumb parentTitle="Quản lý blog" />
 
     <el-card>
       <el-form :model="form" label-position="top">
         <el-form-item label="Nội dung động" prop="content">
-          <mavon-editor
-              class="mavon-editor"
-              v-model="form.content"
-              language="en"
-              placeholder="Nội dung moment"
-              :ishljs="false"
-          />
+          <mavon-editor :is-dark="true"
+                        :placeholder="'Nhập nội dung Moment'"
+                        v-model:content="form.content"/>
         </el-form-item>
 
         <el-form-item label="Số lượt thích" prop="likes" style="width: 50%">
@@ -42,10 +36,10 @@
 import {ref, reactive, onMounted, watch} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import Breadcrumb from '@/components/Breadcrumb.vue'
 import {getMomentById, saveMoment, updateMoment} from "@/api/moment";
 import type {ApiResponse} from "@/plugins/axios2";
 import type {Moment} from "@/types/momentType";
+import MavonEditor from "@/components/mavonEditor/index.vue"
 // import { getMomentById, saveMoment, updateMoment } from '@/api/moment'
 
 

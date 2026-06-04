@@ -1,7 +1,6 @@
 <template>
   <div>
-    <!-- Breadcrumb Navigation -->
-    <Breadcrumb parent-title="Quản lý Blog"></Breadcrumb>
+
     <el-card>
       <!-- Search -->
       <el-row>
@@ -113,7 +112,6 @@ import {
 } from '@/api/blog.js'
 import { formatDate } from '@/util/dateTimeFormatUtils.js'
 import  { getCurrentInstance } from 'vue'
-import Breadcrumb from "@/components/Breadcrumb.vue";
 
 const { proxy } = getCurrentInstance()
 
@@ -200,7 +198,7 @@ const handleCurrentChange = (newPage) => {
 }
 
 const goBlogEditPage = (id) => {
-  router.push(`/blogs/edit/${id}`)
+  router.push(`/blog/edit/${id}`)
 }
 
 const handleDeleteBlogById = async (id) => {

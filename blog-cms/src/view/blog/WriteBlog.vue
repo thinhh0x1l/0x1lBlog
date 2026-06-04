@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!--Thanh điều hướng breadcrumb-->
-    <Breadcrumb parent-title="Quản lý Blog"></Breadcrumb>
 
     <el-card>
       <el-form :model="form" :rules="formRules" ref="formRef" label-position="top">
@@ -29,24 +27,16 @@
 
         <!-- Editor cho mô tả -->
         <el-form-item label="Mô tả Blog" prop="description">
-          <mavon-editor
-              class="mavon-editor"
-              v-model="form.description"
-              language="en"
-              placeholder="Mô tả Blog...."
-              :ishljs="false"
-          />
+          <mavon-editor :is-dark="true"
+                        :placeholder="'Nhập mô tả blog'"
+                        v-model:content="form.description"/>
         </el-form-item>
 
         <!-- Editor cho nội dung chính -->
         <el-form-item label="Nội dung Blog"  prop="content" style="width: 100%">
-          <mavon-editor
-              class="mavon-editor"
-              v-model="form.content"
-              language="en"
-              placeholder="Nội dụng Blog.... "
-              :ishljs="false"
-          />
+          <mavon-editor :is-dark="true"
+                        :placeholder="'Nhập nội dung blog'"
+                        v-model:content="form.content"/>
         </el-form-item>
 
         <!-- Các mục form khác giữ nguyên -->
@@ -144,7 +134,6 @@ import {ref, reactive, onMounted} from 'vue'
 import { useRouter , useRoute} from 'vue-router'
 import { getCategoryAndTag, saveBlog , getBlogById , updateBlog} from '@/api/blog'
 import { getCurrentInstance } from "vue";
-import Breadcrumb from "@/components/Breadcrumb.vue";
 
 const { proxy } = getCurrentInstance()
 const route = useRoute()

@@ -2,7 +2,7 @@ import axios from "axios";
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import {pinia} from "@/store/pinia/pinia.js";
-import {useGuestStore} from "@/store/guessStore";
+import {useGuestStore} from "@/store/guessStore.js";
 
 const request = axios.create({
     baseURL: `${import.meta.env.VITE_API_URL}admin/`,
@@ -13,7 +13,7 @@ const request = axios.create({
 request.interceptors.request.use(
     config => {
         NProgress.start()
-        const token = window.sessionStorage.getItem('token')
+        const token = window.localStorage.getItem('token')
         const guestStore =
             useGuestStore(pinia);
 
