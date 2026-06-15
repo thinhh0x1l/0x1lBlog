@@ -1,19 +1,19 @@
 services:
-  postgres:
-    image: postgres:16-alpine
+  mysql:
+    image: mysql:8.0
     container_name: blog-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-blog}
-      POSTGRES_USER: ${POSTGRES_USER:-blog}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-blog123}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-1820}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-blog}
+      MYSQL_USER: ${MYSQL_USER:-blog}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-blog123}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${MYSQL_PORT:-3306}:3306"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./docker/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-blog}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-1820}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -33,19 +33,18 @@ services:
       timeout: 5s
       retries: 5
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: blog-pgadmin
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: blog-phpmyadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@blog.com}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-1820}
     ports:
-      - "${PGADMIN_PORT:-5050}:80"
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - "${PMA_PORT:-8080}:80"
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
 
   blog-api:
@@ -55,15 +54,15 @@ services:
     container_name: blog-api
     restart: unless-stopped
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
       redis:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-docker}
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-blog}
-      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-blog}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-blog123}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-blog}?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-blog}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-blog123}
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-redis123}
@@ -74,6 +73,5 @@ services:
       - "${API_PORT:-8090}:8090"
 
 volumes:
-  postgres_data:
+  mysql_data:
   redis_data:
-  pgadmin_data:

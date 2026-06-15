@@ -2,3 +2,6 @@
 logs/
 blog-view.iml
 .env
+docker/*.sql
+docker/*.js
+docker/export*

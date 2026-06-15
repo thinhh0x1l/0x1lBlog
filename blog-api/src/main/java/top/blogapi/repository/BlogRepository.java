@@ -205,8 +205,8 @@ public interface BlogRepository {
             blog_tags AS (
                 SELECT
                     bt.blog_id,
-                    STRING_AGG(t.name, '||') AS allTagNames,
-                    STRING_AGG(t.color, '||') AS allTagColors
+                    GROUP_CONCAT(t.name SEPARATOR '||') AS allTagNames,
+                    GROUP_CONCAT(t.color SEPARATOR '||') AS allTagColors
                 FROM blog_tag bt
                 JOIN tag t
                 ON t.id = bt.tag_id
@@ -229,7 +229,7 @@ public interface BlogRepository {
             "ORDER BY create_time DESC ")
     List<BlogIdAndTitleInternal> getIdAndTitleListByIsPublishedAndIsRecommend();
 
-    @Select("SELECT DISTINCT TO_CHAR(create_time, 'MM/YYYY') as day " +
+    @Select("SELECT DISTINCT DATE_FORMAT(create_time,'%m/%Y') as day " +
             "FROM blog " +
             "WHERE is_published = TRUE "
     )
@@ -239,11 +239,11 @@ public interface BlogRepository {
         <script>
             SELECT id,
                    title,
-                   TO_CHAR(create_time, 'D/MM') AS day,
-                   TO_CHAR(create_time, 'MM/YYYY') AS yM
+                   DATE_FORMAT(create_time, 'N%m') AS day,
+                   DATE_FORMAT(create_time, '%m/%Y') AS yM
             FROM blog
             WHERE is_published = TRUE
-              AND TO_CHAR(create_time, 'MM/YYYY') IN
+              AND DATE_FORMAT(create_time, '%m/%Y') IN
             <foreach item="ym"
                      collection="yearMonths"
                      open="("
@@ -287,7 +287,7 @@ public interface BlogRepository {
     SELECT b.id, b.title, c.id AS category_id, c.name AS category_name
     FROM blog AS b LEFT JOIN category AS c ON b.category_id=c.id
     WHERE b.is_published
-    ORDER BY RANDOM()
+    ORDER BY RAND()
     LIMIT #{limitNum}
 """)
     @Results({

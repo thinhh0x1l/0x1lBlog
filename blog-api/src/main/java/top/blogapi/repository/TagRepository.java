@@ -44,8 +44,8 @@ public interface TagRepository {
         WITH blog_tags AS (
             SELECT
                 bt.blog_id,
-                STRING_AGG(t.name, '||') AS allTagNames,
-                STRING_AGG(t.color, '||') AS allTagColors
+                    GROUP_CONCAT(t.name SEPARATOR '||') AS allTagNames,
+                    GROUP_CONCAT(t.color SEPARATOR '||') AS allTagColors
             FROM tag t
             JOIN blog_tag bt
             ON t.id = bt.tag_id
