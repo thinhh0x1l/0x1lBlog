@@ -3,7 +3,7 @@ package top.blogapi.service.impl.orchestration;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import io.jsonwebtoken.Claims;
+import com.nimbusds.jwt.JWTClaimsSet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -181,19 +181,22 @@ public class CommentOrchestrator {
     }
 
     private void applyAdminComment(Comment comment, String jwtToken) {
+        try {
+            JWTClaimsSet claims = jwtService.extractClaims(jwtToken);
 
-        Claims claims = jwtService.extractClaims(jwtToken);
+            User admin = (User) userService.loadUserByUsername(
+                    claims.getSubject()
+            );
 
-        User admin = (User) userService.loadUserByUsername(
-                claims.getSubject()
-        );
-
-        comment.setAdminComment(true);
-        comment.setAvatar(admin.getAvatar());
-        comment.setWebsite("/");
-        comment.setNickname(admin.getNickname());
-        comment.setEmail(admin.getEmail());
-        comment.setNotice(false);
+            comment.setAdminComment(true);
+            comment.setAvatar(admin.getAvatar());
+            comment.setWebsite("/");
+            comment.setNickname(admin.getNickname());
+            comment.setEmail(admin.getEmail());
+            comment.setNotice(false);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to extract JWT claims", e);
+        }
     }
 
     private void applyVisitorComment(Comment comment, SaveCommentReq req) {

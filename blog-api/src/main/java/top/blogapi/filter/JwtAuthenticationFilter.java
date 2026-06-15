@@ -2,7 +2,7 @@ package top.blogapi.filter;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.JwtException;
+import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -74,7 +74,7 @@ public class JwtAuthenticationFilter
                         .setAuthentication(auth);
             }
 
-        } catch (JwtException ex) {
+        } catch (JOSEException | java.text.ParseException ex) {
 //            log.warn("JWT không hợp lệ: {}", ex.getMessage());
 //
 //            SecurityContextHolder.clearContext();
