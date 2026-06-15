@@ -19,7 +19,7 @@ public interface CommentRepository {
             c.email,
             c.content,
             c.avatar,
-            c.create_time,
+            c.create_time AS created_at,
             c.website,
             c.ip,
             c.is_published,
@@ -87,7 +87,7 @@ public interface CommentRepository {
                 </if>
                 UNION ALL
                 SELECT
-                    c.id, c.nickname, c.content, c.avatar, c.create_time, c.is_admin_comment, c.parent_comment_id,
+                    c.id, c.nickname, c.content, c.avatar, c.create_time AS created_at, c.is_admin_comment, c.parent_comment_id,
                     ct.thread_root,
                     ct.depth + 1
                 FROM comment c
@@ -139,7 +139,7 @@ public interface CommentRepository {
             </foreach>
             UNION ALL
             SELECT
-                c.id, c.nickname, c.content, c.avatar, c.create_time, c.is_admin_comment, c.parent_comment_id, c.website, c.guess_id, c.is_edited,
+                c.id, c.nickname, c.content, c.avatar, c.create_time AS created_at, c.is_admin_comment, c.parent_comment_id, c.website, c.guess_id, c.is_edited,
                 ct.thread_root,
                 ct.depth + 1,
                 CONCAT('@',ct.nickname) as reply
@@ -178,7 +178,7 @@ public interface CommentRepository {
             #{email},
             #{content},
             #{avatar},
-            #{createTime},
+            #{createdAt},
             #{website},
             #{ip},
             #{published},
@@ -187,7 +187,7 @@ public interface CommentRepository {
             #{notice},
             #{parentCommentId},
             #{blog.id},
-            #{updateAt},
+            #{updatedAt},
             #{isEdited},
             #{guessId}
         )

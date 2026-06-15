@@ -10,8 +10,9 @@ import top.blogapi.model.entity.User;
 @Mapper
 public interface UserRepository {
     @Select("""
-        SELECT * 
-        FROM User u 
+        SELECT u.id, u.username, u.password, u.nickname, u.avatar, u.email, u.role,
+               u.create_time AS created_at, u.update_time AS updated_at
+        FROM "user" u
         WHERE u.username = #{username}
         LIMIT 1
     """)

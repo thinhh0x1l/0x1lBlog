@@ -21,8 +21,8 @@ public interface BlogRepository {
                b.title,
                b.is_recommend,
                b.is_published,
-               b.create_time,
-               b.update_time,
+               b.create_time AS created_at,
+               b.update_time AS updated_at,
                b.is_top,
                c.id   AS category_id,
                c.name AS category_name
@@ -81,8 +81,8 @@ public interface BlogRepository {
             #{appreciation},
             #{top},
             #{commentEnabled},
-            #{createTime},
-            #{updateTime},
+            #{createdAt},
+            #{updatedAt},
             #{musicId},
             #{views},
             #{words},
@@ -124,8 +124,8 @@ public interface BlogRepository {
                 b.is_recommend,
                 b.is_appreciation,
                 b.is_comment_enabled,
-                b.create_time,
-                b.update_time,
+                b.create_time AS created_at,
+                b.update_time AS updated_at,
                 b.views,
                 b.words,
                 b.read_time,
@@ -164,9 +164,9 @@ public interface BlogRepository {
             is_top = #{top},
             is_appreciation = #{appreciation},
             is_comment_enabled = #{commentEnabled},
-            create_time = #{createTime},
+            create_time = #{createdAt},
             music_id = #{musicId},
-            update_time = #{updateTime},
+            update_time = #{updatedAt},
             views = #{views},
             words = #{words},
             read_time = #{readTime},
@@ -191,7 +191,7 @@ public interface BlogRepository {
                     b.id,
                     b.title,
                     b.description,
-                    b.create_time,
+                    b.create_time AS created_at,
                     b.views,
                     b.words,
                     b.read_time,
@@ -257,7 +257,7 @@ public interface BlogRepository {
 
     @Select("""
         SELECT b.id, b.title, b.content,  b.is_appreciation, b.music_id,
-               b.is_comment_enabled, b.is_top, b.create_time, b.update_time, b.words ,
+               b.is_comment_enabled, b.is_top, b.create_time AS created_at, b.update_time AS updated_at, b.words ,
                b.read_time,c.id AS category_id, c.name AS category_name
         FROM blog AS b
         LEFT JOIN category AS c ON b.category_id = c.id

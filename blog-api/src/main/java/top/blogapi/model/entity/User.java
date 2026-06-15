@@ -16,16 +16,12 @@ import java.util.List;
 @Setter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User implements UserDetails {
-    Long id;
+public class User extends BaseEntity implements UserDetails {
     String username;
     String password;
     String nickname;
     String avatar;
     String email;
-    LocalDateTime createTime;
-    LocalDateTime updateTime;
-    // 1: admin; 2: user
     String role;
 
     @Override

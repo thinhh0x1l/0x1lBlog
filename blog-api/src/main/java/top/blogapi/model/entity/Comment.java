@@ -12,28 +12,24 @@ import java.util.List;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
-public class Comment {
-    Long id;
-    String nickname; // Biệt danh (tên hiển thị của người bình luận)
-    String email; // Địa chỉ email
-    String content; // Nội dung bình luận
-    String avatar; // Ảnh đại diện (đường dẫn ảnh)
+public class Comment extends BaseEntity {
+    String nickname;
+    String email;
+    String content;
+    String avatar;
     String website;
-    String ip; // Địa chỉ IP của người bình luận
-    Boolean published; // Công khai hoặc đưa vào thùng rác
-    Boolean notice; // Có nhận thông báo qua email hay không
+    String ip;
+    Boolean published;
+    Boolean notice;
     Boolean isEdited;
-    LocalDateTime createTime; // Thời gian bình luận
-    LocalDateTime updateAt; // Thời gian chỉnh sửa bình luận
     Long guessId;
-    Boolean adminComment; // Bình luận của quản trị viên (chủ blog)m r
-    Integer page; // 0: bài viết thông thường, 1: trang "Giới thiệu về tôi"
-    BlogIdAndTitleInternal blog; // Bài viết mà bình luận này thuộc về
-    Long parentCommentId; // Bình luận cha (nếu là trả lời)
-    List<Comment> replyComments = new ArrayList<>(); // Danh sách các bình luận trả lời bình luận này
+    Boolean adminComment;
+    Integer page;
+    BlogIdAndTitleInternal blog;
+    Long parentCommentId;
+    List<Comment> replyComments = new ArrayList<>();
 
     public Comment(){
         this.isEdited = false;
-        this.updateAt = LocalDateTime.now();
     }
 }

@@ -23,8 +23,8 @@ public class BlogDetailInternal {
     Boolean appreciation;
     Boolean commentEnabled;
     Boolean top;
-    LocalDateTime createTime;
-    LocalDateTime updateTime;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
     Long views;
     Integer words;
     Integer readTime;
@@ -42,8 +42,8 @@ public class BlogDetailInternal {
                 .appreciation(cache.appreciation)
                 .commentEnabled(cache.commentEnabled)
                 .top(cache.top)
-                .createTime(cache.createTime)
-                .updateTime(cache.updateTime)
+                .createdAt(cache.createdAt)
+                .updatedAt(cache.updatedAt)
                 .views(views)
                 .words(cache.words)
                 .readTime(cache.readTime)

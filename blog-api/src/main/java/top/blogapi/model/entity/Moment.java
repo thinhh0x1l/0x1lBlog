@@ -12,9 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Moment {
-    Long id;
+public class Moment extends BaseEntity {
     String content;
-    LocalDateTime createTime;
     Boolean published;
 }

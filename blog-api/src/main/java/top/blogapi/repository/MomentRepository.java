@@ -15,7 +15,7 @@ public interface MomentRepository {
         SELECT
            m.id,
            m.content,
-           m.create_time,
+           m.create_time AS created_at,
            m.is_published AS published,
            COUNT(mg.guest_id) AS likes
         FROM moment m
@@ -85,7 +85,7 @@ public interface MomentRepository {
         SELECT
            m.id,
            m.content,
-           m.create_time,
+           m.create_time AS created_at,
            m.is_published AS published,
            COUNT(mg.guest_id) AS likes
         FROM moment m
@@ -150,7 +150,7 @@ public interface MomentRepository {
 
     @Insert("""
     INSERT INTO moment (content, create_time, is_published)
-    VALUES (#{content}, #{createTime}, #{published})
+    VALUES (#{content}, #{createdAt}, #{published})
 """)
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int saveMoment(top.blogapi.model.entity.Moment moment);
@@ -159,7 +159,7 @@ public interface MomentRepository {
     UPDATE moment
     SET
         content = #{content},
-        create_time = #{createTime},
+        create_time = #{createdAt},
         is_published = #{published}
     WHERE id = #{id}
 """)

@@ -44,7 +44,7 @@ public class MomentOrchestrator {
                 new PageInfo<>(ms).convert(
                         m -> MomentLikedByGuestIdInternal.builder()
                                 .id(m.getId())
-                                .createTime(m.getCreateTime())
+                                .createTime(m.getCreatedAt())
                                 .content(MarkdownUtils.markdownToHtmlExtensions(m.getContent()))
                                 .likes(map.getOrDefault(m.getId(), MomentLikesAndLikedInternal.empty).getLikes())
                                 .liked(map.getOrDefault(m.getId(), MomentLikesAndLikedInternal.empty).isLiked())
