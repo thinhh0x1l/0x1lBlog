@@ -43,23 +43,29 @@ public class ZingMp3Client {
 
     public void setConfig(Map<String, Map<String, Object>> configMap) {
         if (configMap == null) {
-            throw new IllegalArgumentException("Config map không được null");
+            log.warn("Config map is null, skipping MP3 configuration");
+            return;
         }
         mp3k = configMap.get("mp3-k");
-        if (mp3k == null) {
-            throw new IllegalArgumentException("Thiếu config 'mp3-k'");
+        if (mp3k == null || mp3k.isEmpty()) {
+            log.warn("MP3 config not found or empty, skipping");
+            return;
         }
 
-        this.apiKey = getRequiredValue(mp3k, "API_KEY");
-        this.secretKey = getRequiredValue(mp3k, "SECRET_KEY");
-        this.version = getRequiredValue(mp3k, "VERSION");
+        try {
+            this.apiKey = getRequiredValue(mp3k, "API_KEY");
+            this.secretKey = getRequiredValue(mp3k, "SECRET_KEY");
+            this.version = getRequiredValue(mp3k, "VERSION");
 
-        mp3h = configMap.get("mp3-h");
+            mp3h = configMap.get("mp3-h");
 
-        loadRestClient();
+            loadRestClient();
 
-        cookieCache.clear();
-        configured = true;
+            cookieCache.clear();
+            configured = true;
+        } catch (IllegalArgumentException e) {
+            log.warn("MP3 config incomplete, skipping: {}", e.getMessage());
+        }
     }
 
     public void loadRestClient(){

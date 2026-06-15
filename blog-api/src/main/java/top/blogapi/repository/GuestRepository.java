@@ -25,9 +25,9 @@ public interface GuestRepository {
         #{createAt},
         #{lastSeenAt}
     )
-    ON DUPLICATE KEY UPDATE
-    last_seen_at = VALUES(last_seen_at)
-""")
+    ON CONFLICT (token_hash) DO UPDATE SET
+    last_seen_at = EXCLUDED.last_seen_at
+    """)
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int addGuest(Guest guest);
 

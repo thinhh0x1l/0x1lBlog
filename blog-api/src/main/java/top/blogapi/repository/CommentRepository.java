@@ -131,7 +131,7 @@ public interface CommentRepository {
                 id, nickname, content, avatar, create_time, is_admin_comment, parent_comment_id, website, guess_id, is_edited,
                 id AS thread_root,
                 1 AS depth,
-                CAST('' AS char(100)) as reply
+            CAST('' AS VARCHAR(100)) as reply
             FROM comment
             WHERE id IN
             <foreach item="rootId" collection="rootIds" open="(" separator="," close=")">
