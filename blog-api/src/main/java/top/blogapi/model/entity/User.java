@@ -1,60 +1,40 @@
 package top.blogapi.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User extends BaseEntity implements UserDetails {
+public class User extends BaseEntity {
     String username;
-    String password;
-    String nickname;
-    String avatar;
     String email;
+    String passwordHash;
+    String displayName;
+    String avatarUrl;
+    String bio;
+    String website;
+    String location;
+    String socialLinks;
     String role;
-
-    @Override
-    @JsonIgnore
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(
-                new SimpleGrantedAuthority(
-                        "ROLE_" + role
-                )
-        );
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    Boolean isCreator;
+    String status;
+    OffsetDateTime lockedUntil;
+    Integer blogCount;
+    Integer followerCount;
+    Integer followingCount;
+    Integer level;
+    Long exp;
+    Integer checkinStreak;
+    LocalDate lastCheckinAt;
+    Long balance;
+    Long bonus;
+    OffsetDateTime lastActiveAt;
 }

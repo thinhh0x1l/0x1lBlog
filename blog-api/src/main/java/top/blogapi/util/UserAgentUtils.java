@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.springframework.stereotype.Component;
-import top.blogapi.dto.internal.UserAgentDTO;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,13 +13,16 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class UserAgentUtils {
 
+    public record UserAgentInfo(String os, String browser) {
+        public static final UserAgentInfo UNKNOWN = new UserAgentInfo("Unknown", "Unknown");
+    }
+
     private final UserAgentAnalyzer uaa;
-    private final Cache<String, UserAgentDTO> resultCache;
+    private final Cache<String, UserAgentInfo> resultCache;
 
     public UserAgentUtils() {
         this.uaa = UserAgentAnalyzer
                 .newBuilder()
-                .useJava8CompatibleCaching()
                 .withCache(10000)
                 .hideMatcherLoadStats()
                 .withField(UserAgent.OPERATING_SYSTEM_NAME_VERSION)
@@ -29,18 +31,18 @@ public class UserAgentUtils {
 
         this.resultCache = Caffeine.newBuilder()
                 .maximumSize(500)
-                .expireAfterWrite(30, TimeUnit.DAYS)    // 30 ngày (hợp lý)
-                .expireAfterAccess(60, TimeUnit.DAYS)    // Không dùng 7 ngày → xóa
+                .expireAfterWrite(30, TimeUnit.DAYS)
+                .expireAfterAccess(60, TimeUnit.DAYS)
                 .recordStats()
                 .build();
     }
 
-    public UserAgentDTO parseOsAndBrowser(String userAgent) {
+    public UserAgentInfo parseOsAndBrowser(String userAgent) {
         if (userAgent == null || userAgent.isEmpty()) {
-            return UserAgentDTO.UNKNOWN;
+            return UserAgentInfo.UNKNOWN;
         }
 
-        UserAgentDTO cached = resultCache.getIfPresent(userAgent);
+        UserAgentInfo cached = resultCache.getIfPresent(userAgent);
         if (cached != null) {
             return cached;
         }
@@ -50,7 +52,7 @@ public class UserAgentUtils {
             String os = agent.getValue(UserAgent.OPERATING_SYSTEM_NAME_VERSION);
             String browser = agent.getValue(UserAgent.AGENT_NAME_VERSION);
 
-            UserAgentDTO result = new UserAgentDTO(
+            UserAgentInfo result = new UserAgentInfo(
                     os != null ? os : "Unknown",
                     browser != null ? browser : "Unknown"
             );
@@ -59,7 +61,7 @@ public class UserAgentUtils {
             return result;
         } catch (Exception e) {
             log.warn("Failed to parse User-Agent: {}", userAgent, e);
-            return UserAgentDTO.UNKNOWN;
+            return UserAgentInfo.UNKNOWN;
         }
     }
 

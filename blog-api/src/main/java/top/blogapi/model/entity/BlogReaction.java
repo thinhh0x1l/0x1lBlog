@@ -1,12 +1,14 @@
 package top.blogapi.model.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -15,5 +17,5 @@ public class BlogReaction {
     Long userId;
     Long blogId;
     String type;
-    LocalDateTime createdAt;
+    OffsetDateTime createdAt;
 }

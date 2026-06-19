@@ -1,88 +1,47 @@
 package top.blogapi.repository;
 
 import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Repository;
 import top.blogapi.model.entity.Category;
-import top.blogapi.dto.internal.BlogTagsInfoInternal;
-import top.blogapi.dto.internal.CategoryBlogCountInternal;
 
 import java.util.List;
 import java.util.Optional;
 
 @Mapper
-@Repository
 public interface CategoryRepository {
-    @Select("SELECT c.id, c.name FROM category c ORDER BY id DESC ")
-    List<Category> getCategoryList();
 
-    @Insert("INSERT INTO category (name) VALUES (#{name})")
+    @Select("SELECT * FROM categories WHERE id = #{id} AND deleted_at IS NULL")
+    Optional<Category> findById(Long id);
+
+    @Select("SELECT * FROM categories WHERE slug = #{slug} AND deleted_at IS NULL")
+    Optional<Category> findBySlug(String slug);
+
+    @Select("SELECT * FROM categories WHERE deleted_at IS NULL ORDER BY sort_order, name")
+    List<Category> findAll();
+
+    @Select("SELECT * FROM categories WHERE is_visible = TRUE AND deleted_at IS NULL ORDER BY sort_order, name")
+    List<Category> findAllVisible();
+
+    @Insert("""
+        INSERT INTO categories (name, slug, description, icon, color, sort_order)
+        VALUES (#{name}, #{slug}, #{description}, #{icon}, #{color}, #{sortOrder})
+    """)
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    int saveCategory(Category category);
+    int insert(Category category);
 
-    @Select("SELECT c.id, c.name FROM category c WHERE c.id = #{id}")
-    Optional<Category> getCategoryById(Long id);
+    @Update("""
+        UPDATE categories SET name = #{name}, slug = #{slug}, description = #{description},
+                               icon = #{icon}, color = #{color}, sort_order = #{sortOrder},
+                               is_visible = #{isVisible}
+        WHERE id = #{id}
+    """)
+    int update(Category category);
 
-    @Select("SELECT c.id, c.name FROM category c WHERE c.name = #{name}")
-    Optional<Category> getCategoryByName(String name);
+    @Update("UPDATE categories SET deleted_at = NOW() WHERE id = #{id}")
+    int softDelete(Long id);
 
-    @Delete("DELETE FROM category WHERE id = #{id}")
-    int deleteCategoryById(Long id);
+    @Select("SELECT EXISTS(SELECT 1 FROM categories WHERE slug = #{slug} AND deleted_at IS NULL)")
+    boolean existsBySlug(String slug);
 
-    @Update("UPDATE category SET name = #{name} WHERE id = #{id}")
-    int updateCategory(Category category);
-
-    @Select("SELECT * FROM category WHERE name = #{categoryName}")
-    Optional<Category> categoryExist(String categoryName);
-
-    @Select("""
-        WITH
-            blog_base AS (
-                SELECT
-                    b.id,
-                    b.title,
-                    b.description,
-                    b.create_time,
-                    b.views,
-                    b.words,
-                    b.read_time,
-                    b.is_top,
-                    c.name AS category_name
-                FROM category c
-                JOIN blog b
-                ON c.id = b.category_id
-                WHERE c.name = #{categoryName}
-                AND b.is_published
-            ),
-            blog_tags AS (
-                SELECT
-                    bt.blog_id,
-                    GROUP_CONCAT(t.name SEPARATOR '||') AS allTagNames,
-                    GROUP_CONCAT(t.color SEPARATOR '||') AS allTagColors
-                FROM blog_tag bt
-                JOIN tag t
-                ON t.id = bt.tag_id
-                GROUP BY bt.blog_id
-            )
-        SELECT
-            b.*,
-            bt.allTagNames,
-            bt.allTagColors
-        FROM blog_base b
-        LEFT JOIN blog_tags bt ON bt.blog_id = b.id;
-""")
-    @Results({
-            @Result(property = "top", column = "is_top"),
-    })
-    List<BlogTagsInfoInternal> getBlogInfoListByCategoryNameAndIsPublished(String categoryName);
-
-    @Select("""
-        SELECT c.id, c.name,
-           SUM(CASE WHEN b.id IS NOT NULL THEN 1 ELSE 0 END)AS value
-        FROM category c
-        LEFT JOIN blog b
-        ON c.id = b.category_id
-        GROUP BY c.id
-""")
-    List<CategoryBlogCountInternal> getListCategoryBlogCount();
-
+    @Update("UPDATE categories SET blog_count = (SELECT COUNT(*) FROM blogs WHERE category_id = #{categoryId} AND status = 'PUBLISHED' AND deleted_at IS NULL) WHERE id = #{categoryId}")
+    int refreshBlogCount(Long categoryId);
 }

@@ -1,38 +1,38 @@
 package top.blogapi.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import top.blogapi.dto.request._common.LoginRequest;
-import top.blogapi.dto.request._common.LoginResponse;
-import top.blogapi.dto.response._common.Result;
-import top.blogapi.service.auth.AuthService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import top.blogapi.common.response.ApiResponse;
+import top.blogapi.dto.request.auth.LoginRequest;
+import top.blogapi.dto.request.auth.RefreshTokenRequest;
+import top.blogapi.dto.request.auth.RegisterRequest;
+import top.blogapi.orchestrator.AuthOrchestrator;
+import top.blogapi.service.auth.JwtService;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
 public class AuthController {
 
-    AuthService authService;
-    @PostMapping("/login")
-    public Result<?> login (@RequestBody LoginRequest request, HttpServletRequest httpRequest){
-//        authService.login(request, httpRequest);
-//        System.out.println(IpAddressUtils.getIpAddress(request));
-        LoginResponse response =
-                authService.login(
-                        request,
-                        httpRequest
-                );
+    private final AuthOrchestrator authOrchestrator;
+    private final JwtService jwtService;
 
-        return Result.ok(
-                "Đăng nhập thành công",
-                response
-        );
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(authOrchestrator.register(request)));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(authOrchestrator.login(request)));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse> refresh(@RequestBody RefreshTokenRequest request) {
+        Long userId = jwtService.getUserIdFromToken(request.getRefreshToken());
+        var user = jwtService.getRoleFromToken(request.getRefreshToken());
+        String token = jwtService.generateAccessToken(userId, user);
+        return ResponseEntity.ok(ApiResponse.success(token));
     }
 }

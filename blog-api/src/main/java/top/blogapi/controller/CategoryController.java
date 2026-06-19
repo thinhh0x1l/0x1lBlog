@@ -1,29 +1,56 @@
 package top.blogapi.controller;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import top.blogapi.dto.response._common.Result;
-import top.blogapi.service.impl.orchestration.CategoryOrchestrator;
+import top.blogapi.common.response.ApiResponse;
+import top.blogapi.dto.mapper.CategoryMapper;
+import top.blogapi.dto.response.CategoryResponse;
+import top.blogapi.model.entity.Category;
+import top.blogapi.service.category.CategoryService;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api/categories")
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
 public class CategoryController {
-    CategoryOrchestrator categoryOrchestrator;
 
-    @GetMapping("/categories")
-    public Result<?> categories() {
-        return Result.ok("Yêu cầu thành công", categoryOrchestrator.getCategoryList());
+    private final CategoryService categoryService;
+    private final CategoryMapper categoryMapper;
+
+    @GetMapping
+    public ResponseEntity<ApiResponse> getAll() {
+        List<CategoryResponse> categories = categoryService.findAllVisible().stream()
+                .map(categoryMapper::toResponse)
+                .toList();
+        return ResponseEntity.ok(ApiResponse.success(categories));
     }
 
-    @GetMapping("/category/{slug}")
-    public Result<?> category(@PathVariable String slug,
-                         @RequestParam(defaultValue = "1") Integer pageNum,
-                         @RequestParam(defaultValue = "1") Integer pageSize) {
-        return Result.ok("Yêu cầu thành công",
-                categoryOrchestrator.getBlogInfoListByCategoryNameAndIsPublished(slug,pageNum,pageSize));
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(categoryMapper.toResponse(categoryService.findById(id))));
+    }
+
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<ApiResponse> getBySlug(@PathVariable String slug) {
+        return ResponseEntity.ok(ApiResponse.success(categoryMapper.toResponse(categoryService.findBySlug(slug))));
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse> create(@RequestBody Category category) {
+        return ResponseEntity.ok(ApiResponse.success(categoryMapper.toResponse(categoryService.create(category))));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody Category category) {
+        category.setId(id);
+        return ResponseEntity.ok(ApiResponse.success(categoryMapper.toResponse(categoryService.update(category))));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> delete(@PathVariable Long id) {
+        categoryService.softDelete(id);
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

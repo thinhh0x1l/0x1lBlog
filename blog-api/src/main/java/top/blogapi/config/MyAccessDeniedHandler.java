@@ -3,20 +3,18 @@ package top.blogapi.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
-import top.blogapi.dto.response._common.Result;
+import top.blogapi.common.response.ApiResponse;
 
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor
 public class MyAccessDeniedHandler implements AccessDeniedHandler {
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void handle(
@@ -24,13 +22,9 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler {
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) throws IOException {
-
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-        Result<?> result = Result.create(403, "Bạn không có quyền truy cập!");
-
+        ApiResponse<?> result = ApiResponse.error("Bạn không có quyền truy cập!");
         response.getWriter().write(objectMapper.writeValueAsString(result));
     }
 }

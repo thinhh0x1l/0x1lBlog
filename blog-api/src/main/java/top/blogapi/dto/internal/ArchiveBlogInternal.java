@@ -1,16 +1,12 @@
 package top.blogapi.dto.internal;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.Value;
 
-@NoArgsConstructor
-@Setter
-@Getter
-@ToString
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Value
 public class ArchiveBlogInternal {
-    Long id;
+    Integer year;
+    Integer month;
+    Long blogId;
     String title;
-    String day;
-    String yM;
+    String slug;
 }

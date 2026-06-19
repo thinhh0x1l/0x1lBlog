@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import top.blogapi.constant.CacheNameConstant;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -22,7 +21,6 @@ public class CacheConfig {
     public CacheManager caffeineCacheManager(){
         CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
 
-        // Default
         caffeineCacheManager.setCaffeine(
                 Caffeine.newBuilder()
                         .initialCapacity(100)
@@ -33,9 +31,6 @@ public class CacheConfig {
         caffeineCacheManager.registerCustomCache(CacheNameConstant.SITE_INFO_MAP, buildCache());
         caffeineCacheManager.registerCustomCache(CacheNameConstant.ABOUT_INFO_MAP, buildCache());
         caffeineCacheManager.registerCustomCache(CacheNameConstant.TAG_CLOUD_LIST, buildCache());
-
-        caffeineCacheManager.registerCustomCache(CacheNameConstant.GUEST_INFO_BY_TOKEN, guessCache());
-
         caffeineCacheManager.registerCustomCache(
                 CacheNameConstant.MUSIC_INFO,
                 Caffeine.newBuilder()
@@ -45,14 +40,6 @@ public class CacheConfig {
                         .build()
         );
         return caffeineCacheManager;
-    }
-
-    private Cache<Object, Object> guessCache(){
-        return Caffeine.newBuilder()
-                .maximumSize(1000)
-                .expireAfterWrite(120, TimeUnit.DAYS )
-                .recordStats()
-                .build();
     }
 
     private Cache<Object, Object> buildCache() {

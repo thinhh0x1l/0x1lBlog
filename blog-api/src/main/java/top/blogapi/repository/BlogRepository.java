@@ -1,325 +1,103 @@
 package top.blogapi.repository;
 
 import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.annotations.Result;
-import org.springframework.stereotype.Repository;
-import top.blogapi.dto.internal.*;
 import top.blogapi.model.entity.Blog;
-import top.blogapi.model.entity.Tag;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Mapper
-@Repository
 public interface BlogRepository {
-    // Chỉ lấy thông tin cơ bản như trong XML
-    @Select("""
-            <script>
-        SELECT b.id,
-               b.title,
-               b.is_recommend,
-               b.is_published,
-               b.create_time AS created_at,
-               b.update_time AS updated_at,
-               b.is_top,
-               c.id   AS category_id,
-               c.name AS category_name
-        FROM blog b
-        LEFT JOIN category c
-            ON b.category_id = c.id
-        <where>
-            <if test="query != null and query != ''">
-                b.title LIKE CONCAT('%', #{query}, '%')
-            </if>
-            <if test="categoryId != null">
-                AND b.category_id = #{categoryId}
-            </if>
-        </where>
-    </script>
-    """)
-    @Results(id = "baseBlogMap", value = {
-            @Result(property = "top", column = "is_top"),
-            @Result(property = "recommend", column = "is_recommend"), // vì khác tên
-            @Result(property = "published", column = "is_published"), // vì khác tên
-            @Result(property = "category.id", column = "category_id"), // vì Đối tượng lồng cần phải map
-            @Result(property = "category.name", column = "category_name") // vì Đối tượng lồng cần phải map
-    })
-    List<Blog> getListByTitleOrCategory(@Param("query") String query, @Param("categoryId") Integer categoryId);
 
-    @Delete("DELETE FROM blog WHERE id = #{id}")
-    int deleteBlogById(@Param("id") Long id);
+    @Select("SELECT * FROM blogs WHERE id = #{id} AND deleted_at IS NULL")
+    Optional<Blog> findById(Long id);
 
-    @Delete("DELETE FROM blog_tag WHERE blog_id = #{blogId} ")
-    int deleteBlogTagByBlogId(@Param("blogId") Long blogId);
+    @Select("SELECT * FROM blogs WHERE slug = #{slug} AND deleted_at IS NULL")
+    Optional<Blog> findBySlug(String slug);
+
+    @Select("SELECT * FROM blogs WHERE status = 'PUBLISHED' AND deleted_at IS NULL ORDER BY published_at DESC LIMIT #{limit} OFFSET #{offset}")
+    List<Blog> findPublished(@Param("limit") int limit, @Param("offset") int offset);
+
+    @Select("SELECT * FROM blogs WHERE author_id = #{authorId} AND deleted_at IS NULL ORDER BY created_at DESC LIMIT #{limit} OFFSET #{offset}")
+    List<Blog> findByAuthorId(@Param("authorId") Long authorId, @Param("limit") int limit, @Param("offset") int offset);
+
+    @Select("SELECT * FROM blogs WHERE category_id = #{categoryId} AND status = 'PUBLISHED' AND visibility = 'PUBLIC' AND deleted_at IS NULL ORDER BY published_at DESC LIMIT #{limit} OFFSET #{offset}")
+    List<Blog> findByCategoryId(@Param("categoryId") Long categoryId, @Param("limit") int limit, @Param("offset") int offset);
 
     @Insert("""
-        INSERT INTO blog (
-            title,
-            content,
-            description,
-            is_published,
-            is_recommend,
-            is_appreciation,
-            is_top,
-            is_comment_enabled,
-            create_time,
-            update_time,
-            music_id,
-            views,
-            words,
-            read_time,
-            category_id,
-            user_id
-        ) VALUES (
-            #{title},
-            #{content},
-            #{description},
-            #{published},
-            #{recommend},
-            #{appreciation},
-            #{top},
-            #{commentEnabled},
-            #{createdAt},
-            #{updatedAt},
-            #{musicId},
-            #{views},
-            #{words},
-            #{readTime},
-            #{category.id},
-            #{user.id}
-        )
+        INSERT INTO blogs (author_id, category_id, title, slug, content, description,
+                           cover_image, content_type, location_name, latitude, longitude,
+                           status, visibility, price, is_top, is_recommend, allow_comments,
+                           words, read_time)
+        VALUES (#{authorId}, #{categoryId}, #{title}, #{slug}, #{content}, #{description},
+                #{coverImage}, #{contentType}, #{locationName}, #{latitude}, #{longitude},
+                #{status}, #{visibility}, #{price}, #{isTop}, #{isRecommend}, #{allowComments},
+                #{words}, #{readTime})
     """)
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    int saveBlog(Blog blog);
-
-    @Insert("""
-            <script>
-                INSERT INTO blog_tag (blog_id, tag_id) VALUES
-                <foreach collection="tagIds" item="tagId" separator=",">
-                    (#{blogId},#{tagId})
-                </foreach>
-            </script>
-
-            """)
-    int saveBlogTag(Long blogId, List<Long> tagIds);
-
-    @Update("UPDATE blog SET is_top = #{top} WHERE id = #{id}")
-    int updateBlogTopById(@Param("id") Long id, @Param("top") boolean top);
-
-    @Update("UPDATE blog SET is_published = #{published} WHERE id = #{id}")
-    int updateBlogPublishedById(@Param("id") Long id, @Param("published") boolean published);
-
-    @Update("UPDATE blog SET is_recommend = #{recommend} WHERE id = #{id}")
-    int updateBlogRecommendById(@Param("id")Long id, @Param("recommend") boolean recommend);
-
-    @Select("""
-            SELECT
-                b.id,
-                b.title,
-                b.content,
-                b.description,
-                b.is_published,
-                b.is_recommend,
-                b.is_appreciation,
-                b.is_comment_enabled,
-                b.create_time AS created_at,
-                b.update_time AS updated_at,
-                b.views,
-                b.words,
-                b.read_time,
-                b.music_id,
-                b.is_top,
-                c.id as category_id,
-                c.name as category_name
-            FROM blog b
-            JOIN category c ON b.category_id = c.id
-            WHERE b.id = #{id}
-    """)
-    @Results({
-            @Result(property = "published", column = "is_published"),
-            @Result(property = "recommend", column = "is_recommend"),
-            @Result(property = "top", column = "is_top"),
-            @Result(property = "appreciation", column = "is_appreciation"),
-            @Result(property = "commentEnabled", column = "is_comment_enabled"),
-            @Result(property = "category.id", column = "category_id"),
-            @Result(property = "category.name", column = "category_name"),
-    })
-    Optional<Blog> getBlogById(Long id);
-
-    @Select("SELECT t.id, t.name, t.color " +
-            "FROM blog_tag bt " +
-            "JOIN tag t ON bt.tag_id = t.id " +
-            "WHERE bt.blog_id = #{blogId}")
-    List<Tag> findTagsByBlogId(@Param("blogId") Long blogId);
+    int insert(Blog blog);
 
     @Update("""
-        UPDATE blog
-        SET title = #{title},
-            content = #{content},
-            description = #{description},
-            is_published = #{published},
-            is_recommend = #{recommend},
-            is_top = #{top},
-            is_appreciation = #{appreciation},
-            is_comment_enabled = #{commentEnabled},
-            create_time = #{createdAt},
-            music_id = #{musicId},
-            update_time = #{updatedAt},
-            views = #{views},
-            words = #{words},
-            read_time = #{readTime},
-            category_id = #{category.id}
-        WHERE id = #{id}
+        UPDATE blogs SET title = #{title}, content = #{content}, description = #{description},
+                          cover_image = #{coverImage}, category_id = #{categoryId},
+                          content_type = #{contentType}, allow_comments = #{allowComments},
+                          updated_at = NOW()
+        WHERE id = #{id} AND deleted_at IS NULL
     """)
-    int updateBlog(Blog blog);
-
-    @Select("SELECT COUNT(b.category_id) FROM blog b WHERE b.category_id = #{categoryId}")
-    int countBlogByCategoryId(Long categoryId);
-
-    @Select("SELECT COUNT(bt.tag_id) FROM blog_tag bt WHERE bt.tag_id = #{tagId} ")
-    int countBlogByTagId(Long tagId);
-
-    @Select("SELECT b.title, b.id FROM blog b ORDER BY create_time DESC ")
-    List<BlogIdAndTitleInternal> getIdAndTitleList();
-
-    @Select("""
-        WITH
-            blog_base AS (
-                SELECT
-                    b.id,
-                    b.title,
-                    b.description,
-                    b.create_time AS created_at,
-                    b.views,
-                    b.words,
-                    b.read_time,
-                    b.is_top,
-                    c.name AS category_name
-                FROM category c
-                JOIN blog b
-                ON c.id = b.category_id
-                WHERE b.is_published
-            ),
-            blog_tags AS (
-                SELECT
-                    bt.blog_id,
-                    GROUP_CONCAT(t.name SEPARATOR '||') AS allTagNames,
-                    GROUP_CONCAT(t.color SEPARATOR '||') AS allTagColors
-                FROM blog_tag bt
-                JOIN tag t
-                ON t.id = bt.tag_id
-                GROUP BY bt.blog_id
-            )
-        SELECT
-            b.*,
-            bt.allTagNames,
-            bt.allTagColors
-        FROM blog_base b
-        LEFT JOIN blog_tags bt ON bt.blog_id = b.id;
-""")
-    @Results({
-            @Result(property = "top", column = "is_top")
-    })
-    List<BlogTagsInfoInternal> getBlogInfoListByIsPublished();
-
-    @Select("SELECT id, title FROM blog " +
-            "WHERE is_published = TRUE AND is_recommend = TRUE " +
-            "ORDER BY create_time DESC ")
-    List<BlogIdAndTitleInternal> getIdAndTitleListByIsPublishedAndIsRecommend();
-
-    @Select("SELECT DISTINCT DATE_FORMAT(create_time,'%m/%Y') as day " +
-            "FROM blog " +
-            "WHERE is_published = TRUE "
-    )
-    List<String> getGroupYearMonthAndIsPublished();
-
-    @Select("""
-        <script>
-            SELECT id,
-                   title,
-                   DATE_FORMAT(create_time, 'N%m') AS day,
-                   DATE_FORMAT(create_time, '%m/%Y') AS yM
-            FROM blog
-            WHERE is_published = TRUE
-              AND DATE_FORMAT(create_time, '%m/%Y') IN
-            <foreach item="ym"
-                     collection="yearMonths"
-                     open="("
-                     separator=","
-                     close=")">
-                #{ym}
-            </foreach>
-        </script>
-    """)
-    List<ArchiveBlogInternal> getArchiveBlogListByYearMonthAndIsPublished(List<String> yearMonths);
-
-    @Select("""
-        SELECT b.id, b.title, b.content,  b.is_appreciation, b.music_id,
-               b.is_comment_enabled, b.is_top, b.create_time AS created_at, b.update_time AS updated_at, b.words ,
-               b.read_time,c.id AS category_id, c.name AS category_name
-        FROM blog AS b
-        LEFT JOIN category AS c ON b.category_id = c.id
-        WHERE b.id = #{id} AND b.is_published
-    """)
-    @Results({
-            @Result(property = "category.name", column = "category_name"),
-            @Result(property = "category.id", column = "category_id"),
-            @Result(property = "appreciation", column = "is_appreciation"),
-            @Result(property = "commentEnabled", column = "is_comment_enabled"),
-            @Result(property = "top", column = "is_top"),
-    })
-    Optional<BlogDetailInternal> getBlogWithCategory(Long id);
-
-    @Select("""
-        SELECT views FROM blog WHERE id = #{id}
-""")
-    Long queryViewsByBlogId(Long id);
-//    int getAmountOfCommentIs
-
-    @Select("""
-        SELECT is_comment_enabled from blog where id = #{blogId}
-""")
-    Boolean getCommentEnabledByBlogId(Long blogId);
-
-    @Select("""
-    SELECT b.id, b.title, c.id AS category_id, c.name AS category_name
-    FROM blog AS b LEFT JOIN category AS c ON b.category_id=c.id
-    WHERE b.is_published
-    ORDER BY RAND()
-    LIMIT #{limitNum}
-""")
-    @Results({
-            @Result(property = "category.name", column = "category_name"),
-            @Result(property = "category.id", column = "category_id"),
-    })
-    List<Blog> getRandomBlogListByLimitNumAndIsPublished(int limitNum);
-
-    @Select("""
-    SELECT id, title, content FROM blog WHERE title LIKE CONCAT('%',#{search},'%') AND is_published = TRUE
-""")
-    List<SearchBlog> searchBlogs(String search);
+    int update(Blog blog);
 
     @Update("""
-    <script>
-        UPDATE blog
-        SET views = views +
-        CASE id
-            <foreach collection="map" pinia="key" item="value">
-                WHEN #{key} THEN #{value}
-            </foreach>
-        END
-        WHERE id IN
-        <foreach collection="map.keySet()" item="id" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </script>
-""")
-    int flushViews(@Param("map") Map<Long, Long> map);
+        UPDATE blogs SET status = #{status}, published_at = CASE WHEN #{status} = 'PUBLISHED' AND published_at IS NULL THEN NOW() ELSE published_at END
+        WHERE id = #{id} AND deleted_at IS NULL
+    """)
+    int updateStatus(@Param("id") Long id, @Param("status") String status);
+
+    @Update("UPDATE blogs SET deleted_at = NOW() WHERE id = #{id}")
+    int softDelete(Long id);
+
+    @Select("SELECT COUNT(*) FROM blogs WHERE status = 'PUBLISHED' AND deleted_at IS NULL")
+    long countPublished();
+
+    @Select("SELECT COUNT(*) FROM blogs WHERE author_id = #{authorId} AND deleted_at IS NULL")
+    long countByAuthorId(Long authorId);
 
     @Select("""
-        SELECT COUNT(*) FROM blog
-""")
-    int totalBlogs();
+        SELECT * FROM blogs WHERE status = 'PUBLISHED' AND deleted_at IS NULL
+        ORDER BY (views * 0.3 + like_count * 2 + comment_count * 3 + bookmark_count * 4 + share_count * 5) DESC
+        LIMIT #{limit}
+    """)
+    List<Blog> findTrending(@Param("limit") int limit);
+
+    @Select("""
+        SELECT * FROM blogs WHERE status = 'PUBLISHED' AND is_recommend = TRUE AND deleted_at IS NULL
+        ORDER BY published_at DESC LIMIT #{limit}
+    """)
+    List<Blog> findRecommended(@Param("limit") int limit);
+
+    @Update("UPDATE blogs SET is_top = #{isTop} WHERE id = #{id}")
+    int toggleTop(@Param("id") Long id, @Param("isTop") boolean isTop);
+
+    @Update("UPDATE blogs SET is_recommend = #{isRecommend} WHERE id = #{id}")
+    int toggleRecommend(@Param("id") Long id, @Param("isRecommend") boolean isRecommend);
+
+    @Update("""
+        UPDATE blogs SET views = views + 1 WHERE id = #{id}
+    """)
+    int incrementViews(Long id);
+
+    @Update("UPDATE blogs SET comment_count = comment_count + 1 WHERE id = #{id}")
+    int incrementCommentCount(Long id);
+
+    @Update("UPDATE blogs SET bookmark_count = bookmark_count + 1 WHERE id = #{id}")
+    int incrementBookmarkCount(Long id);
+
+    @Select("""
+        SELECT * FROM blogs WHERE status = 'PUBLISHED' AND deleted_at IS NULL
+        AND (title ILIKE '%' || #{keyword} || '%' OR content ILIKE '%' || #{keyword} || '%')
+        ORDER BY published_at DESC LIMIT #{limit} OFFSET #{offset}
+    """)
+    List<Blog> search(@Param("keyword") String keyword, @Param("limit") int limit, @Param("offset") int offset);
+
+    @Select("SELECT COUNT(*) FROM blogs WHERE status = 'PUBLISHED' AND deleted_at IS NULL AND (title ILIKE '%' || #{keyword} || '%' OR content ILIKE '%' || #{keyword} || '%')")
+    long countSearch(String keyword);
 }

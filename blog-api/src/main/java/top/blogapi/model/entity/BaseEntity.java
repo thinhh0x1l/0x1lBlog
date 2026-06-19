@@ -5,31 +5,35 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class BaseEntity {
+
     Long id;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
-    LocalDateTime deletedAt;
+
+    OffsetDateTime createdAt;
+
+    OffsetDateTime updatedAt;
+
+    OffsetDateTime deletedAt;
 
     public boolean isDeleted() {
         return deletedAt != null;
     }
 
     public void softDelete() {
-        this.deletedAt = LocalDateTime.now();
+        this.deletedAt = OffsetDateTime.now();
     }
 
     public void markCreated() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = OffsetDateTime.now();
+        this.updatedAt = OffsetDateTime.now();
     }
 
     public void markUpdated() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = OffsetDateTime.now();
     }
 }

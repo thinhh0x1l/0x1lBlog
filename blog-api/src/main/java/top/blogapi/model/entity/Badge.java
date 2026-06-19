@@ -1,12 +1,14 @@
 package top.blogapi.model.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -17,5 +19,6 @@ public class Badge {
     String description;
     String iconUrl;
     String tier;
-    LocalDateTime createdAt;
+    String criteria;
+    OffsetDateTime createdAt;
 }

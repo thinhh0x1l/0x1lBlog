@@ -1,44 +1,38 @@
 package top.blogapi.controller.admin;
 
-
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import top.blogapi.dto.request.category.CategoryQueryRequest;
-import top.blogapi.service.impl.orchestration.CategoryOrchestrator;
-import top.blogapi.dto.response._common.Result;
+import top.blogapi.common.response.ApiResponse;
+import top.blogapi.model.entity.Category;
+import top.blogapi.service.category.CategoryService;
 
 @RestController
+@RequestMapping("/api/admin/categories")
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
-@RequestMapping("/admin")
 public class CategoryAdminController {
-    CategoryOrchestrator categoryOrchestrator;
 
-    @GetMapping("/categories")
-    public Result<?> categories(@ModelAttribute CategoryQueryRequest request) {
-        return Result.ok("Yêu cầu thành công",categoryOrchestrator.getCategoryList(request));
+    private final CategoryService categoryService;
+
+    @GetMapping
+    public ResponseEntity<ApiResponse> getAll() {
+        return ResponseEntity.ok(ApiResponse.success(categoryService.findAll()));
     }
 
-    @DeleteMapping("/category/{id}")
-    public Result<?> deleteCategoryById(@PathVariable Long id) {
-        categoryOrchestrator.deleteCategoryById(id);
-        return Result.ok("Xóa thể loại thành công");
+    @PostMapping
+    public ResponseEntity<ApiResponse> create(@RequestBody Category category) {
+        return ResponseEntity.ok(ApiResponse.success(categoryService.create(category)));
     }
 
-    @PostMapping("/categories")
-    public Result<?> addCategory(@RequestParam(value = "name", required = true) String name) {
-        categoryOrchestrator.createCategory(name);
-        return Result.ok("Thêm thể loại thành công [ "+ name +" ]" );
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody Category category) {
+        category.setId(id);
+        return ResponseEntity.ok(ApiResponse.success(categoryService.update(category)));
     }
 
-
-    @PutMapping("/category/{id}")
-    public Result<?> updateCategoryById(@PathVariable Long id,
-                                        @RequestParam(value = "name", required = true) String name) {
-        categoryOrchestrator.updateCategory(id, name);
-        return Result.ok("Cập nhật thể loại thành công !!");
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> delete(@PathVariable Long id) {
+        categoryService.softDelete(id);
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
-
 }

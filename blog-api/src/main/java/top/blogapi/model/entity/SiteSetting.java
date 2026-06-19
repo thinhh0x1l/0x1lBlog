@@ -1,21 +1,22 @@
 package top.blogapi.model.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-/**
- *  description: Cài đặt web
- * */
+import java.time.OffsetDateTime;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@ToString
 public class SiteSetting {
     Long id;
-    String nameEn;
-    String nameVn;
+    String key;
     String value;
-    Integer type;
+    String type;
+    String description;
+    OffsetDateTime updatedAt;
 }

@@ -1,55 +1,19 @@
 package top.blogapi.dto.internal;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-import top.blogapi.model.entity.Category;
-import top.blogapi.model.entity.Tag;
+import lombok.Value;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
-@ToString
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
+@Value
 public class BlogDetailInternal {
     Long id;
     String title;
+    String slug;
     String content;
-    Boolean appreciation;
-    Boolean commentEnabled;
-    Boolean top;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
-    Long views;
-    Integer words;
-    Integer readTime;
-    String musicId;
-    Category category;
-    List<Tag> tags = new ArrayList<>();
-
-    public static BlogDetailInternal cloneBlogDetail(BlogDetailInternal cache, Long views) {
-        if (cache == null) return null;
-
-        return BlogDetailInternal.builder()
-                .id(cache.id)
-                .title(cache.title)
-                .content(cache.content)
-                .appreciation(cache.appreciation)
-                .commentEnabled(cache.commentEnabled)
-                .top(cache.top)
-                .createdAt(cache.createdAt)
-                .updatedAt(cache.updatedAt)
-                .views(views)
-                .words(cache.words)
-                .readTime(cache.readTime)
-                .musicId(cache.musicId)
-                .category(cache.category)
-                .tags(cache.tags != null ? new ArrayList<>(cache.tags) : new ArrayList<>())
-                .build();
-    }
+    String description;
+    String coverImage;
+    String authorName;
+    String authorAvatar;
+    String categoryName;
+    Integer views;
+    Integer likeCount;
+    Integer commentCount;
 }

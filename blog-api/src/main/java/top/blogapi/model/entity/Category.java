@@ -6,19 +6,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @NoArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Category {
-    Long id;
+public class Category extends BaseEntity {
     String name;
-    List<Blog> blogs = new ArrayList<>();
-
-    public Category(String name) {
-        this.name = name;
-    }
+    String slug;
+    String description;
+    String icon;
+    String color;
+    Integer sortOrder;
+    Integer blogCount;
+    Boolean isVisible;
 }

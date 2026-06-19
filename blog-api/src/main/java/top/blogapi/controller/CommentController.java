@@ -1,51 +1,62 @@
 package top.blogapi.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import top.blogapi.dto.request.comment.CommentEditReq;
-import top.blogapi.dto.request.comment.SaveCommentReq;
-import top.blogapi.dto.response.comment.CommentByBlogIdResponse;
-import top.blogapi.dto.response._common.Result;
-import top.blogapi.service.impl.orchestration.CommentOrchestrator;
+import top.blogapi.common.response.ApiResponse;
+import top.blogapi.common.response.PagedResponse;
+import top.blogapi.dto.mapper.CommentMapper;
+import top.blogapi.dto.request.comment.CommentRequest;
+import top.blogapi.dto.response.CommentResponse;
+import top.blogapi.orchestrator.CommentOrchestrator;
+import top.blogapi.security.UserPrincipal;
+import top.blogapi.service.comment.CommentService;
 
 @RestController
+@RequestMapping("/api/comments")
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
 public class CommentController {
-    CommentOrchestrator commentOrchestrator;
 
+    private final CommentService commentService;
+    private final CommentOrchestrator commentOrchestrator;
+    private final CommentMapper commentMapper;
 
-    @GetMapping("/comment-tree")
-    public Result<CommentByBlogIdResponse> commentTree(@RequestParam Integer page,
-                                                      @RequestParam(defaultValue = "") Long blogId,
-                                                      @RequestParam(defaultValue = "1") Integer pageNum,
-                                                      @RequestParam(defaultValue = "10") Integer pageSize,
-                                                      HttpServletRequest request){
-
-
-        if (!commentOrchestrator.judgeCommentEnabled(page, blogId)) {
-            return Result.create(403, "Chức năng bình luận đã bị tắt");
-        }
-        return Result.ok("Yêu cầu thành công!",commentOrchestrator
-                .listCommentByBlogId(pageNum, pageSize, blogId, page, request ));
+    @GetMapping("/blog/{blogId}")
+    public ResponseEntity<PagedResponse<CommentResponse>> getByBlog(
+            @PathVariable Long blogId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        var comments = commentService.getRootByBlogId(blogId, page, size).stream()
+                .map(commentMapper::toResponse)
+                .toList();
+        var total = commentService.countRootByBlogId(blogId);
+        return ResponseEntity.ok(PagedResponse.of(comments, page, size, total));
     }
 
-    @PostMapping("/comment")
-    public Result<?> createComment (@RequestBody SaveCommentReq req,
-                                    HttpServletRequest request) throws Exception {
-
-        commentOrchestrator.saveComment(req,request);
-        return Result.ok("Đã viết bình luận");
+    @GetMapping("/{id}/replies")
+    public ResponseEntity<ApiResponse> getReplies(@PathVariable Long id) {
+        var replies = commentService.getReplies(id).stream()
+                .map(commentMapper::toResponse)
+                .toList();
+        return ResponseEntity.ok(ApiResponse.success(replies));
     }
 
-    @PutMapping("/comment")
-    public Result<?> editComment(@RequestBody CommentEditReq req){
-        commentOrchestrator.editComment(req);
+    @PostMapping
+    public ResponseEntity<ApiResponse> create(@AuthenticationPrincipal UserPrincipal principal,
+                                              @RequestBody CommentRequest request) {
+        Long userId = principal != null ? principal.getId() : null;
+        return ResponseEntity.ok(ApiResponse.success(commentOrchestrator.createComment(request, userId)));
+    }
 
-        return Result.ok("Chỉnh sửa bình luận thành công");
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody String content) {
+        return ResponseEntity.ok(ApiResponse.success(commentOrchestrator.updateComment(id, content)));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> delete(@PathVariable Long id) {
+        commentService.softDelete(id);
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

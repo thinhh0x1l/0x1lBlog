@@ -1,20 +1,24 @@
 package top.blogapi.model.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RefreshToken {
     Long id;
     Long userId;
-    String token;
-    LocalDateTime expiresAt;
-    LocalDateTime createdAt;
-    boolean revoked;
+    String tokenHash;
+    String deviceInfo;
+    String ipAddress;
+    OffsetDateTime expiresAt;
+    Boolean revoked;
+    OffsetDateTime createdAt;
 }

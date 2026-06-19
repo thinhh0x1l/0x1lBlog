@@ -1,69 +1,30 @@
 package top.blogapi.repository;
 
 import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Repository;
 import top.blogapi.model.entity.SiteSetting;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
-@Repository
 public interface SiteSettingRepository {
-    @Select("SELECT * FROM site_setting")
-    List<SiteSetting> getList();
 
-    @Update("""
-        <script>
-            UPDATE site_setting
-            SET value = CASE id
-            <foreach collection="list" item="item">
-                WHEN #{item.id} THEN #{item.value}
-            </foreach>
-            END
-            WHERE id IN
-            <foreach collection="list" item="item" open="(" separator="," close=")">
-                #{item.id}
-            </foreach>
-        </script>
-""")
-    int updateAll(@Param("list") List<SiteSetting> list);
+    @Select("SELECT * FROM site_settings WHERE id = #{id}")
+    Optional<SiteSetting> findById(Long id);
 
-    @Delete("""
-    <script>
-        DELETE FROM site_setting
-        WHERE id IN
-        <foreach collection="ids"
-                 item="id"
-                 open="("
-                 separator=","
-                 close=")">
-            #{id}
-        </foreach>
-    </script>
-""")
-    int deleteBatch(@Param("ids") List<Long> ids);
+    @Select("SELECT * FROM site_settings WHERE key = #{key}")
+    Optional<SiteSetting> findByKey(String key);
+
+    @Select("SELECT * FROM site_settings ORDER BY key")
+    List<SiteSetting> findAll();
 
     @Insert("""
-        <script>
-            INSERT INTO site_setting (name_en, name_vn, value, type)
-            VALUES
-            <foreach collection="list" item="item" separator=",">
-                (
-                    #{item.nameEn},
-                    #{item.nameVn},
-                    #{item.value},
-                    #{item.type}
-                )
-            </foreach>
-        </script>
-""")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
-    int saveBatch(List<SiteSetting> list);
+        INSERT INTO site_settings (key, value, type, description)
+        VALUES (#{key}, #{value}, #{type}, #{description})
+        ON CONFLICT (key) DO UPDATE SET value = #{value}, updated_at = NOW()
+    """)
+    int upsert(SiteSetting setting);
 
-    @Select("""
-        SELECT *
-        FROM site_setting
-        WHERE type = #{type}
-""")
-    List<SiteSetting> mp3Setting(int type);
+    @Delete("DELETE FROM site_settings WHERE id = #{id}")
+    int delete(Long id);
 }

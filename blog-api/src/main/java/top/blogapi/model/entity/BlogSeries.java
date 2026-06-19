@@ -1,23 +1,22 @@
 package top.blogapi.model.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
-
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BlogSeries {
-    Long id;
+public class BlogSeries extends BaseEntity {
     String name;
     String description;
-    String coverUrl;
+    String coverImage;
     Long authorId;
-    boolean published;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
-    LocalDateTime deletedAt;
+    String status;
+    Integer price;
+    Integer postCount;
+    Integer subscriberCount;
 }

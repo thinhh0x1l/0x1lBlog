@@ -36,7 +36,7 @@ public class DataSourceConfig {
         mybatisConfig.setLogImpl(Slf4jImpl.class);
 
         sessionFactory.setConfiguration(mybatisConfig);
-        sessionFactory.setTypeAliasesPackage("top.blogapi.entity");
+        sessionFactory.setTypeAliasesPackage("top.blogapi.model.entity");
 
         return sessionFactory.getObject();
     }
