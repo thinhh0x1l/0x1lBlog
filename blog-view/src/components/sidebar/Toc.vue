@@ -266,7 +266,7 @@ defineExpose({
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .toc-container {
   position: relative;
   background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
@@ -303,7 +303,7 @@ defineExpose({
   left: 0;
   width: 40px;
   height: 2px;
-  background: linear-gradient(90deg, #3b82f6, #1e40af);
+  background: linear-gradient(90deg, var(--primary), var(--primary-dark));
   border-radius: 2px;
 }
 
@@ -313,16 +313,16 @@ defineExpose({
   justify-content: center;
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   border-radius: 10px;
   color: white;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
 }
 
 .toc-icon-wrapper:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
 }
 
 .toc-icon {
@@ -334,7 +334,7 @@ defineExpose({
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -345,15 +345,15 @@ defineExpose({
   margin-left: auto;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #3b82f6;
-  background: rgba(59, 130, 246, 0.1);
+  color: var(--primary);
+  background: rgba(14, 165, 233, 0.1);
   padding: 2px 8px;
   border-radius: 20px;
   transition: all 0.2s ease;
 }
 
 .toc-count:hover {
-  background: rgba(59, 130, 246, 0.2);
+  background: rgba(14, 165, 233, 0.2);
   transform: scale(1.05);
 }
 
@@ -423,7 +423,7 @@ defineExpose({
 
 .toc-link:hover {
   background: rgba(59, 130, 246, 0.08);
-  color: #3b82f6;
+  color: var(--primary);
   transform: translateX(4px);
 }
 
@@ -436,7 +436,7 @@ defineExpose({
 }
 
 .toc-link:hover .toc-link-indicator {
-  background: #3b82f6;
+  background: var(--primary);
   transform: scale(1.5);
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
@@ -461,7 +461,7 @@ defineExpose({
 }
 
 .toc-item.is-active .toc-link {
-  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(90deg, var(--primary) 0%, #2563eb 100%);
   color: white;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
 }
@@ -510,7 +510,7 @@ defineExpose({
 }
 
 .toc-container::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   border-radius: 10px;
   transition: all 0.2s ease;
 }
@@ -562,41 +562,17 @@ defineExpose({
   }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
+@include respond-to(md) {
   .toc-container {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border-color: rgba(59, 130, 246, 0.2);
-  }
-
-  .toc-title {
-    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-  }
-
-  .toc-link {
-    color: #cbd5e1;
-  }
-
-  .toc-link:hover {
-    background: rgba(59, 130, 246, 0.12);
-    color: #60a5fa;
-  }
-
-  .toc-link-indicator {
-    background: #64748b;
-  }
-
-  .toc-container::-webkit-scrollbar-track {
-    background: rgba(59, 130, 246, 0.1);
-  }
-
-  .toc-count {
-    background: rgba(59, 130, 246, 0.15);
+    max-height: 350px;
+    padding: 1rem;
+    border-radius: 12px;
   }
 }
 
+[data-theme='dark'] .toc-link-indicator {
+  background: var(--text-muted);
+}
 /* Print styles */
 @media print {
   .toc-container {
@@ -616,7 +592,7 @@ defineExpose({
   }
 
   .toc-icon-wrapper {
-    background: #3b82f6;
+    background: var(--primary);
   }
 }
 </style>

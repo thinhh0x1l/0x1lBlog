@@ -118,9 +118,7 @@ import { ref, onMounted } from 'vue'
 import { cloneDeep } from 'lodash-es'
 import { Delete, Plus, Check } from '@element-plus/icons-vue'
 import {getSiteSettingData, update,} from "@/api/siteSetting"
-import {useToast} from "@/plugins/primevueConfig/primePluginVue.js";
-
-const toast = useToast()
+import { ElMessage } from 'element-plus'
 
 // Dữ liệu
 const deleteIds = ref([]);
@@ -145,13 +143,13 @@ const getList = async () => {
         }
       })
       typeMap.value = res.data
-      toast.success(res.msg || 'Tải dữ liệu thành công')
+      ElMessage.success(res.msg || 'Tải dữ liệu thành công')
     } else {
-      toast.info(res.msg || 'Tải dữ liệu thất bại')
+      ElMessage.info(res.msg || 'Tải dữ liệu thất bại')
     }
   } catch (error) {
     console.error('Lỗi khi tải dữ liệu:', error)
-    toast.error(error)
+    ElMessage.error(error?.message || 'Lỗi tải dữ liệu')
   }
 }
 
@@ -171,7 +169,7 @@ const addBadge = () => {
       value: ''
     }
   })
-  toast.info('Đã thêm huy hiệu mới')
+  ElMessage.info('Đã thêm huy hiệu mới')
   console.log(typeMap.value)
 }
 
@@ -236,12 +234,12 @@ const submit = async () => {
     if(res.code === 200){
       deleteIds.value = []
       await getList()
-      toast.success(res.msg)
+      ElMessage.success(res.msg)
     }else
-      toast.info(res.msg)
+      ElMessage.info(res.msg)
   }catch (e){
     console.log(e.response.data)
-    toast.error(e.response.data.msg)
+    ElMessage.error(e.response?.data?.msg || 'Lỗi cập nhật')
   }
 }
 
@@ -249,7 +247,7 @@ const removeBadge = (id) => {
   const index = typeMap.value.type2.findIndex(item => item.id === id)
   if (index !== -1) {
     typeMap.value.type2.splice(index, 1)
-    toast.success('Đã xóa huy hiệu')
+    ElMessage.success('Đã xóa huy hiệu')
   }
 }
 

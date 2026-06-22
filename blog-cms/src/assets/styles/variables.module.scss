@@ -137,7 +137,7 @@ html.dark {
 
   /* Ghi đè menu thanh bên */
   .sidebar-container {
-    .el-menu-item:not(.is-active), .menu-title {
+    .el-menu-item:not(.is-active) {
       color: var(--el-text-color-regular);
     }
     & .el-menu .theme-dark .nest-menu .el-sub-menu > .el-sub-menu__title,

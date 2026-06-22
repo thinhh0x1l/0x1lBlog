@@ -225,7 +225,6 @@ import {
 } from '@element-plus/icons-vue'
 
 import {defineAsyncComponent} from "vue";
-import {useToast} from "@/plugins/primevueConfig/primePluginVue.js";
 const iconsObj = {
   '1': defineAsyncComponent(()=> import('@/assets/css/icon/MenuIcon.vue')),
   '2': Tools,
@@ -243,7 +242,6 @@ const iconsObj = {
 }
 
 const user = ref({})
-const toast = useToast()
 // Lifecycle
 onMounted(() => {
   const userData = sessionStorage.getItem('user')

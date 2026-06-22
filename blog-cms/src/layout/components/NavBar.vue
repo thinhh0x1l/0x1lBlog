@@ -6,7 +6,8 @@
     <div class="right-menu">
       <template v-if="appStore.device !== 'mobile'">
 
-<!--        <screenfull id="screenfull" class="right-menu-item hover-effect" />-->
+        <screenfull id="screenfull" class="right-menu-item hover-effect" />
+
         <el-tooltip content="Hiệu ứng theme" effect="dark" placement="bottom">
           <div class="right-menu-item hover-effect theme-switch-wrapper" @click="toggleTheme">
             <sunny v-if="settingsStore.isThemeDark" style="height: 30px; width: 30px; background: #99a9bf !important;" />
@@ -60,6 +61,7 @@ import sunny from '@/assets/icons/svg/sunny.svg'
 import moon from '@/assets/icons/svg/moon.svg'
 import {storeToRefs} from "pinia";
 import Breadcrumb from '@/components/Breadcrumb/index.vue'
+import Screenfull from '@/components/Screenfull/index.vue'
 import {getCurrentInstance, onMounted} from "vue";
 
 const route = useRoute()

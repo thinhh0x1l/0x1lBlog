@@ -1,0 +1,92 @@
+// ============================================
+// Utility Classes
+// ============================================
+
+.container {
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.line-clamp-1 { @include line-clamp(1); }
+.line-clamp-2 { @include line-clamp(2); }
+.line-clamp-3 { @include line-clamp(3); }
+
+.truncate { @include truncate; }
+
+// Animations
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-fadeIn { animation: fadeIn var(--duration-normal) var(--ease-out) forwards; }
+.animate-fadeInUp { animation: fadeInUp var(--duration-slow) var(--ease-out) forwards; }
+.animate-scaleIn { animation: scaleIn var(--duration-normal) var(--ease-out) forwards; }
+.animate-pulse { animation: pulse 2s infinite; }
+
+// ===== Scrollbar =====
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: var(--radius-full); }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+// ===== Selection =====
+::selection { background: var(--primary-100); color: var(--primary-dark); }
+
+// ===== Focus Visible =====
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+// ===== Responsive Typography =====
+@include respond-to(md) {
+  html { font-size: 14px; }
+}
+
+// ===== Print =====
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+  .sidebar { display: none; }
+}
+
+// ===== Skeleton CSS class =====
+.sk {
+  @include skeleton;
+  display: block;
+  height: 1em;
+  margin-bottom: 8px;
+}

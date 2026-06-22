@@ -5,3 +5,7 @@ blog-view.iml
 docker/*.sql
 docker/*.js
 docker/export*
+blog-api/src/main/resources/db/**
+RuoYi-Vue3-master/**
+.mimocode/
+docs/

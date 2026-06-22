@@ -1,9 +1,7 @@
 <template>
   <div id="app">
-    <Toast/>
-    <ConfirmDialog/>
-    <router-view/>
-    <universe/>
+    <router-view />
+    <universe />
   </div>
 </template>
 

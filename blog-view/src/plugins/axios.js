@@ -1,50 +1,23 @@
-import axios from "axios";
-import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
-import {pinia} from "@/store/pinia/pinia.js";
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
 
-import {useGuestStore} from "@/store/guessStore";
-
-const api = import.meta.env.VITE_API_URL
-const request = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
-    timeout: 10000,
-    // withCredentials: true
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || '/api',
+  timeout: 10000,
 })
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
 
-request.interceptors.request.use((config) => {
-    NProgress.start();
-    const guestStore =
-        useGuestStore(pinia);
-    const isYourApi = !(config.url)?.includes("http");
+api.interceptors.response.use(
+  (res) => res.data,
+  (err) => {
+    ElMessage.error(err.response?.data?.message || 'Lỗi hệ thống')
+    return Promise.reject(err)
+  }
+)
 
-    if ( isYourApi && guestStore.guestToken) {
-        config.headers["X-Guest-Token" ] = guestStore.guestToken;
-        const cleared = guestStore.backUpToken();
-        if(cleared){
-            console.log('cleared')
-        }
-    }
-
-    return config;
-});
-
-
-request.interceptors.response.use((response) => {
-    NProgress.done();
-
-    const guestStore =
-        useGuestStore(pinia);
-
-    const newToken = response.headers["x-guest-token"];
-
-    if (newToken) {
-        guestStore.setToken( newToken);
-    }
-
-    return response.data;
-});
-
-
-export default request
+export default api

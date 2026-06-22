@@ -1,70 +1,72 @@
 <template>
   <div :class="classObj" class="app-wrapper"
-       :style="{ '--current-color': theme, '--current-color-light': theme + '1a', '--current-color-dark-bg': theme + '33' }"
+    :style="{ '--current-color': settingsStore.theme, '--current-color-light': settingsStore.theme + '1a', '--current-color-dark-bg': settingsStore.theme + '33' }"
   >
-    <div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
-    <side-bar v-if="!sidebar.hide" class="sidebar-container" />
-    <div  class="main-container">
-      <div :class="{ 'fixed-header': fixedHeader }">
-        <nav-bar  />
-<!--        <tags-view v-if="needTagsView" />-->
+    <div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
+    <SideBar class="sidebar-container" />
+    <div class="main-container" :class="{ 'hide-sidebar': !sidebar.opened }">
+      <div class="fixed-header" :class="{ 'fixed-header--fixed': settingsStore.fixedHeader }">
+        <NavBar />
+        <TagsView v-if="settingsStore.tagsView" />
       </div>
-      <app-main />
-<!--      <settings ref="settingRef" />-->
+      <AppMain />
+      <Copyright />
     </div>
+    <Settings v-model:visible="settingsVisible" />
+
+    <el-tooltip content="Tùy chỉnh giao diện" placement="left">
+      <div class="settings-trigger" @click="settingsVisible = true">
+        <el-icon :size="20"><Setting /></el-icon>
+      </div>
+    </el-tooltip>
   </div>
 </template>
 
 <script setup>
+import { ref, computed, watch, watchEffect } from 'vue'
 import { useWindowSize } from '@vueuse/core'
-import { AppMain, NavBar, SideBar } from "./components";
-import {useAppStore} from "@/store/index.js";
-import {useSettingsStore} from "@/store/modules/settings.js";
+import { useAppStore } from '@/store/index.js'
+import { useSettingsStore } from '@/store/modules/settings.js'
+import { SideBar, NavBar, TagsView, AppMain, Settings, Copyright } from './components'
+
+const appStore = useAppStore()
 const settingsStore = useSettingsStore()
-const theme = computed(() => settingsStore.theme)
-const sidebar = computed(() => useAppStore().sidebar)
-const device = computed(() => useAppStore().device)
-const needTagsView = computed(() => settingsStore.tagsView)
-const fixedHeader = computed(() => settingsStore.fixedHeader)
 
+const settingsVisible = ref(false)
+const showSettings = () => { settingsVisible.value = true }
 
-watch(() => theme.value ,(s,b)=> {
-  console.log(s)
-  console.log()
-})
+const sidebar = computed(() => appStore.sidebar)
+const device = computed(() => appStore.device)
 
 const classObj = computed(() => ({
   hideSidebar: !sidebar.value.opened,
   openSidebar: sidebar.value.opened,
   withoutAnimation: sidebar.value.withoutAnimation,
-  mobile: device.value === 'mobile'
+  mobile: device.value === 'mobile',
+  [settingsStore.sideTheme]: true
 }))
-const { width, height } = useWindowSize()
-const WIDTH = 992 // refer to Bootstrap's responsive design
+
+const { width } = useWindowSize()
+const WIDTH = 992
 
 watch(() => device.value, () => {
   if (device.value === 'mobile' && sidebar.value.opened) {
-    useAppStore().closeSideBar({ withoutAnimation: false })
+    appStore.closeSideBar({ withoutAnimation: false })
   }
 })
 
 watchEffect(() => {
   if (width.value - 1 < WIDTH) {
-    useAppStore().setDevice('mobile')
-    useAppStore().closeSideBar({ withoutAnimation: true })
+    appStore.setDevice('mobile')
+    appStore.closeSideBar({ withoutAnimation: true })
   } else {
-    useAppStore().setDevice('desktop')
+    appStore.setDevice('desktop')
   }
 })
 
 function handleClickOutside() {
-  useAppStore().closeSideBar({ withoutAnimation: false })
+  appStore.closeSideBar({ withoutAnimation: false })
 }
-
-const settingRef = ref(null)
-// function setLayout() {
-//   settingRef.value.openSetting()
-// }
 </script>
 
 <style lang="scss" scoped>
@@ -83,9 +85,49 @@ const settingRef = ref(null)
   }
 }
 
-.main-container:has(.fixed-header) {
-  height: 100vh;
+.sidebar-container {
+  transition: width 0.28s;
+  width: vars.$base-sidebar-width !important;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1001;
   overflow: hidden;
+}
+
+.main-container {
+  min-height: 100%;
+  transition: margin-left 0.28s;
+  margin-left: vars.$base-sidebar-width;
+  position: relative;
+
+  &.hide-sidebar {
+    margin-left: 54px;
+  }
+}
+
+.fixed-header {
+  position: relative;
+  z-index: 10;
+}
+
+.fixed-header--fixed {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: vars.$base-sidebar-width;
+  z-index: 9;
+  transition: left 0.28s;
+}
+
+.hideSidebar .fixed-header--fixed {
+  left: 54px;
+}
+
+.mobile .fixed-header--fixed {
+  left: 0;
 }
 
 .drawer-bg {
@@ -98,24 +140,35 @@ const settingRef = ref(null)
   z-index: 999;
 }
 
-.fixed-header {
+.settings-trigger {
   position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 9;
-  width: calc(100% - #{vars.$base-sidebar-width});
-  transition: width 0.28s;
+  bottom: 40px;
+  right: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--el-color-primary, #409eff);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  transition: transform 0.3s;
+  &:hover { transform: scale(1.1); }
+}
+</style>
+
+<style lang="scss">
+.fixed-header--fixed + .app-main {
+  min-height: 100vh;
+  padding: 104px 20px 20px;
 }
 
-.hideSidebar .fixed-header {
-  width: calc(100% - 54px);
+.fixed-header:not(.fixed-header--fixed) + .app-main {
+  min-height: calc(100vh - 84px);
+  padding: 20px;
 }
 
-.sidebarHide .fixed-header {
-  width: 100%;
-}
-
-.mobile .fixed-header {
-  width: 100%;
-}
 </style>

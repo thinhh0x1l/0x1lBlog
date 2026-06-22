@@ -1,40 +1,14 @@
 <template>
-  <component :is="type" v-bind="linkProps()">
+  <a v-if="isExternal(to)" :href="to" target="_blank" rel="noopener">
     <slot />
-  </component>
+  </a>
+  <router-link v-else :to="to">
+    <slot />
+  </router-link>
 </template>
 
 <script setup>
-import { isExternal } from '@/util/validate'
+import { isExternal } from '@/utils/validate'
 
-const props = defineProps({
-  to: {
-    type: [String, Object],
-    required: true
-  }
-})
-
-const isExt = computed(() => {
-  return isExternal(props.to)
-})
-
-const type = computed(() => {
-  if (isExt.value) {
-    return 'a'
-  }
-  return 'router-link'
-})
-
-function linkProps() {
-  if (isExt.value) {
-    return {
-      href: props.to,
-      target: '_blank',
-      rel: 'noopener'
-    }
-  }
-  return {
-    to: props.to
-  }
-}
+defineProps({ to: { type: [String, Object], required: true } })
 </script>

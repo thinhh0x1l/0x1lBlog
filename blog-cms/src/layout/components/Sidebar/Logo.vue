@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar-logo-container" :class="{ 'collapse': collapse }">
+  <div class="sidebar-logo-container" :class="{ collapse: collapse }">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
         <img v-if="logo" :src="logo" class="sidebar-logo" />
@@ -14,52 +14,33 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import logo from '@/assets/avatar.jpg'
-import {useSettingsStore} from '@/store/modules/settings'
+import { useSettingsStore } from '@/store/modules/settings'
 import variables from '@/assets/styles/variables.module.scss'
 
 defineProps({
-  collapse: {
-    type: Boolean,
-    required: true
-  }
+  collapse: { type: Boolean, required: true }
 })
 
 const title = 'thinhh0x1l'
 const settingsStore = useSettingsStore()
 const sideTheme = computed(() => settingsStore.sideTheme)
 
-
 const getLogoBackground = computed(() => {
-  if (settingsStore.isDark) {
-    return 'var(--sidebar-bg)'
-  }
-  if (settingsStore.navType === 3) {
-    return variables.menuLightBg
-  }
+  if (settingsStore.isDark) return 'var(--sidebar-bg)'
   return sideTheme.value === 'theme-dark' ? variables.menuBg : variables.menuLightBg
 })
 
 const getLogoTextColor = computed(() => {
-  if (settingsStore.isDark) {
-    return 'var(--sidebar-logo-text)'
-  }
-  if (settingsStore.navType === 3) {
-    return variables.menuLightText
-  }
+  if (settingsStore.isDark) return 'var(--sidebar-logo-text)'
   return sideTheme.value === 'theme-dark' ? '#fff' : variables.menuLightText
 })
 </script>
 
 <style lang="scss" scoped>
-.sidebarLogoFade-enter-active {
-  transition: opacity 1.5s;
-}
-
-.sidebarLogoFade-enter,
-.sidebarLogoFade-leave-to {
-  opacity: 0;
-}
+.sidebarLogoFade-enter-active { transition: opacity 1.5s; }
+.sidebarLogoFade-enter, .sidebarLogoFade-leave-to { opacity: 0; }
 
 .sidebar-logo-container {
   position: relative;
@@ -69,33 +50,26 @@ const getLogoTextColor = computed(() => {
   text-align: center;
   overflow: hidden;
 
-  & .sidebar-logo-link {
+  .sidebar-logo-link {
     height: 100%;
     width: 100%;
-
-    & .sidebar-logo {
+    .sidebar-logo {
       width: 32px;
       height: 32px;
       vertical-align: middle;
       margin-right: 12px;
     }
-
-    & .sidebar-title {
+    .sidebar-title {
       display: inline-block;
       margin: 0;
       color: v-bind(getLogoTextColor);
       font-weight: 600;
       line-height: 50px;
       font-size: 14px;
-      font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
       vertical-align: middle;
     }
   }
 
-  &.collapse {
-    .sidebar-logo {
-      margin-right: 0px;
-    }
-  }
+  &.collapse .sidebar-logo { margin-right: 0px; }
 }
 </style>

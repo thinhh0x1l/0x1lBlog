@@ -1,0 +1,181 @@
+// ============================================
+// 0x1lBlog Design System v3
+// Professional — CSDN + Facebook hybrid
+// ============================================
+
+@import 'tokens';
+@import 'reset';
+@import 'mixins';
+@import 'utilities';
+
+// ===== Element Plus Overrides =====
+.el-button--primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border: none;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 8px rgba(14,165,233,0.3);
+  transition: all var(--duration-normal) var(--ease-out);
+
+  &:hover {
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+    box-shadow: 0 4px 12px rgba(14,165,233,0.4);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.el-button--default {
+  &:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+}
+
+.el-button--primary.is-round {
+  padding: 12px 32px;
+}
+
+.el-card {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-normal) var(--ease-out);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--border);
+  }
+}
+
+.el-input__wrapper {
+  border-radius: var(--radius-md) !important;
+  box-shadow: 0 0 0 1px var(--border) !important;
+  transition: all var(--duration-fast) ease;
+
+  &:hover {
+    box-shadow: 0 0 0 1px var(--primary-light) !important;
+  }
+
+  &.is-focus {
+    box-shadow: 0 0 0 2px var(--primary-100), 0 0 0 1px var(--primary) !important;
+  }
+}
+
+.el-tag {
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.el-tag--dark {
+  box-shadow: var(--shadow-xs);
+}
+
+.el-badge__content {
+  font-weight: 600;
+}
+
+.el-empty {
+  padding: var(--space-3xl) 0;
+}
+
+.el-skeleton {
+  --el-skeleton-color: var(--bg-secondary);
+  --el-skeleton-to-color: var(--surface-hover);
+}
+
+.el-avatar {
+  --el-avatar-bg-color: linear-gradient(135deg, var(--primary), #8b5cf6);
+}
+
+.el-dropdown-menu__item {
+  font-size: 0.88rem;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  svg { width: 16px; height: 16px; }
+}
+
+.el-divider {
+  border-top-color: var(--border-light);
+}
+
+// ===== Professional Enhancements =====
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  &::before {
+    content: '';
+    width: 3px;
+    height: 20px;
+    background: linear-gradient(180deg, var(--primary), var(--info));
+    border-radius: var(--radius-full);
+  }
+}
+
+.card-base {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  transition: all var(--duration-normal) var(--ease-out);
+
+  &:hover {
+    border-color: var(--border);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+}
+
+.glass-card {
+  @include glass;
+  border-radius: var(--radius-xl);
+}
+
+.text-gradient {
+  @include text-gradient($primary, #8b5cf6);
+}
+
+// ===== Page Header (reusable) =====
+.page-header {
+  margin-bottom: var(--space-xl);
+
+  h1 {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .page-desc {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+  }
+}
+
+// ===== Smooth page transition =====
+.page-enter-active,
+.page-leave-active {
+  transition: opacity var(--duration-normal) var(--ease-out),
+              transform var(--duration-normal) var(--ease-out);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-12px);
+}
