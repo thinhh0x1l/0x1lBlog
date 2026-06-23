@@ -6,7 +6,7 @@ export const reputationApi = {
     await delay()
     const u = users.find(u => u.id === Number(userId))
     if (!u) return { data: null }
-    const totalExp = userExpLog.filter(l => l.userId === Number(userId)).reduce((s, l) => s + l.points, 0)
+    const totalExp = userExpLog.filter(l => l.userId === Number(userId)).reduce((s, l) => s + (l.amount || 0), 0)
     const level = Math.floor(totalExp / 1000) + 1
     return { data: { userId: u.id, level, currentExp: totalExp % 1000, nextLevelExp: 1000, totalExp } }
   },
