@@ -1,9 +1,18 @@
 <template>
   <div class="blog-layout" v-if="blog">
-    <!-- LEFT SIDEBAR: Author + TOC -->
-    <BlogSidebar :author="author" :content="blog.content" :isFollowing="isFollowing" @toggleFollow="toggleFollow" />
+    <BlogSidebar
+      :author="author"
+      :content="blog.content"
+      :is-following="isFollowing"
+      :reputation="reputation"
+      :streak="streakCount"
+      :badges="authorBadges"
+      :author-status="authorStatus"
+      :author-stories="authorStories"
+      @toggle-follow="toggleFollow"
+      @view-story="viewStory"
+    />
 
-    <!-- RIGHT: Content -->
     <div class="blog-main">
       <div class="blog-header">
         <div class="blog-category" v-if="blog.categoryName">
@@ -45,6 +54,8 @@
         </div>
       </div>
 
+      <AuthorCta v-if="author && currentUserId !== author.id" :author="author" :is-following="isFollowing" @follow="toggleFollow" />
+
       <div id="comments" class="comments-section">
         <h3>Bình luận ({{ comments.length }})</h3>
         <div class="comment-form" v-if="isLoggedIn">
@@ -83,22 +94,51 @@
           </div>
         </div>
       </div>
+
+      <RelatedPosts v-if="relatedPosts.length" :posts="relatedPosts" />
     </div>
+
+    <BlogDiscoverySidebar
+      v-if="!isMobile"
+      :playlist="authorPlaylist"
+      :canvas="authorCanvas"
+      :quests="myQuests"
+      :challenge="todayBlind"
+      :my-guess="myBlindGuess"
+      :skill-trees="categorySkills"
+      :skill-progress="mySkillProgress"
+      :trending="trendingPosts"
+      :tags="blogTags"
+      :is-logged-in="isLoggedIn"
+      @claim="handleClaim"
+      @guess="handleBlindGuess"
+    />
   </div>
   <el-skeleton :rows="10" animated v-else-if="loading" />
   <el-empty v-else description="Không tìm thấy bài viết" />
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { View, ChatDotRound, Star, Share, ChatRound } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { useAuthStore } from '@/store/auth'
-import { blogApi, commentApi, reactionApi, bookmarkApi, followApi, profileApi } from '@/api'
+import { blogApi, commentApi, reactionApi, bookmarkApi, followApi, profileApi, hashtagApi } from '@/api'
+import { statusApi } from '@/api/status'
+import { storyApi } from '@/api/story'
+import { playlistApi } from '@/api/playlist'
+import { canvasApi } from '@/api/canvas'
+import { reputationApi } from '@/api/reputation'
+import { questApi } from '@/api/quest'
+import { blindApi } from '@/api/blind'
+import { skillApi } from '@/api/skill'
 import BlogSidebar from '@/components/blog/BlogSidebar.vue'
+import AuthorCta from '@/components/blog/AuthorCta.vue'
+import RelatedPosts from '@/components/blog/RelatedPosts.vue'
+import BlogDiscoverySidebar from '@/components/blog/BlogDiscoverySidebar.vue'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/vi'
@@ -106,6 +146,7 @@ dayjs.extend(relativeTime)
 dayjs.locale('vi')
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 const isLoggedIn = computed(() => authStore.isLoggedIn)
 const currentUserId = computed(() => authStore.user?.id)
@@ -120,6 +161,23 @@ const userReaction = ref(null)
 const isBookmarked = ref(false)
 const isFollowing = ref(false)
 const contentRef = ref(null)
+const isMobile = ref(window.innerWidth < 768)
+
+const reputation = ref(null)
+const streakCount = ref(0)
+const authorBadges = ref([])
+const authorStatus = ref(null)
+const authorStories = ref([])
+const authorPlaylist = ref(null)
+const authorCanvas = ref(null)
+const myQuests = ref([])
+const todayBlind = ref(null)
+const myBlindGuess = ref(null)
+const categorySkills = ref([])
+const mySkillProgress = ref(null)
+const trendingPosts = ref([])
+const blogTags = ref([])
+const relatedPosts = ref([])
 
 const reactions = [
   { type: 'LIKE', icon: '👍', key: 'likeCount' },
@@ -162,33 +220,92 @@ const loadComments = async () => {
   try { const res = await commentApi.getByBlog(route.params.id); comments.value = res.data || [] } catch (e) {}
 }
 
+const viewStory = (story) => { /* TODO: open story viewer */ }
+const handleClaim = async (userQuestId) => {
+  try { await questApi.claim(userQuestId); ElMessage.success('Đã nhận thưởng!') }
+  catch (e) { ElMessage.error('Lỗi nhận thưởng') }
+}
+const handleBlindGuess = async (data) => {
+  try { const res = await blindApi.submitGuess(data.challengeId, data.guessedTopicId); myBlindGuess.value = res.data; ElMessage.success('Đã gửi dự đoán!') }
+  catch (e) { ElMessage.error('Lỗi gửi dự đoán') }
+}
+
+const checkMobile = () => { isMobile.value = window.innerWidth < 768 }
+
 onMounted(async () => {
   loading.value = true
   try {
     const blogRes = await blogApi.getById(route.params.id)
     blog.value = blogRes.data
     if (blog.value) {
-      await Promise.all([
-        loadComments(),
+      const authorId = blog.value.authorId
+
+      const [
+        , /* blogApi.incrementView */
+        commentRes,
+        repRes, badgeRes, statusRes, storyRes,
+        playlistRes, canvasRes,
+        questRes, blindRes,
+        skillRes, relatedRes, trendRes, tagRes
+      ] = await Promise.all([
         blogApi.incrementView(route.params.id),
-        profileApi.getPublic(blog.value.authorId).then(r => author.value = r.data),
+        commentApi.getByBlog(route.params.id),
+        reputationApi.getByUser(authorId),
+        profileApi.getPublic(authorId).then(r => { author.value = r.data; return r.data }),
+        statusApi.getByUser(authorId),
+        storyApi.getByUser(authorId),
+        playlistApi.getByUser(authorId),
+        canvasApi.getByUser(authorId),
+        isLoggedIn.value ? questApi.getMyQuests(currentUserId.value) : Promise.resolve({ data: [] }),
+        blindApi.getToday(),
+        skillApi.getByCategory(blog.value.categoryId),
+        blogApi.getByAuthor(authorId),
+        blogApi.trending(3),
+        hashtagApi.getTop(10),
       ])
+
+      comments.value = commentRes.data || []
+      reputation.value = repRes.data
+      authorStatus.value = (statusRes.data || [])[0]
+      authorStories.value = storyRes.data || []
+      authorPlaylist.value = playlistRes.data
+      authorCanvas.value = canvasRes.data
+      myQuests.value = questRes.data || []
+      todayBlind.value = blindRes.data
+      categorySkills.value = skillRes.data || []
+      relatedPosts.value = (relatedRes.data || []).filter(p => p.id !== blog.value.id).slice(0, 3)
+      trendingPosts.value = trendRes.data || []
+      blogTags.value = tagRes.data || []
+
+      streakCount.value = repRes.data?.level || 0
+
+      try {
+        const { badges } = await import('@/data/dummy')
+        const { userBadges } = await import('@/data/dummy')
+        const myBadges = userBadges.filter(b => b.userId === authorId)
+        authorBadges.value = myBadges.map(b => {
+          const badgeDef = badges.find(bd => bd.id === b.badgeId)
+          return badgeDef || { id: b.badgeId, displayName: `Badge #${b.badgeId}`, icon: '🏆' }
+        })
+      } catch (e) { authorBadges.value = [] }
     }
   } catch (e) { console.error(e) }
   finally { loading.value = false }
 })
+
+onMounted(() => window.addEventListener('resize', checkMobile))
+onUnmounted(() => window.removeEventListener('resize', checkMobile))
 </script>
 
 <style scoped lang="scss">
 .blog-layout {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 32px;
+  grid-template-columns: 280px 1fr 280px;
+  gap: 24px;
   max-width: 100%;
 }
 
 .blog-main {
-  flex: 1;
   min-width: 0;
 }
 
@@ -200,7 +317,6 @@ onMounted(async () => {
 
 .blog-category {
   margin-bottom: var(--space-md);
-
   a {
     display: inline-block;
     padding: 5px 14px;
@@ -211,10 +327,7 @@ onMounted(async () => {
     font-weight: 600;
     text-decoration: none;
     transition: all var(--duration-fast) ease;
-
-    &:hover {
-      background: var(--primary-100);
-    }
+    &:hover { background: var(--primary-100); }
   }
 }
 
@@ -244,7 +357,6 @@ onMounted(async () => {
 .blog-stats {
   display: flex;
   gap: var(--space-md);
-
   span {
     display: flex;
     align-items: center;
@@ -259,16 +371,12 @@ onMounted(async () => {
   border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: var(--shadow-md);
-
   img {
     width: 100%;
     max-height: 400px;
     object-fit: cover;
     transition: transform var(--duration-slow) var(--ease-out);
-
-    &:hover {
-      transform: scale(1.01);
-    }
+    &:hover { transform: scale(1.01); }
   }
 }
 
@@ -313,23 +421,9 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 6px;
-
-  &:hover {
-    background: var(--surface-hover);
-    border-color: var(--border-light);
-    transform: scale(1.05);
-  }
-
-  &.active {
-    background: var(--primary-50);
-    border-color: var(--primary-100);
-  }
-
-  span {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    font-weight: 500;
-  }
+  &:hover { background: var(--surface-hover); border-color: var(--border-light); transform: scale(1.05); }
+  &.active { background: var(--primary-50); border-color: var(--primary-100); }
+  span { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
 }
 
 .comments-section {
@@ -338,46 +432,14 @@ onMounted(async () => {
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
   padding: var(--space-2xl);
-
-  h3 {
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin-bottom: var(--space-lg);
-  }
+  h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-lg); }
 }
 
-.comment-form {
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-lg);
-  border-bottom: 1px solid var(--border-light);
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: var(--space-sm);
-}
-
-.comment-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-.comment-item {
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--border-light);
-
-  &:last-child { border-bottom: none; }
-}
-
-.comment-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: 8px;
-}
-
+.comment-form { margin-bottom: var(--space-lg); padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border-light); }
+.form-actions { display: flex; justify-content: flex-end; margin-top: var(--space-sm); }
+.comment-list { display: flex; flex-direction: column; gap: var(--space-lg); }
+.comment-item { padding-bottom: var(--space-md); border-bottom: 1px solid var(--border-light); &:last-child { border-bottom: none; } }
+.comment-header { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: 8px; }
 .comment-meta { display: flex; flex-direction: column; }
 .comment-author { font-size: 0.9rem; font-weight: 600; }
 .comment-time { font-size: 0.75rem; color: var(--text-muted); }
@@ -387,8 +449,12 @@ onMounted(async () => {
 .reply-item { padding: var(--space-sm) 0; }
 .reply-item .comment-content { padding-left: 40px; }
 
-@include respond-to(lg) {
+// Responsive
+@media (max-width: 1199px) {
+  .blog-layout { grid-template-columns: 280px 1fr; }
+}
+
+@media (max-width: 767px) {
   .blog-layout { grid-template-columns: 1fr; }
-  .blog-sidebar { display: none; }
 }
 </style>
