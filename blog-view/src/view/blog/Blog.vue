@@ -161,7 +161,7 @@ const userReaction = ref(null)
 const isBookmarked = ref(false)
 const isFollowing = ref(false)
 const contentRef = ref(null)
-const isMobile = ref(window.innerWidth < 768)
+const isMobile = ref(window.innerWidth <= 767)
 
 const reputation = ref(null)
 const streakCount = ref(0)
@@ -243,10 +243,11 @@ onMounted(async () => {
       const [
         , /* blogApi.incrementView */
         commentRes,
-        repRes, badgeRes, statusRes, storyRes,
+        repRes, profileRes, statusRes, storyRes,
         playlistRes, canvasRes,
         questRes, blindRes,
-        skillRes, relatedRes, trendRes, tagRes
+        skillRes, relatedRes, trendRes, tagRes,
+        skillProgressRes,
       ] = await Promise.all([
         blogApi.incrementView(route.params.id),
         commentApi.getByBlog(route.params.id),
@@ -262,6 +263,7 @@ onMounted(async () => {
         blogApi.getByAuthor(authorId),
         blogApi.trending(3),
         hashtagApi.getTop(10),
+        isLoggedIn.value ? skillApi.getMyProgress(currentUserId.value, blog.value.categoryId) : Promise.resolve({ data: null }),
       ])
 
       comments.value = commentRes.data || []
@@ -278,10 +280,10 @@ onMounted(async () => {
       blogTags.value = tagRes.data || []
 
       streakCount.value = repRes.data?.level || 0
+      mySkillProgress.value = skillProgressRes.data
 
       try {
-        const { badges } = await import('@/data/dummy')
-        const { userBadges } = await import('@/data/dummy')
+        const { badges, userBadges } = await import('@/data/dummy')
         const myBadges = userBadges.filter(b => b.userId === authorId)
         authorBadges.value = myBadges.map(b => {
           const badgeDef = badges.find(bd => bd.id === b.badgeId)
