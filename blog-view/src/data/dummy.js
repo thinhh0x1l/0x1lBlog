@@ -1159,6 +1159,118 @@ export const seriesSubscribers = Array.from({length: 200}, () => ({
   createdAt: new Date(Date.now() - random(0, 365) * 86400000).toISOString(),
 }))
 
+// ─── R101: Statuses ───────────────────────────────────────────────
+export const statuses = Array.from({length: 200}, (_, i) => ({
+  id: i + 1,
+  userId: users[i % 100].id,
+  content: ['Đang học Rust...', 'Hôm nay trời đẹp quá!', 'Vừa release feature mới 🚀', 'Có ai rảnh review PR giúp mình không?', 'Đang đọc sách "Clean Code"'][i % 5],
+  type: ['TEXT', 'POLL', 'THREAD'][i % 3],
+  pollOptions: i % 3 === 1 ? JSON.stringify([
+    {id: 1, text: 'Rust', votes: 12},
+    {id: 2, text: 'Go', votes: 8},
+    {id: 3, text: 'TypeScript', votes: 5},
+  ]) : null,
+  totalVotes: i % 3 === 1 ? 25 : 0,
+  visibility: 'PUBLIC',
+  createdAt: new Date(Date.now() - i * 3600000).toISOString(),
+  updatedAt: new Date(Date.now() - i * 3600000).toISOString(),
+}))
+
+// ─── R301: Stories ────────────────────────────────────────────────
+export const stories = Array.from({length: 50}, (_, i) => ({
+  id: i + 1,
+  userId: users[i % 50].id,
+  mediaUrl: `https://picsum.photos/seed/story${i}/400/600`,
+  mediaType: 'IMAGE',
+  caption: ['Đang code đây...', 'Cà phê sáng ☕', 'Bug mới, ngày mới!', 'Mặt mộc đi làm'][i % 4],
+  expiresAt: new Date(Date.now() + (24 - i) * 3600000).toISOString(),
+  viewCount: Math.floor(Math.random() * 100),
+  createdAt: new Date(Date.now() - i * 7200000).toISOString(),
+}))
+
+// ─── R302: Canvases ───────────────────────────────────────────────
+export const canvases = Array.from({length: 30}, (_, i) => ({
+  id: i + 1,
+  userId: users[i % 30].id,
+  type: ['PROFILE', 'COMMUNITY'][i % 2],
+  canvasData: JSON.stringify({elements: [{type: 'rectangle', x: 10, y: 10, w: 180, h: 180, color: '#0ea5e9'}]}),
+  thumbnailUrl: `https://picsum.photos/seed/canvas${i}/200/200`,
+  isEquipped: i < 10,
+  createdAt: new Date(Date.now() - i * 86400000).toISOString(),
+}))
+
+// ─── R303: Playlists ──────────────────────────────────────────────
+export const playlists = Array.from({length: 20}, (_, i) => ({
+  id: i + 1,
+  ownerId: users[i % 20].id,
+  name: ['Code Flow', 'Chill Vibes', 'Focus Mode', 'Late Night Coding'][i % 4],
+  isActive: i < 5,
+  createdAt: new Date(Date.now() - i * 86400000).toISOString(),
+}))
+
+export const playlistSongs = Array.from({length: 100}, (_, i) => ({
+  id: i + 1,
+  playlistId: (i % 20) + 1,
+  title: ['Song A', 'Song B', 'Song C', 'Song D', 'Song E'][i % 5],
+  artist: ['Artist X', 'Artist Y', 'Artist Z'][i % 3],
+  url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+  coverUrl: `https://picsum.photos/seed/song${i}/100/100`,
+  sortOrder: i % 5,
+  duration: 180 + Math.floor(Math.random() * 120),
+}))
+
+// ─── R104: Quests ─────────────────────────────────────────────────
+export const quests = [
+  {id: 1, type: 'DAILY', title: 'Viết 1 blog', description: 'Viết một bài blog mới hôm nay', conditions: JSON.stringify({action: 'WRITE_BLOG', count: 1}), rewards: JSON.stringify({exp: 50, coins: 30}), isActive: true, createdAt: new Date().toISOString()},
+  {id: 2, type: 'DAILY', title: 'Đọc 3 blogs', description: 'Đọc 3 bài viết của người khác', conditions: JSON.stringify({action: 'READ_BLOG', count: 3}), rewards: JSON.stringify({exp: 30, coins: 20}), isActive: true, createdAt: new Date().toISOString()},
+  {id: 3, type: 'DAILY', title: 'Reaction 5 bài', description: 'Thả reaction 5 bài viết', conditions: JSON.stringify({action: 'REACT', count: 5}), rewards: JSON.stringify({exp: 40, coins: 25}), isActive: true, createdAt: new Date().toISOString()},
+  {id: 4, type: 'DAILY', title: 'Viết 1 status', description: 'Đăng một status mới', conditions: JSON.stringify({action: 'WRITE_STATUS', count: 1}), rewards: JSON.stringify({exp: 20, coins: 15}), isActive: true, createdAt: new Date().toISOString()},
+  {id: 5, type: 'WEEKLY', title: 'Viết 3 blogs', description: 'Viết 3 bài trong tuần', conditions: JSON.stringify({action: 'WRITE_BLOG', count: 3}), rewards: JSON.stringify({exp: 200, gems: 50}), isActive: true, createdAt: new Date().toISOString()},
+]
+
+export const userQuests = Array.from({length: 100}, (_, i) => ({
+  id: i + 1,
+  userId: users[i % 10].id,
+  questId: (i % 5) + 1,
+  progress: Math.floor(Math.random() * 3),
+  target: [(i % 5) + 1, 3, 5, 1, 3][i % 5],
+  status: ['IN_PROGRESS', 'COMPLETED', 'CLAIMED'][i % 3],
+  claimedAt: i % 3 === 2 ? new Date().toISOString() : null,
+  expiresAt: new Date(Date.now() + 86400000).toISOString(),
+  createdAt: new Date().toISOString(),
+}))
+
+// ─── R110: Blind Challenge ────────────────────────────────────────
+export const blindChallenges = [
+  {id: 1, date: new Date().toISOString().split('T')[0], topicId: 1, topicHint: 'Một ngôn ngữ lập trình', options: JSON.stringify([{id: 1, name: 'Rust'}, {id: 2, name: 'Go'}, {id: 3, name: 'TypeScript'}, {id: 4, name: 'Python'}, {id: 5, name: 'Java'}, {id: 6, name: 'C++'}, {id: 7, name: 'Kotlin'}, {id: 8, name: 'Swift'}, {id: 9, name: 'Ruby'}, {id: 10, name: 'PHP'}]), revealed: false, createdAt: new Date().toISOString()},
+]
+
+export const blindChallengeGuesses = [
+  {id: 1, challengeId: 1, userId: 1, guessedTopicId: 1, isCorrect: null, createdAt: new Date().toISOString()},
+]
+
+// ─── R103: Skill Trees ────────────────────────────────────────────
+export const skillTrees = [
+  {id: 1, categoryId: 1, name: 'Upload ảnh 10MB', description: 'Mở khóa khả năng upload ảnh dung lượng lớn', perkType: 'UPLOAD_LIMIT', perkValue: JSON.stringify({maxSize: 10}), pointsRequired: 100, sortOrder: 1, createdAt: new Date().toISOString()},
+  {id: 2, categoryId: 1, name: 'Scheduled Post', description: 'Lên lịch đăng bài', perkType: 'SCHEDULE', perkValue: JSON.stringify({}), pointsRequired: 300, sortOrder: 2, createdAt: new Date().toISOString()},
+  {id: 3, categoryId: 1, name: 'Analytics Pro', description: 'Xem thống kê chi tiết', perkType: 'ANALYTICS', perkValue: JSON.stringify({}), pointsRequired: 500, sortOrder: 3, createdAt: new Date().toISOString()},
+  {id: 4, categoryId: 1, name: 'Custom Domain', description: 'Sử dụng domain riêng', perkType: 'CUSTOM_DOMAIN', perkValue: JSON.stringify({}), pointsRequired: 1000, sortOrder: 4, createdAt: new Date().toISOString()},
+]
+
+export const userSkillProgress = Array.from({length: 50}, (_, i) => ({
+  id: i + 1,
+  userId: users[i % 20].id,
+  categoryId: (i % 5) + 1,
+  totalPoints: Math.floor(Math.random() * 500),
+}))
+
+export const userSkillUnlocks = Array.from({length: 30}, (_, i) => ({
+  id: i + 1,
+  userId: users[i % 15].id,
+  skillId: (i % 4) + 1,
+  unlockedAt: new Date(Date.now() - i * 86400000).toISOString(),
+}))
+
 // ===== SUMMARY =====
 console.log('=== Dummy Data Summary ===')
 console.log(`Users: ${users.length}`)

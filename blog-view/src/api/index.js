@@ -1,5 +1,13 @@
 // API layer — mock data cho frontend
 import { users, blogs, categories, hashtags, comments, blogReactions, bookmarks, follows, notifications, blogSeries, badges, dailyCheckins } from '@/data/dummy'
+import { statusApi } from './status'
+import { storyApi } from './story'
+import { playlistApi } from './playlist'
+import { canvasApi } from './canvas'
+import { reputationApi } from './reputation'
+import { questApi } from './quest'
+import { blindApi } from './blind'
+import { skillApi } from './skill'
 
 const delay = (ms = 300) => new Promise(r => setTimeout(r, ms))
 
@@ -135,3 +143,5 @@ export const seriesApi = {
 export const dashboardApi = {
   getStats: async () => { await delay(); return { data: { users: 1247, blogs: 856, views: 128470, comments: 8934 } } },
 }
+
+export { statusApi, storyApi, playlistApi, canvasApi, reputationApi, questApi, blindApi, skillApi }
