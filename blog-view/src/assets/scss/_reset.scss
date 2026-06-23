@@ -23,7 +23,7 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
-  transition: background var(--duration-normal) var(--ease-out),
+  transition: background-color var(--duration-normal) var(--ease-out),
               color var(--duration-normal) var(--ease-out);
 }
 
@@ -56,7 +56,36 @@ input, textarea, select {
   font-family: inherit;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  line-height: 1.3;
-  color: var(--text-primary);
+h1, .h1 {
+  font-size: var(--fs-4xl);
+  font-weight: var(--fw-extrabold);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.02em;
+}
+h2, .h2 {
+  font-size: var(--fs-3xl);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.01em;
+}
+h3, .h3 {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-normal);
+}
+h4, .h4 {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-normal);
+}
+h5, .h5 {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-normal);
+}
+h6, .h6 {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-normal);
+  color: var(--text-secondary);
 }
