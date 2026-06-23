@@ -1,0 +1,41 @@
+// ============================================
+// Design Tokens — Dark Theme
+// ============================================
+
+@import 'variables';
+
+[data-theme='dark'] {
+  --bg: #{$dark-bg};
+  --bg-secondary: #{$dark-bg-secondary};
+  --surface: #{$dark-surface};
+  --surface-hover: #{$dark-surface-hover};
+  --surface-active: #{$dark-surface-active};
+  --border: #{$dark-border};
+  --border-light: #{$dark-border-light};
+  --text-primary: #{$dark-text-primary};
+  --text-secondary: #{$dark-text-secondary};
+  --text-muted: #{$dark-text-muted};
+  --text-inverse: #0f172a;
+
+  // Dark shadows (tinted blue)
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px rgba(14,165,233,0.05);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(14,165,233,0.08);
+  --shadow-xl: 0 25px 50px rgba(0,0,0,0.6);
+
+  // Dark glass
+  --glass-bg: rgba(26, 35, 50, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.06);
+
+  // Dark primary adjust
+  --primary-light: #60cffc;
+  --primary-100: rgba(14,165,233,0.15);
+  --primary-50: rgba(14,165,233,0.08);
+
+  // Dark accent
+  --accent-light: #fdba74;
+
+  // Dark Element Plus
+  --el-fill-color-light: #{$dark-bg-secondary};
+  --el-border-color: #{$dark-border};
+}
