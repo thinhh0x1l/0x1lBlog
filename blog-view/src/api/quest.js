@@ -1,4 +1,4 @@
-import { quests, userQuests, users } from '@/data/dummy'
+import { quests, userQuests } from '@/data/dummy'
 const delay = (ms = 300) => new Promise(r => setTimeout(r, ms))
 
 export const questApi = {
