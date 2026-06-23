@@ -17,6 +17,18 @@
           <div class="stat"><span class="stat-value">Lv.{{ author?.level || 1 }}</span><span class="stat-label">Cấp độ</span></div>
         </div>
 
+        <!-- EXP Bar -->
+        <ExpBar v-if="reputation" :level="reputation.level" :current-exp="reputation.currentExp" :next-level-exp="reputation.nextLevelExp" :rep="author?.repScore" />
+
+        <!-- Streak + Rep row -->
+        <div class="streak-row" v-if="streak">
+          <span class="streak-item">🔥 <strong>{{ streak }}</strong> ngày</span>
+          <span class="streak-item" v-if="author?.repScore">★ <strong>{{ author.repScore }}</strong> Rep</span>
+        </div>
+
+        <!-- Badge Row -->
+        <BadgeRow v-if="badges.length" :badges="badges" />
+
         <transition name="expand">
           <div class="author-expanded" v-if="showDetail">
             <div class="info-row" v-if="author?.bio">
@@ -46,6 +58,12 @@
           {{ showDetail ? 'Thu gọn' : 'Xem thêm' }}
           <svg :class="{ rotated: showDetail }" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
+
+        <!-- Author Status -->
+        <AuthorStatus v-if="authorStatus" :status="authorStatus" />
+
+        <!-- Author Story -->
+        <AuthorStory v-if="authorStories.length" :stories="authorStories" @viewStory="(s) => $emit('viewStory', s)" />
 
         <button v-if="author?.id !== currentUserId" :class="['follow-btn', { following: isFollowing }]" @click="$emit('toggleFollow')">
           {{ isFollowing ? '✓ Đang follow' : 'Follow' }}
@@ -85,14 +103,23 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import ExpBar from './ExpBar.vue'
+import BadgeRow from './BadgeRow.vue'
+import AuthorStatus from './AuthorStatus.vue'
+import AuthorStory from './AuthorStory.vue'
 
 const props = defineProps({
   author: Object,
   content: String,
   isFollowing: Boolean,
+  reputation: Object,
+  streak: { type: Number, default: 0 },
+  badges: { type: Array, default: () => [] },
+  authorStatus: Object,
+  authorStories: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(['toggleFollow'])
+const emit = defineEmits(['toggleFollow', 'viewStory'])
 
 const showDetail = ref(false)
 const activeHeading = ref('')
@@ -189,6 +216,10 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 .info-label { font-size: 0.68rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
 .info-value { font-size: 0.82rem; color: var(--text-secondary); }
 .info-link { font-size: 0.82rem; color: var(--primary); word-break: break-all; }
+
+.streak-row { display: flex; justify-content: center; gap: 16px; padding: 6px 0; margin-bottom: 4px; }
+.streak-item { font-size: 0.78rem; color: var(--text-secondary); }
+.streak-item strong { color: var(--accent); }
 
 .toggle-btn { display: flex; align-items: center; justify-content: center; gap: 4px; width: 100%; padding: 8px; border: none; background: var(--bg-secondary); border-radius: var(--radius); font-size: 0.78rem; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: all var(--duration-fast) ease; margin-bottom: 8px; }
 .toggle-btn:hover { background: var(--primary-50); color: var(--primary); }
