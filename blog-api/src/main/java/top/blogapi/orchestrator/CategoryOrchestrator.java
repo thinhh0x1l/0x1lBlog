@@ -2,6 +2,7 @@ package top.blogapi.orchestrator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.dto.mapper.CategoryMapper;
 import top.blogapi.dto.response.CategoryResponse;
 import top.blogapi.model.entity.Category;
@@ -9,6 +10,9 @@ import top.blogapi.service.category.CategoryService;
 
 import java.util.List;
 
+/**
+ * Orchestrates category query, creation, update, and deletion, with DTO mapping.
+ */
 @Component
 @RequiredArgsConstructor
 public class CategoryOrchestrator {
@@ -30,15 +34,18 @@ public class CategoryOrchestrator {
         return categoryMapper.toResponse(categoryService.findBySlug(slug));
     }
 
+    @Transactional
     public CategoryResponse create(Category category) {
         return categoryMapper.toResponse(categoryService.create(category));
     }
 
+    @Transactional
     public CategoryResponse update(Long id, Category category) {
         category.setId(id);
         return categoryMapper.toResponse(categoryService.update(category));
     }
 
+    @Transactional
     public void delete(Long id) {
         categoryService.softDelete(id);
     }

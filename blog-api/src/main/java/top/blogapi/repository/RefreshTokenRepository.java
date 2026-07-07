@@ -5,6 +5,10 @@ import top.blogapi.model.entity.RefreshToken;
 
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code refresh_tokens}. Xử lý lưu trữ token,
+ * thu hồi (đơn lẻ và theo người dùng) và dọn dẹp token hết hạn.
+ */
 @Mapper
 public interface RefreshTokenRepository {
 

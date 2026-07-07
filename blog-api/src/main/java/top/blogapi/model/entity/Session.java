@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 
+/** Phiên người dùng theo dõi hoạt động đăng nhập, IP và thời lượng. */
 @NoArgsConstructor
 @Getter
 @Setter

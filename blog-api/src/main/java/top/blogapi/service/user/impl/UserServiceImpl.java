@@ -1,36 +1,40 @@
 package top.blogapi.service.user.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.common.exception.AppException;
 import top.blogapi.common.exception.ErrorCode;
 import top.blogapi.model.entity.User;
 import top.blogapi.repository.UserRepository;
+import top.blogapi.service.CacheService;
+import top.blogapi.service.cache.CacheKey;
+import top.blogapi.service.cache.CachePolicies;
 import top.blogapi.service.user.UserService;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Triển khai UserService với cache, cung cấp CRUD người dùng,
+ * kiểm tra tính duy nhất và xóa cache khi cập nhật hồ sơ.
+ */
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final CacheService cacheService;
 
     @Override
-    @Cacheable(value = "users", key = "'findById:' + #id")
     public User findById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-    }
-
-    @Override
-    @Cacheable(value = "users", key = "'findByUsername:' + #username")
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return cacheService.get(
+                CacheKey.user(id),
+                User.class,
+                () -> userRepository.findById(id)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)),
+                CachePolicies.USER_PROFILE
+        );
     }
 
     @Override
@@ -40,32 +44,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
-    @CacheEvict(value = "users", allEntries = true)
     public User create(User user) {
         userRepository.insert(user);
         return user;
     }
 
     @Override
-    @Transactional
-    @CacheEvict(value = "users", allEntries = true)
     public User update(User user) {
         userRepository.update(user);
-        return userRepository.findById(user.getId())
+        User updated = userRepository.findById(user.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        cacheService.evict(CacheKey.user(updated.getId()));
+        return updated;
     }
 
     @Override
-    @Transactional
-    @CacheEvict(value = "users", allEntries = true)
     public void updateLastActive(Long id) {
         userRepository.updateLastActive(id);
-    }
-
-    @Override
-    public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
+        cacheService.evict(CacheKey.user(id));
     }
 
     @Override

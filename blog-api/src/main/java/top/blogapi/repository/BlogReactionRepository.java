@@ -5,6 +5,10 @@ import top.blogapi.model.entity.BlogReaction;
 
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code blog_reactions}. Xử lý upsert, xóa và
+ * truy vấn đếm phản ứng của người dùng trên blog.
+ */
 @Mapper
 public interface BlogReactionRepository {
 

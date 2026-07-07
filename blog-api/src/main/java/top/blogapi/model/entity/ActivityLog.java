@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 
+/** Ghi lại hành động của người dùng hoặc hệ thống phục vụ kiểm toán và phân tích. */
 @NoArgsConstructor
 @Getter
 @Setter

@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -13,10 +14,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import top.blogapi.model.entity.User;
 import top.blogapi.repository.UserRepository;
 import top.blogapi.security.UserPrincipal;
-import top.blogapi.service.auth.JwtService;
+import top.blogapi.security.auth.JwtService;
 
 import java.io.IOException;
 
+/**
+ * Trích xuất và xác thực JWT từ header Authorization, sau đó gán {@link UserPrincipal}
+ * vào security context.
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -50,8 +55,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         UserPrincipal principal = UserPrincipal.create(user);
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+
+        //Để spring lưu metadata
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
 
         filterChain.doFilter(request, response);
     }

@@ -5,6 +5,10 @@ import top.blogapi.model.entity.CommentReaction;
 
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code comment_reactions}. Quản lý lượt thích
+ * bình luận với thêm/xóa và truy vấn đếm.
+ */
 @Mapper
 public interface CommentReactionRepository {
 

@@ -5,6 +5,9 @@ import lombok.Getter;
 
 import java.time.Instant;
 
+/**
+ * Lớp bọc phản hồi API thống nhất với các phương thức factory cho kết quả thành công và lỗi.
+ */
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {

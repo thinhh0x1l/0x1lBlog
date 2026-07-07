@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 
+/** Người dùng đăng ký chuỗi bài viết blog để nhận cập nhật. */
 @NoArgsConstructor
 @Getter
 @Setter

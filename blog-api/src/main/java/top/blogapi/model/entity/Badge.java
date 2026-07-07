@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 
+/** Huy hiệu thành tích người dùng có thể đạt được dựa trên tiêu chí. */
 @NoArgsConstructor
 @Getter
 @Setter

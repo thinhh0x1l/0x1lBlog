@@ -4,6 +4,7 @@ import org.commonmark.node.Node;
 import org.commonmark.renderer.text.TextContentNodeRendererContext;
 import org.commonmark.renderer.text.TextContentWriter;
 
+/** Renderer nội dung văn bản cho node Cover — hiển thị nội dung được bọc trong dấu gạch chéo. */
 public class CoverTextContentNodeRenderer extends AbstractCoverNodeRenderer {
 
     private final TextContentWriter text;

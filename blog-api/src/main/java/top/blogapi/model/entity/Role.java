@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+/** Vai trò xác định tập quyền hạn cho phân quyền. */
 @NoArgsConstructor
 @Getter
 @Setter

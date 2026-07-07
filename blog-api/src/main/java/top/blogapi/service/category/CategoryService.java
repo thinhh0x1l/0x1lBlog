@@ -4,6 +4,10 @@ import top.blogapi.model.entity.Category;
 
 import java.util.List;
 
+/**
+ * Giao diện service quản lý danh mục, cung cấp thao tác CRUD
+ * và tra cứu theo slug với tích hợp cache.
+ */
 public interface CategoryService {
     List<Category> findAll();
     List<Category> findAllVisible();

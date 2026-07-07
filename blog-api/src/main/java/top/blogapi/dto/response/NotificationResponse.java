@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.time.OffsetDateTime;
 
+/**
+ * DTO phản hồi cho thông báo người dùng với loại, nội dung và trạng thái đã đọc.
+ */
 @Data
 public class NotificationResponse {
     private Long id;

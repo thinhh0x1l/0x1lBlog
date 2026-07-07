@@ -1,66 +1,97 @@
 <template>
-  <div class="profile-page">
-    <div class="profile-header">
-      <div class="profile-cover"></div>
-      <div class="profile-info">
-        <el-avatar :size="96" :src="profile?.avatarUrl" class="profile-avatar">{{ profile?.displayName?.charAt(0) || 'U' }}</el-avatar>
-        <h1 class="profile-name">{{ profile?.displayName }}</h1>
-        <p class="profile-bio" v-if="profile?.bio">{{ profile.bio }}</p>
-        <div class="profile-stats">
-          <div class="stat"><span class="stat-value">{{ profile?.blogCount || 0 }}</span><span class="stat-label">Bài viết</span></div>
-          <div class="stat"><span class="stat-value">{{ profile?.followerCount || 0 }}</span><span class="stat-label">Theo dõi</span></div>
-          <div class="stat"><span class="stat-value">{{ profile?.followingCount || 0 }}</span><span class="stat-label">Đang follow</span></div>
+  <ProfileLayout>
+    <template #cover>
+      <CanvasCover :canvas="profileData?.canvas" :is-own="isOwnProfile" @viewCanvas="openCanvas" />
+    </template>
+    <template #sidebar>
+      <ProfileInfo
+        :user="profileData?.user"
+        :level="profileData?.level"
+        :current-exp="profileData?.currentExp"
+        :next-level-exp="profileData?.nextLevelExp"
+        :rep-score="profileData?.repScore"
+        :streak="profileData?.streak"
+        :is-own="isOwnProfile"
+        :is-following="isFollowing"
+        :game-mode="gameMode"
+        @edit-profile="editProfile"
+        @edit-layout="editLayout"
+        @toggle-game-mode="toggleGameMode"
+        @follow="toggleFollow"
+      />
+    </template>
+
+    <div class="profile-section" v-if="gameMode">
+      <GameModeSheet
+        :game-mode="gameMode"
+        :user="profileData?.user"
+        :level="profileData?.level"
+        :current-exp="profileData?.currentExp"
+        :next-level-exp="profileData?.nextLevelExp"
+        :badges="profileData?.badges"
+      />
+    </div>
+
+    <div class="profile-section" v-if="profileData">
+      <WidgetGrid :profile-data="profileData" :is-own="isOwnProfile" />
+    </div>
+
+    <div class="profile-section">
+      <div class="activity-card">
+        <div class="activity-header">
+          <div class="activity-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            <span>Hoạt động 30 ngày</span>
+          </div>
+          <span class="activity-badge">+{{ totalActivity }} rep</span>
         </div>
-        <div class="profile-badges" v-if="profile?.level">
-          <el-tag type="info">Lv.{{ profile.level }}</el-tag>
-          <el-tag type="warning" v-if="profile?.isCreator">Creator</el-tag>
-          <el-tag type="danger" v-if="profile?.role === 'ADMIN'">Admin</el-tag>
-        </div>
-        <div class="profile-actions">
-          <el-button v-if="isOwnProfile" type="primary" @click="editProfile" round>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            Chỉnh sửa hồ sơ
-          </el-button>
-          <el-button v-else :type="isFollowing ? 'default' : 'primary'" @click="toggleFollow" round>
-            <svg v-if="isFollowing" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg>
-            <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            {{ isFollowing ? 'Đang follow' : 'Follow' }}
-          </el-button>
+        <div class="activity-chart">
+          <EChart :option="activityOption" />
         </div>
       </div>
     </div>
 
-    <div class="profile-activity-card">
-      <div class="activity-header">
-        <div class="activity-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          <span>Hoạt động 30 ngày</span>
-        </div>
-        <span class="activity-badge">+{{ totalActivity }} lượt xem</span>
-      </div>
-      <div class="activity-chart">
-        <EChart :option="activityOption" />
-      </div>
+    <div class="profile-footer">
+      <span class="member-since">Tham gia từ {{ profileData?.user?.createdAt ? new Date(profileData.user.createdAt).toLocaleDateString('vi-VN') : '...' }}</span>
     </div>
-  </div>
+  </ProfileLayout>
+  <CanvasViewer v-if="canvasViewerVisible" :canvas="viewingCanvas" :initial-strokes="[]" @close="canvasViewerVisible = false" @stroke="handleCanvasStroke" />
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
-import { profileApi } from '@/api'
+import { profileExtApi } from '@/api/profile-ext'
 import EChart from '@/components/EChart.vue'
+import CanvasCover from '@/components/profile/CanvasCover.vue'
+import CanvasViewer from '@/components/canvas/CanvasViewer.vue'
+import ProfileInfo from '@/components/profile/ProfileInfo.vue'
+import WidgetGrid from '@/components/profile/WidgetGrid.vue'
+import GameModeSheet from '@/components/profile/GameModeSheet.vue'
+import ProfileLayout from '@/components/layouts/ProfileLayout.vue'
 
 const route = useRoute()
 const authStore = useAuthStore()
-const profile = ref(null)
+const profileData = ref(null)
 const isFollowing = ref(false)
 const isOwnProfile = computed(() => authStore.user?.id === Number(route.params.userId))
-const totalActivity = ref(0)
+const gameMode = ref(false)
+const canvasViewerVisible = ref(false)
+const viewingCanvas = ref(null)
+
+const openCanvas = (canvas) => { viewingCanvas.value = canvas; canvasViewerVisible.value = true }
+const handleCanvasStroke = (stroke) => {}
 
 const toggleFollow = async () => { isFollowing.value = !isFollowing.value }
 const editProfile = () => {}
+const editLayout = () => {}
+const toggleGameMode = () => { gameMode.value = !gameMode.value }
+
+const totalActivity = computed(() => {
+  const h = profileData.value?.reputationHistory
+  return h ? h.reduce((s, d) => s + d.points, 0) : 0
+})
 
 const activityOption = computed(() => ({
   tooltip: {
@@ -73,14 +104,13 @@ const activityOption = computed(() => ({
   grid: { top: 16, right: 8, bottom: 24, left: 40 },
   xAxis: {
     type: 'category',
-    data: Array.from({ length: 30 }, (_, i) => `${i + 1}`),
+    data: (profileData.value?.reputationHistory || []).map(d => {
+      const parts = d.date.split('-')
+      return parts[2]
+    }),
     axisLine: { show: false },
     axisTick: { show: false },
-    axisLabel: {
-      color: 'var(--text-muted)',
-      fontSize: 10,
-      interval: 4
-    }
+    axisLabel: { color: 'var(--text-muted)', fontSize: 10, interval: 4 }
   },
   yAxis: {
     type: 'value',
@@ -93,11 +123,8 @@ const activityOption = computed(() => ({
     type: 'line',
     smooth: true,
     showSymbol: false,
-    data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 80 + 10)),
-    lineStyle: {
-      width: 2.5,
-      color: '#fb7293'
-    },
+    data: (profileData.value?.reputationHistory || []).map(d => d.points),
+    lineStyle: { width: 2.5, color: '#fb7293' },
     areaStyle: {
       color: {
         type: 'linear',
@@ -120,104 +147,22 @@ const activityOption = computed(() => ({
 
 onMounted(async () => {
   try {
-    const res = await profileApi.getPublic(route.params.userId)
-    profile.value = res.data
-    totalActivity.value = Math.floor(Math.random() * 5000 + 1000)
+    const res = await profileExtApi.getProfileData(route.params.userId)
+    profileData.value = res.data
   } catch (e) { console.error(e) }
 })
 </script>
 
 <style scoped lang="scss">
-.profile-header {
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  margin-bottom: var(--space-lg);
-  border: 1px solid var(--border-light);
-}
+.profile-section {
+  padding: 0 24px;
 
-.profile-cover {
-  height: 200px;
-  background: linear-gradient(135deg, var(--primary), #8b5cf6 50%, #ec4899);
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.2));
+  &:last-of-type {
+    padding-bottom: 24px;
   }
 }
 
-.profile-info {
-  padding: 0 var(--space-xl) var(--space-xl);
-  text-align: center;
-  margin-top: -48px;
-  position: relative;
-  z-index: 1;
-}
-
-.profile-avatar {
-  border: 6px solid var(--surface);
-  margin-bottom: var(--space-md);
-  box-shadow: var(--shadow-md);
-}
-
-.profile-name {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 4px;
-  letter-spacing: -0.02em;
-}
-
-.profile-bio {
-  color: var(--text-secondary);
-  margin-bottom: var(--space-md);
-  font-size: 0.95rem;
-}
-
-.profile-stats {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-2xl);
-  margin-bottom: var(--space-md);
-}
-
-.stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.stat-value {
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-
-.stat-label {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-.profile-badges {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
-}
-
-.profile-actions {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-sm);
-
-  .el-button svg {
-    margin-right: 4px;
-  }
-}
-
-.profile-activity-card {
+.activity-card {
   background: var(--surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
@@ -262,5 +207,15 @@ onMounted(async () => {
 
 .activity-chart {
   height: 240px;
+}
+
+.profile-footer {
+  padding: 16px 24px;
+  text-align: center;
+
+  .member-since {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
 }
 </style>

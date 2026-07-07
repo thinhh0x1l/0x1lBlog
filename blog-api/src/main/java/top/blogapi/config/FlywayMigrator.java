@@ -9,22 +9,25 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 
-@Component
-@Order(1)
-@RequiredArgsConstructor
-@Slf4j
-public class FlywayMigrator implements CommandLineRunner {
-
-    private final DataSource dataSource;
-
-    @Override
-    public void run(String... args) {
-        Flyway flyway = Flyway.configure()
-                .dataSource(dataSource)
-                .locations("classpath:db/migration")
-                .baselineOnMigrate(true)
-                .load();
-        flyway.migrate();
-        log.info("Flyway migrations completed");
-    }
-}
+/**
+ * Thực thi migration cơ sở dữ liệu Flyway khi khởi động ứng dụng.
+ */
+//@Component
+//@Order(1)
+//@RequiredArgsConstructor
+//@Slf4j
+//public class FlywayMigrator implements CommandLineRunner {
+//
+//    private final DataSource dataSource;
+//
+//    @Override
+//    public void run(String... args) {
+//        Flyway flyway = Flyway.configure()
+//                .dataSource(dataSource)
+//                .locations("classpath:db/migration")
+//                .baselineOnMigrate(true)
+//                .load();
+//        flyway.migrate();
+//        log.info("Flyway migrations completed");
+//    }
+//}

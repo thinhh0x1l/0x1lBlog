@@ -6,6 +6,10 @@ import top.blogapi.model.entity.Category;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code categories}. Cung cấp CRUD, lọc hiển thị
+ * và làm mới bộ đếm blog.
+ */
 @Mapper
 public interface CategoryRepository {
 

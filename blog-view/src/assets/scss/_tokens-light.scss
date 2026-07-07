@@ -4,8 +4,7 @@
 
 @import 'variables';
 
-:root,
-[data-theme='light'] {
+:root {
   --primary: #{$primary};
   --primary-dark: #{$primary-dark};
   --primary-light: #{$primary-light};

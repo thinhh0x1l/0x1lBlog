@@ -5,6 +5,10 @@ import top.blogapi.model.entity.ActivityLog;
 
 import java.util.List;
 
+/**
+ * MyBatis mapper cho bảng {@code activity_log}. Hỗ trợ thêm, truy vấn
+ * theo trace/session/user/category và dọn dẹp log cũ theo lịch.
+ */
 @Mapper
 public interface ActivityLogRepository {
 

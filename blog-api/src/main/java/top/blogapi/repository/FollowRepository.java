@@ -6,6 +6,10 @@ import top.blogapi.model.entity.Follow;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code follows}. Xử lý theo dõi/hủy theo dõi,
+ * truy vấn phân trang người theo dõi/đang theo dõi và kiểm tra tồn tại.
+ */
 @Mapper
 public interface FollowRepository {
 

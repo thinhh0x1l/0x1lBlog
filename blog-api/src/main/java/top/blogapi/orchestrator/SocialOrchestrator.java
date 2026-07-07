@@ -7,6 +7,9 @@ import top.blogapi.service.follow.FollowService;
 
 import java.util.List;
 
+/**
+ * Điều phối thao tác theo dõi/huỷ theo dõi và truy vấn người theo dõi.
+ */
 @Component
 @RequiredArgsConstructor
 public class SocialOrchestrator {
@@ -15,9 +18,6 @@ public class SocialOrchestrator {
 
     @Transactional
     public void follow(Long followerId, Long followingId) {
-        if (followerId.equals(followingId)) {
-            throw new IllegalArgumentException("Cannot follow yourself");
-        }
         followService.follow(followerId, followingId);
     }
 

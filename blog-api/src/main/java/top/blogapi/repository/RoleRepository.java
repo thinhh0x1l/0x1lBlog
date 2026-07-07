@@ -5,6 +5,10 @@ import top.blogapi.model.entity.Role;
 
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code roles}. Cung cấp tra cứu vai trò theo ID
+ * và tên để phân quyền.
+ */
 @Mapper
 public interface RoleRepository {
 

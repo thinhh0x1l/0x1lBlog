@@ -1,71 +1,84 @@
 package top.blogapi.service.category.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.common.exception.AppException;
 import top.blogapi.common.exception.ErrorCode;
 import top.blogapi.model.entity.Category;
 import top.blogapi.repository.CategoryRepository;
+import top.blogapi.service.CacheService;
+import top.blogapi.service.cache.CacheKey;
+import top.blogapi.service.cache.CachePolicies;
 import top.blogapi.service.category.CategoryService;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Triển khai CategoryService với cache, cung cấp CRUD,
+ * tra cứu theo slug và xóa cache khi cập nhật.
+ */
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CacheService cacheService;
 
     @Override
-    @Cacheable(value = "categories", key = "'findAll'")
     public List<Category> findAll() {
         return categoryRepository.findAll();
     }
 
     @Override
-    @Cacheable(value = "categories", key = "'findAllVisible'")
     public List<Category> findAllVisible() {
         return categoryRepository.findAllVisible();
     }
 
     @Override
-    @Cacheable(value = "categories", key = "'findById:' + #id")
     public Category findById(Long id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+        return cacheService.get(
+                CacheKey.category(id),
+                Category.class,
+                () -> categoryRepository.findById(id)
+                        .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND)),
+                CachePolicies.CATEGORY
+        );
     }
 
     @Override
-    @Cacheable(value = "categories", key = "'findBySlug:' + #slug")
     public Category findBySlug(String slug) {
-        return categoryRepository.findBySlug(slug)
-                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+        return cacheService.get(
+                CacheKey.categoryBySlug(slug),
+                Category.class,
+                () -> categoryRepository.findBySlug(slug)
+                        .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND)),
+                CachePolicies.CATEGORY
+        );
     }
 
     @Override
-    @Transactional
-    @CacheEvict(value = "categories", allEntries = true)
     public Category create(Category category) {
         categoryRepository.insert(category);
         return category;
     }
 
     @Override
-    @Transactional
-    @CacheEvict(value = "categories", allEntries = true)
     public Category update(Category category) {
         categoryRepository.update(category);
-        return findById(category.getId());
+        Category updated = findById(category.getId());
+        cacheService.evict(CacheKey.category(updated.getId()));
+        if (updated.getSlug() != null) {
+            cacheService.evict(CacheKey.categoryBySlug(updated.getSlug()));
+        }
+        return updated;
     }
 
     @Override
-    @Transactional
-    @CacheEvict(value = "categories", allEntries = true)
     public void softDelete(Long id) {
         categoryRepository.softDelete(id);
+        cacheService.evict(CacheKey.category(id));
     }
 
     @Override

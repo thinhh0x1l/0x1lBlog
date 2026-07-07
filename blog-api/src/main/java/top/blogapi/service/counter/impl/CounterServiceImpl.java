@@ -1,6 +1,7 @@
 package top.blogapi.service.counter.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -9,8 +10,13 @@ import top.blogapi.service.counter.CounterService;
 
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Triển khai CounterService sử dụng Redis để đếm lượt xem tạm thời
+ * với đồng bộ lô bất đồng bộ xuống cơ sở dữ liệu.
+ */
 public class CounterServiceImpl implements CounterService {
 
     private final RedisTemplate<String, String> redisTemplate;

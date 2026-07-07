@@ -1,56 +1,74 @@
 package top.blogapi.controller;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import top.blogapi.common.response.ApiResponse;
-import top.blogapi.dto.mapper.CategoryMapper;
-import top.blogapi.dto.response.CategoryResponse;
-import top.blogapi.model.entity.Category;
-import top.blogapi.service.category.CategoryService;
+import top.blogapi.orchestrator.CategoryOrchestrator;
 
-import java.util.List;
-
+/**
+ * Endpoint công khai để duyệt và quản lý danh mục blog.
+ */
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
 public class CategoryController {
 
-    private final CategoryService categoryService;
-    private final CategoryMapper categoryMapper;
+    @Data
+    public static class CategoryRequest {
+        private String name;
+        private String slug;
+        private String description;
+        private String icon;
+        private String color;
+        private Integer sortOrder;
+    }
+
+    private final CategoryOrchestrator categoryOrchestrator;
 
     @GetMapping
     public ResponseEntity<ApiResponse> getAll() {
-        List<CategoryResponse> categories = categoryService.findAllVisible().stream()
-                .map(categoryMapper::toResponse)
-                .toList();
-        return ResponseEntity.ok(ApiResponse.success(categories));
+        return ResponseEntity.ok(ApiResponse.success(categoryOrchestrator.getAllVisible()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success(categoryMapper.toResponse(categoryService.findById(id))));
+        return ResponseEntity.ok(ApiResponse.success(categoryOrchestrator.getById(id)));
     }
 
     @GetMapping("/slug/{slug}")
     public ResponseEntity<ApiResponse> getBySlug(@PathVariable String slug) {
-        return ResponseEntity.ok(ApiResponse.success(categoryMapper.toResponse(categoryService.findBySlug(slug))));
+        return ResponseEntity.ok(ApiResponse.success(categoryOrchestrator.getBySlug(slug)));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse> create(@RequestBody Category category) {
-        return ResponseEntity.ok(ApiResponse.success(categoryMapper.toResponse(categoryService.create(category))));
+    public ResponseEntity<ApiResponse> create(@RequestBody CategoryRequest request) {
+        var category = new top.blogapi.model.entity.Category();
+        category.setName(request.getName());
+        category.setSlug(request.getSlug());
+        category.setDescription(request.getDescription());
+        category.setIcon(request.getIcon());
+        category.setColor(request.getColor());
+        category.setSortOrder(request.getSortOrder());
+        return ResponseEntity.ok(ApiResponse.success(categoryOrchestrator.create(category)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody Category category) {
-        category.setId(id);
-        return ResponseEntity.ok(ApiResponse.success(categoryMapper.toResponse(categoryService.update(category))));
+    public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody CategoryRequest request) {
+        var category = new top.blogapi.model.entity.Category();
+        category.setName(request.getName());
+        category.setSlug(request.getSlug());
+        category.setDescription(request.getDescription());
+        category.setIcon(request.getIcon());
+        category.setColor(request.getColor());
+        category.setSortOrder(request.getSortOrder());
+        return ResponseEntity.ok(ApiResponse.success(categoryOrchestrator.update(id, category)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable Long id) {
-        categoryService.softDelete(id);
+        categoryOrchestrator.delete(id);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

@@ -1,8 +1,8 @@
 package top.blogapi.service.follow.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.common.exception.AppException;
 import top.blogapi.common.exception.ErrorCode;
 import top.blogapi.model.entity.Follow;
@@ -12,15 +12,19 @@ import top.blogapi.service.follow.FollowService;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Triển khai FollowService với chống tự theo dõi và phát hiện theo dõi
+ * trùng lặp, cung cấp danh sách người theo dõi phân trang.
+ */
 public class FollowServiceImpl implements FollowService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
 
     @Override
-    @Transactional
     public void follow(Long followerId, Long followingId) {
         if (followerId.equals(followingId)) {
             throw new AppException(ErrorCode.INVALID_INPUT, "Cannot follow yourself");
@@ -35,7 +39,6 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    @Transactional
     public void unfollow(Long followerId, Long followingId) {
         followRepository.delete(followerId, followingId);
     }

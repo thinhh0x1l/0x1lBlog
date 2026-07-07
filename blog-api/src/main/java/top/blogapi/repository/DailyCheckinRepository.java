@@ -6,6 +6,10 @@ import top.blogapi.model.entity.DailyCheckin;
 import java.time.LocalDate;
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code daily_checkins}. Theo dõi điểm danh hàng
+ * ngày, chuỗi điểm danh và kinh nghiệm thưởng.
+ */
 @Mapper
 public interface DailyCheckinRepository {
 

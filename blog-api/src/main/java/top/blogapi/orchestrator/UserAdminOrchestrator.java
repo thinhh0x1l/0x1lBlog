@@ -2,14 +2,16 @@ package top.blogapi.orchestrator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.dto.mapper.UserMapper;
 import top.blogapi.dto.response.UserResponse;
-import top.blogapi.model.enums.UserRole;
-import top.blogapi.model.enums.UserStatus;
 import top.blogapi.service.user.UserService;
 
 import java.util.List;
 
+/**
+ * Orchestrates admin user management: listing, role updates, and account banning.
+ */
 @Component
 @RequiredArgsConstructor
 public class UserAdminOrchestrator {
@@ -23,15 +25,17 @@ public class UserAdminOrchestrator {
                 .toList();
     }
 
-    public void updateRole(Long id, UserRole role) {
+    @Transactional
+    public void updateRole(Long id, String role) {
         var user = userService.findById(id);
         user.setRole(role);
         userService.update(user);
     }
 
+    @Transactional
     public void banUser(Long id) {
         var user = userService.findById(id);
-        user.setStatus(UserStatus.BANNED);
+        user.setStatus("BANNED");
         userService.update(user);
     }
 }

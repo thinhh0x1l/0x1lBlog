@@ -8,6 +8,9 @@ import top.blogapi.service.bookmark.BookmarkService;
 
 import java.util.List;
 
+/**
+ * Orchestrates bookmark toggle, removal, and query operations for blog posts.
+ */
 @Component
 @RequiredArgsConstructor
 public class BookmarkOrchestrator {

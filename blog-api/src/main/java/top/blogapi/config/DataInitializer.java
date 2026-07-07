@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import top.blogapi.model.entity.User;
 import top.blogapi.repository.UserRepository;
 
+/**
+ * Khởi tạo dữ liệu mặc định cho người dùng admin khi chạy lần đầu.
+ */
 @Component
 @Order(2)
 @RequiredArgsConstructor
@@ -21,9 +24,8 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         try {
-            if (!userRepository.existsByUsername("admin")) {
+            if (!userRepository.existsByEmail("admin@0x1lblog.top")) {
                 User admin = new User();
-                admin.setUsername("admin");
                 admin.setEmail("admin@0x1lblog.top");
                 admin.setPasswordHash(passwordEncoder.encode("admin123"));
                 admin.setDisplayName("Admin");

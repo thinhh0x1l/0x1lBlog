@@ -58,22 +58,10 @@
   bottom: 0;
 }
 
-.dark::view-transition-old(root) {
-  z-index: 2147483646;
-  background: var(--bg-color-dark);
-}
-
-.dark::view-transition-new(root) {
-  z-index: 1;
-  background: var(--bg-color);
-}
-
 ::view-transition-old(root) {
   z-index: 1;
-  background: var(--bg-color);
 }
 
 ::view-transition-new(root) {
   z-index: 2147483646;
-  background: var(--bg-color-dark);
 }

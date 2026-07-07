@@ -5,6 +5,10 @@ import top.blogapi.model.entity.Session;
 
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code sessions}. Quản lý phiên người dùng bao
+ * gồm tạo, kết thúc và dọn dẹp phiên cũ.
+ */
 @Mapper
 public interface SessionRepository {
 

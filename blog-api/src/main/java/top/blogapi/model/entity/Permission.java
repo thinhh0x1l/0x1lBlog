@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+/** Quyền hạn được đặt tên cho kiểm soát truy cập dựa trên vai trò. */
 @NoArgsConstructor
 @Getter
 @Setter

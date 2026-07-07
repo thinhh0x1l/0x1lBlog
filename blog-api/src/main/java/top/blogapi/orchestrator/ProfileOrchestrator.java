@@ -8,6 +8,9 @@ import top.blogapi.dto.response.UserResponse;
 import top.blogapi.model.entity.User;
 import top.blogapi.service.user.UserService;
 
+/**
+ * Orchestrates profile retrieval and update with entity-to-DTO mapping.
+ */
 @Component
 @RequiredArgsConstructor
 public class ProfileOrchestrator {

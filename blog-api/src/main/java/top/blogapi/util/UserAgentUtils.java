@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
+/** Phân tích chuỗi User-Agent thành thông tin hệ điều hành và trình duyệt với bộ nhớ đệm. */
 public class UserAgentUtils {
 
     public record UserAgentInfo(String os, String browser) {

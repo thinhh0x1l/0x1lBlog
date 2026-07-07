@@ -14,6 +14,10 @@ import top.blogapi.security.UserPrincipal;
 
 import java.util.List;
 
+/**
+ * Đăng ký resolver tùy chỉnh để inject {@link UserPrincipal} hiện tại
+ * vào tham số phương thức controller thông qua {@link CurrentUser}.
+ */
 @Configuration
 public class CurrentUserResolverConfig implements WebMvcConfigurer {
 

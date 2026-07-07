@@ -6,6 +6,8 @@ import ElementPlusPlugin from './plugins/element-plus.js'
 import tokenBackupPlugin from './plugins/tokenBackup'
 import { pinia } from './store/pinia/pinia.js'
 import { initGuest } from './plugins/auth.js'
+import 'element-plus/theme-chalk/dark/css-vars.css'
+import 'aplayer/dist/APlayer.min.css'
 import './assets/scss/index.scss'
 
 const app = createApp(App)

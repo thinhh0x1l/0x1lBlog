@@ -68,7 +68,7 @@
 // ===== Selection =====
 ::selection { background: var(--primary-100); color: var(--primary-dark); }
 
-[data-theme='dark'] {
+html.dark {
   ::-webkit-scrollbar-thumb { background: #334155; }
   ::-webkit-scrollbar-thumb:hover { background: #475569; }
 

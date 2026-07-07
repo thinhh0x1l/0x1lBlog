@@ -6,6 +6,9 @@ import top.blogapi.dto.request.blog.CreateBlogRequest;
 import top.blogapi.dto.response.BlogResponse;
 import top.blogapi.model.entity.Blog;
 
+/**
+ * Mapper MapStruct để chuyển đổi giữa entity Blog và DTO.
+ */
 @Mapper(componentModel = "spring")
 public interface BlogMapper {
 
@@ -40,8 +43,5 @@ public interface BlogMapper {
     @Mapping(target = "allowComments", expression = "java(request.getAllowComments() != null ? request.getAllowComments() : true)")
     Blog toEntity(CreateBlogRequest request);
 
-    @Mapping(target = "authorName", ignore = true)
-    @Mapping(target = "authorAvatar", ignore = true)
-    @Mapping(target = "categoryName", ignore = true)
     BlogResponse toResponse(Blog blog);
 }

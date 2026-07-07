@@ -5,25 +5,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import top.blogapi.common.response.ApiResponse;
 import top.blogapi.model.entity.SiteSetting;
-import top.blogapi.service.site.SiteSettingService;
+import top.blogapi.orchestrator.SiteSettingOrchestrator;
 
 import java.util.List;
 
+/**
+ * Endpoint quản trị để lấy và cập nhật cài đặt toàn trang.
+ */
 @RestController
 @RequestMapping("/api/admin/settings")
 @RequiredArgsConstructor
 public class SiteSettingAdminController {
 
-    private final SiteSettingService siteSettingService;
+    private final SiteSettingOrchestrator siteSettingOrchestrator;
 
     @GetMapping
     public ResponseEntity<ApiResponse> getAll() {
-        return ResponseEntity.ok(ApiResponse.success(siteSettingService.findAll()));
+        return ResponseEntity.ok(ApiResponse.success(siteSettingOrchestrator.getAll()));
     }
 
     @PutMapping
     public ResponseEntity<ApiResponse> updateAll(@RequestBody List<SiteSetting> settings) {
-        settings.forEach(siteSettingService::upsert);
+        siteSettingOrchestrator.updateAll(settings);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

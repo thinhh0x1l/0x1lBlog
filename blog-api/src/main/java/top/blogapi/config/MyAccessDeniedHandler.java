@@ -11,6 +11,9 @@ import top.blogapi.common.response.ApiResponse;
 
 import java.io.IOException;
 
+/**
+ * Trả về phản hồi JSON 403 Forbidden khi người dùng không có quyền truy cập.
+ */
 @Component
 public class MyAccessDeniedHandler implements AccessDeniedHandler {
 

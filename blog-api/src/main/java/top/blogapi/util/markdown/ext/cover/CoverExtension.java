@@ -10,6 +10,7 @@ import top.blogapi.util.markdown.ext.cover.internal.CoverDelimiterProcessor;
 import top.blogapi.util.markdown.ext.cover.internal.CoverHtmlNodeRenderer;
 import top.blogapi.util.markdown.ext.cover.internal.CoverTextContentNodeRenderer;
 
+/** Extension CommonMark đăng ký cú pháp dấu phân cách %%cover%% cho parser và renderer. */
 public class CoverExtension implements Parser.ParserExtension, HtmlRenderer.HtmlRendererExtension, TextContentRenderer.TextContentRendererExtension {
 
     private CoverExtension(){}

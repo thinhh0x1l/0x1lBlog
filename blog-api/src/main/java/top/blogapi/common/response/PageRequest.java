@@ -3,6 +3,9 @@ package top.blogapi.common.response;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
+/**
+ * Tham số phân trang gồm index, kích thước trang, trường sắp xếp và hướng sắp xếp.
+ */
 public class PageRequest {
     @Min(0)
     private int page = 0;

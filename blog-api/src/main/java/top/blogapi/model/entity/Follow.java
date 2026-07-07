@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 
+/** Quan hệ theo dõi giữa hai người dùng (người theo dõi và được theo dõi). */
 @NoArgsConstructor
 @Getter
 @Setter

@@ -7,6 +7,9 @@ import top.blogapi.service.hashtag.HashtagService;
 
 import java.util.List;
 
+/**
+ * Điều phối truy vấn hashtag như lấy danh sách thịnh hành hoặc hàng đầu.
+ */
 @Component
 @RequiredArgsConstructor
 public class HashtagOrchestrator {

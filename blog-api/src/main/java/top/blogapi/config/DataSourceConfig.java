@@ -12,6 +12,9 @@ import javax.sql.DataSource;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * Cấu hình MyBatis {@link SqlSessionFactory} và transaction manager.
+ */
 @Configuration
 @MapperScan(basePackages = "top.blogapi.repository")
 public class DataSourceConfig {
@@ -27,7 +30,6 @@ public class DataSourceConfig {
         mybatisConfig.setLazyLoadingEnabled(true);
         mybatisConfig.setAggressiveLazyLoading(false);
         mybatisConfig.setLazyLoadTriggerMethods(new HashSet<>(List.of("equals","clone","hashCode","toString")));
-        mybatisConfig.setMultipleResultSetsEnabled(true);
         mybatisConfig.setUseColumnLabel(true);
         mybatisConfig.setUseGeneratedKeys(true);
         mybatisConfig.setDefaultStatementTimeout(25);

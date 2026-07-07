@@ -4,7 +4,7 @@
 
 @import 'variables';
 
-[data-theme='dark'] {
+html.dark {
   --bg: #{$dark-bg};
   --bg-secondary: #{$dark-bg-secondary};
   --surface: #{$dark-surface};
@@ -17,14 +17,14 @@
   --text-muted: #{$dark-text-muted};
   --text-inverse: #0f172a;
 
-  // Dark shadows (tinted blue)
+  // Dark shadows
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px rgba(14,165,233,0.05);
-  --shadow-lg: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(14,165,233,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.5);
   --shadow-xl: 0 25px 50px rgba(0,0,0,0.6);
 
   // Dark glass
-  --glass-bg: rgba(26, 35, 50, 0.8);
+  --glass-bg: rgba(30, 30, 32, 0.8);
   --glass-border: rgba(255, 255, 255, 0.06);
 
   // Dark primary adjust
@@ -36,6 +36,145 @@
   --accent-light: #fdba74;
 
   // Dark Element Plus
-  --el-fill-color-light: #{$dark-bg-secondary};
+  --el-color-primary: #{$primary};
+  --el-color-primary-dark-2: #{$primary-dark};
+  --el-color-primary-light-3: #60cffc;
+  --el-color-primary-light-5: #7dd3fc;
+  --el-color-primary-light-7: #bae6fd;
+  --el-color-primary-light-8: #e0f2fe;
+  --el-color-primary-light-9: rgba(14, 165, 233, 0.15);
+
+  --el-color-success: #{$success};
+  --el-color-warning: #{$warning};
+  --el-color-danger: #{$danger};
+  --el-color-error: #{$danger};
+  --el-color-info: #{$info};
+
+  --el-bg-color-page: #{$dark-bg};
+  --el-bg-color: #{$dark-bg-secondary};
+  --el-bg-color-overlay: #{$dark-surface};
+
+  --el-fill-color: #{$dark-surface-hover};
+  --el-fill-color-light: #{$dark-surface-active};
+  --el-fill-color-lighter: #{$dark-bg-secondary};
+  --el-fill-color-blank: transparent;
+  --el-fill-color-dark: #{$dark-surface};
+
+  --el-text-color-primary: #{$dark-text-primary};
+  --el-text-color-regular: #{$dark-text-secondary};
+  --el-text-color-secondary: #{$dark-text-muted};
+  --el-text-color-placeholder: #{$dark-text-muted};
+  --el-text-color-disabled: #475569;
+
   --el-border-color: #{$dark-border};
+  --el-border-color-dark: #{$dark-border};
+  --el-border-color-darker: #{$dark-border};
+  --el-border-color-light: #{$dark-border-light};
+  --el-border-color-lighter: #{$dark-border-light};
+  --el-border-color-extra-light: #{$dark-border-light};
+
+  --el-color-white: #{$dark-text-primary};
+  --el-color-black: #{$dark-bg};
+
+  --el-border-radius-base: var(--radius);
+  --el-font-family: var(--font-sans);
+
+  --el-box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.5), 0px 8px 20px rgba(0, 0, 0, 0.4);
+  --el-box-shadow-light: 0px 0px 12px rgba(0, 0, 0, 0.4);
+  --el-box-shadow-lighter: 0px 0px 6px rgba(0, 0, 0, 0.3);
+  --el-box-shadow-dark: 0px 16px 48px 16px rgba(0, 0, 0, 0.6), 0px 12px 32px rgba(0, 0, 0, 0.5), 0px 8px 16px -8px rgba(0, 0, 0, 0.5);
+
+  --el-skeleton-color: #{$dark-surface-hover};
+  --el-skeleton-to-color: #{$dark-surface};
+
+  // APlayer dark theme
+  --aplayer-bg: #{$dark-surface};
+  --aplayer-text: #{$dark-text-primary};
+  --aplayer-text-secondary: #{$dark-text-secondary};
+  --aplayer-border: #{$dark-border-light};
+  --aplayer-hover: #{$dark-surface-hover};
+}
+
+html.dark .aplayer {
+  background: var(--aplayer-bg) !important;
+  border-color: var(--aplayer-border) !important;
+}
+
+html.dark .aplayer .aplayer-info {
+  border-color: var(--aplayer-border) !important;
+}
+
+html.dark .aplayer .aplayer-info .aplayer-music .aplayer-title {
+  color: var(--aplayer-text) !important;
+}
+
+html.dark .aplayer .aplayer-info .aplayer-music .aplayer-author {
+  color: var(--aplayer-text-secondary) !important;
+}
+
+html.dark .aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar {
+  background: var(--aplayer-border) !important;
+}
+
+html.dark .aplayer .aplayer-info .aplayer-controller .aplayer-vol-wrap .aplayer-vol-bar {
+  background: var(--aplayer-border) !important;
+}
+
+html.dark .aplayer .aplayer-info .aplayer-controller .aplayer-vol-wrap .aplayer-vol-bar .aplayer-vol {
+  background: var(--primary) !important;
+}
+
+html.dark .aplayer .aplayer-info .aplayer-controller .aplayer-time {
+  color: var(--aplayer-text-secondary) !important;
+}
+
+html.dark .aplayer .aplayer-list {
+  background: var(--aplayer-bg) !important;
+  border-color: var(--aplayer-border) !important;
+}
+
+html.dark .aplayer .aplayer-list ol li {
+  border-color: var(--aplayer-border) !important;
+  color: var(--aplayer-text) !important;
+}
+
+html.dark .aplayer .aplayer-list ol li:hover {
+  background: var(--aplayer-hover) !important;
+}
+
+html.dark .aplayer .aplayer-list ol li.aplayer-list-light {
+  background: var(--primary-50) !important;
+}
+
+html.dark .aplayer .aplayer-list ol li .aplayer-list-index {
+  color: var(--aplayer-text-secondary) !important;
+}
+
+html.dark .aplayer .aplayer-list ol li .aplayer-list-author {
+  color: var(--aplayer-text-secondary) !important;
+}
+
+html.dark .aplayer .aplayer-list ol li.aplayer-list-light .aplayer-list-index {
+  color: var(--primary) !important;
+}
+
+html.dark .aplayer .aplayer-icon {
+  fill: var(--aplayer-text) !important;
+}
+
+html.dark .aplayer .aplayer-icon:hover {
+  fill: var(--primary) !important;
+}
+
+html.dark .aplayer .aplayer-miniswitcher {
+  background: var(--aplayer-bg) !important;
+  border-color: var(--aplayer-border) !important;
+}
+
+html.dark .aplayer .aplayer-miniswitcher .aplayer-icon {
+  fill: var(--aplayer-text) !important;
+}
+
+html.dark .aplayer .aplayer-body .aplayer-pic {
+  border-color: var(--aplayer-border) !important;
 }

@@ -5,6 +5,10 @@ import top.blogapi.model.entity.Notification;
 
 import java.util.List;
 
+/**
+ * MyBatis mapper cho bảng {@code notifications}. Xử lý thêm, truy vấn
+ * phân trang, đánh dấu đã đọc và dọn dẹp thông báo cũ.
+ */
 @Mapper
 public interface NotificationRepository {
 
@@ -16,6 +20,9 @@ public interface NotificationRepository {
 
     @Select("SELECT COUNT(*) FROM notifications WHERE user_id = #{userId} AND is_read = FALSE")
     long countUnread(Long userId);
+
+    @Select("SELECT COUNT(*) FROM notifications WHERE user_id = #{userId}")
+    long countByUserId(Long userId);
 
     @Insert("""
         INSERT INTO notifications (user_id, actor_id, type, title, message, target_type, target_id)

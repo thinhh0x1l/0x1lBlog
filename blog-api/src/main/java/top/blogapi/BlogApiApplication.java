@@ -7,6 +7,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+/**
+ * Điểm vào chính của ứng dụng Spring Boot Blog API.
+ */
 @SpringBootApplication
 @EnableScheduling
 public class BlogApiApplication {

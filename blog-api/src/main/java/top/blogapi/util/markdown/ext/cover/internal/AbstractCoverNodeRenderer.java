@@ -6,6 +6,7 @@ import top.blogapi.util.markdown.ext.cover.Cover;
 
 import java.util.Set;
 
+/** Triển khai cơ sở {@link NodeRenderer} đăng ký loại node Cover. */
 abstract class AbstractCoverNodeRenderer implements NodeRenderer {
     @Override
     public Set<Class<? extends Node>> getNodeTypes() {

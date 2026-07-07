@@ -5,6 +5,10 @@ import top.blogapi.model.entity.SeriesBlog;
 
 import java.util.List;
 
+/**
+ * MyBatis mapper cho bảng liên kết {@code series_blogs}. Quản lý quan hệ
+ * nhiều-nhiều có thứ tự giữa series và blog.
+ */
 @Mapper
 public interface SeriesBlogRepository {
 

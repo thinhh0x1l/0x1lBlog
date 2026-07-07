@@ -6,6 +6,10 @@ import top.blogapi.model.entity.Hashtag;
 
 import java.util.List;
 
+/**
+ * Giao diện service quản lý bài viết blog, bao gồm CRUD, xuất bản,
+ * tìm kiếm, đề xuất thịnh hành và xóa cache.
+ */
 public interface BlogService {
     Blog create(Blog blog);
     Blog update(Blog blog);
@@ -25,7 +29,14 @@ public interface BlogService {
 
     long countPublished();
     long countByAuthorId(Long authorId);
+    long countSearch(String keyword);
 
     void incrementViews(Long id);
     void updateCategoryCounters(Long categoryId);
+
+    void toggleTop(Long id, boolean isTop);
+    void toggleRecommend(Long id, boolean isRecommend);
+
+    void linkHashtags(Long blogId, java.util.List<String> hashtagNames);
+    void evictCache(Long id);
 }

@@ -6,6 +6,10 @@ import top.blogapi.model.entity.Hashtag;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code hashtags}. Cung cấp truy vấn tra cứu
+ * thẻ, thẻ xu hướng và quản lý số lần sử dụng.
+ */
 @Mapper
 public interface HashtagRepository {
 

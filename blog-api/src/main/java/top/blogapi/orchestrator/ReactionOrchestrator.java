@@ -9,6 +9,9 @@ import top.blogapi.service.reaction.ReactionService;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Orchestrates reaction toggle, removal, and summary retrieval for any target type.
+ */
 @Component
 @RequiredArgsConstructor
 public class ReactionOrchestrator {
@@ -16,19 +19,20 @@ public class ReactionOrchestrator {
     private final ReactionService reactionService;
 
     @Transactional
-    public void react(Long userId, Long blogId, ReactionType type) {
-        reactionService.react(userId, blogId, type);
+    public void react(String targetType, Long targetId, Long userId, String type) {
+        reactionService.react(targetType, targetId, userId, ReactionType.valueOf(type));
     }
 
     @Transactional
-    public void unreact(Long userId, Long blogId) {
-        reactionService.unreact(userId, blogId);
+    public void unreact(String targetType, Long targetId, Long userId) {
+        reactionService.unreact(targetType, targetId, userId);
     }
 
-    public Map<String, Object> getSummary(Long blogId, Long userId) {
-        Map<String, Object> result = new HashMap<>(reactionService.getSummary(blogId));
+    public Map<String, Object> getSummary(String targetType, Long targetId, Long userId) {
+        Map<String, Object> result = new HashMap<>(reactionService.getSummary(targetType, targetId));
         if (userId != null) {
-            result.put("userReaction", reactionService.getUserReaction(userId, blogId));
+            ReactionType userReaction = reactionService.getUserReaction(targetType, targetId, userId);
+            result.put("userReaction", userReaction != null ? userReaction.getValue() : null);
         }
         return result;
     }

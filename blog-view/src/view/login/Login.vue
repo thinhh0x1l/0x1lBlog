@@ -35,12 +35,8 @@
               <input v-model="form.displayName" type="text" placeholder="Nguyễn Văn A" class="form-input" />
             </div>
             <div class="form-group">
-              <label>Tên đăng nhập</label>
-              <input v-model="form.username" type="text" placeholder="username" class="form-input" required />
-            </div>
-            <div class="form-group" v-if="isRegister">
               <label>Email</label>
-              <input v-model="form.email" type="email" placeholder="email@example.com" class="form-input" />
+              <input v-model="form.email" type="email" placeholder="email@example.com" class="form-input" required />
             </div>
             <div class="form-group">
               <label>Mật khẩu</label>
@@ -82,27 +78,41 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/store/auth'
+import api from '@/plugins/axios'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const isRegister = ref(false)
 const showPwd = ref(false)
 const loading = ref(false)
-const form = reactive({ username: '', password: '', email: '', displayName: '' })
+const form = reactive({ email: '', password: '', displayName: '' })
 
 const handleSubmit = async () => {
-  if (!form.username || !form.password) { ElMessage.warning('Vui lòng nhập đầy đủ thông tin'); return }
+  if (!form.email || !form.password) { ElMessage.warning('Vui lòng nhập đầy đủ thông tin'); return }
   loading.value = true
-  setTimeout(() => {
-    authStore.setToken('mock-token')
-    authStore.setUser({ id: 1, username: form.username, displayName: form.displayName || form.username, role: 'USER', avatarUrl: '', blogCount: 0, followerCount: 0, followingCount: 0, level: 1 })
+  try {
+    const endpoint = isRegister.value ? '/auth/register' : '/auth/login'
+    const body = isRegister.value
+      ? { email: form.email, password: form.password, displayName: form.displayName }
+      : { email: form.email, password: form.password }
+    const res = await api.post(endpoint, body)
+    const { accessToken, refreshToken, user } = res.data
+    authStore.setToken(accessToken)
+    authStore.setRefreshToken(refreshToken)
+    authStore.setUser(user)
     ElMessage.success(isRegister.value ? 'Đăng ký thành công!' : 'Đăng nhập thành công!')
     router.push('/home')
+  } catch (err) {
+    ElMessage.error(err?.response?.data?.message || 'Có lỗi xảy ra')
+  } finally {
     loading.value = false
-  }, 800)
+  }
 }
 
-const handleGoogleLogin = () => { ElMessage.info('Google OAuth sẽ được tích hợp sau') }
+const handleGoogleLogin = () => {
+  const url = new URL(import.meta.env.VITE_API_URL || 'http://localhost:8090')
+  window.location.href = `${url.origin}/oauth2/authorization/google`
+}
 </script>
 
 <style scoped lang="scss">
@@ -125,7 +135,7 @@ const handleGoogleLogin = () => { ElMessage.info('Google OAuth sẽ được tí
 .feature-icon { font-size: 1.2rem; }
 
 .login-form-wrapper { width: 480px; display: flex; align-items: center; justify-content: center; padding: var(--space-3xl); }
-.form-container { width: 100%; max-width: 380px; }
+.form-container { width: 100%; max-width: 380px; background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: var(--space-xl); box-shadow: var(--shadow-sm); }
 .form-header { margin-bottom: var(--space-xl); }
 .form-header h2 { font-size: 1.6rem; font-weight: 800; color: var(--text-primary); margin-bottom: 6px; letter-spacing: -0.02em; }
 .form-header p { color: var(--text-muted); font-size: 0.9rem; }

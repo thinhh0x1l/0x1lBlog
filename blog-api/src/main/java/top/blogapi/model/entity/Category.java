@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+/** Danh mục phân loại bài viết blog theo chủ đề. */
 @NoArgsConstructor
 @Getter
 @Setter

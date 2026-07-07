@@ -1,7 +1,13 @@
 package top.blogapi.common.response;
 
+import lombok.Getter;
+
 import java.util.List;
 
+/**
+ * Lớp bọc nội dung phân trang kèm thông tin metadata (page, size, total...).
+ */
+@Getter
 public class PagedResponse<T> {
     private List<T> content;
     private int page;
@@ -23,11 +29,4 @@ public class PagedResponse<T> {
         return r;
     }
 
-    public List<T> getContent() { return content; }
-    public int getPage() { return page; }
-    public int getSize() { return size; }
-    public long getTotalElements() { return totalElements; }
-    public int getTotalPages() { return totalPages; }
-    public boolean isFirst() { return first; }
-    public boolean isLast() { return last; }
 }

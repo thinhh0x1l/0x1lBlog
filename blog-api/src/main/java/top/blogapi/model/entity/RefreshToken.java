@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 
+/** Token làm mới để cấp token truy cập mới mà không cần xác thực lại. */
 @NoArgsConstructor
 @Getter
 @Setter

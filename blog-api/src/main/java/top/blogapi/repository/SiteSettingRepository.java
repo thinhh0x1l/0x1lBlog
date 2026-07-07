@@ -6,6 +6,10 @@ import top.blogapi.model.entity.SiteSetting;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code site_settings}. Cung cấp thao tác CRUD
+ * key-value cho cấu hình ứng dụng.
+ */
 @Mapper
 public interface SiteSettingRepository {
 

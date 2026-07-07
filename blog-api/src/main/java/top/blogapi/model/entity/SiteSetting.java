@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 
+/** Cấu hình trang web dạng key-value. */
 @NoArgsConstructor
 @Getter
 @Setter

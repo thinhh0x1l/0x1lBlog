@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/** Tiện ích băm MD5 với tiền tố salt bí mật. */
 public class MD5Utils {
     private static final String SALT = "mySecret";
 

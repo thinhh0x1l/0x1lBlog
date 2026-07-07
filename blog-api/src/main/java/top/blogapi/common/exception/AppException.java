@@ -5,6 +5,10 @@ import lombok.Getter;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Ngoại lệ nghiệp vụ cơ bản chứa {@link ErrorCode} và context tùy chọn.
+ * Các ngoại lệ khác nên kế thừa lớp này.
+ */
 @Getter
 public class AppException extends RuntimeException {
 

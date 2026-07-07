@@ -5,10 +5,14 @@
       <div class="author-cover" :style="{ background: `linear-gradient(135deg, ${authorColors[0]}, ${authorColors[1]})` }"></div>
       <div class="author-content">
         <router-link :to="`/profile/${author?.id}`" class="author-avatar-link">
-          <img v-if="author?.avatarUrl" :src="author.avatarUrl" class="author-avatar" />
-          <div v-else class="author-avatar author-avatar-placeholder">{{ author?.displayName?.charAt(0) || 'U' }}</div>
+          <EquippedBorder :border="equippedBorder">
+            <img v-if="author?.avatarUrl" :src="author.avatarUrl" class="author-avatar" />
+            <div v-else class="author-avatar author-avatar-placeholder">{{ author?.displayName?.charAt(0) || 'U' }}</div>
+          </EquippedBorder>
         </router-link>
         <h3 class="author-name">{{ author?.displayName }}</h3>
+        <RolltextBanner v-if="rolltext" :rolltext="rolltext" />
+        <MischiefEffect v-if="activeMischief" :mischief="activeMischief" />
         <span class="author-role" v-if="author?.isCreator">Creator</span>
 
         <div class="author-stats">
@@ -107,6 +111,9 @@ import ExpBar from './ExpBar.vue'
 import BadgeRow from './BadgeRow.vue'
 import AuthorStatus from './AuthorStatus.vue'
 import AuthorStory from './AuthorStory.vue'
+import EquippedBorder from './EquippedBorder.vue'
+import RolltextBanner from './RolltextBanner.vue'
+import MischiefEffect from './MischiefEffect.vue'
 
 const props = defineProps({
   author: Object,
@@ -117,6 +124,9 @@ const props = defineProps({
   badges: { type: Array, default: () => [] },
   authorStatus: Object,
   authorStories: { type: Array, default: () => [] },
+  equippedBorder: Object,
+  rolltext: Object,
+  activeMischief: Object,
 })
 
 const emit = defineEmits(['toggleFollow', 'viewStory'])

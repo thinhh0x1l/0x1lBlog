@@ -8,6 +8,8 @@ import { reputationApi } from './reputation'
 import { questApi } from './quest'
 import { blindApi } from './blind'
 import { skillApi } from './skill'
+import { musicCommentApi } from './music-comment'
+import { musicReactionApi } from './music-reaction'
 
 const delay = (ms = 300) => new Promise(r => setTimeout(r, ms))
 
@@ -131,6 +133,7 @@ export const profileApi = {
 }
 
 export const seriesApi = {
+  getAll: async () => { await delay(); return { data: blogSeries } },
   getById: async (id) => { await delay(); return { data: blogSeries.find(s => s.id === Number(id)) } },
   getByAuthor: async (authorId) => { await delay(); return { data: blogSeries.filter(s => s.authorId === Number(authorId)) } },
   create: async (data) => { await delay(); return { data: { id: 999, ...data } } },
@@ -144,4 +147,4 @@ export const dashboardApi = {
   getStats: async () => { await delay(); return { data: { users: 1247, blogs: 856, views: 128470, comments: 8934 } } },
 }
 
-export { statusApi, storyApi, playlistApi, canvasApi, reputationApi, questApi, blindApi, skillApi }
+export { statusApi, storyApi, playlistApi, canvasApi, reputationApi, questApi, blindApi, skillApi, musicCommentApi, musicReactionApi }

@@ -8,15 +8,16 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 
+/** Bản ghi người dùng chia sẻ nội dung ra nền tảng bên ngoài. */
 @NoArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Share {
     Long id;
-    Long blogId;
+    String targetType;
+    Long targetId;
     Long userId;
-    String quoteText;
-    String platform;
+    String content;
     OffsetDateTime createdAt;
 }

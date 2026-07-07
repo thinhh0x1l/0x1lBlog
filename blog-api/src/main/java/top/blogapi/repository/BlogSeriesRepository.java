@@ -6,6 +6,10 @@ import top.blogapi.model.entity.BlogSeries;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code blog_series}. Hỗ trợ CRUD, xóa mềm và
+ * làm mới bộ đếm bài viết/người theo dõi.
+ */
 @Mapper
 public interface BlogSeriesRepository {
 

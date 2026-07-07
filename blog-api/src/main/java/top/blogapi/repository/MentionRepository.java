@@ -5,6 +5,10 @@ import top.blogapi.model.entity.Mention;
 
 import java.util.List;
 
+/**
+ * MyBatis mapper cho bảng {@code mentions}. Ghi lại và truy xuất đề cập
+ * người dùng trên nhiều nguồn nội dung.
+ */
 @Mapper
 public interface MentionRepository {
 

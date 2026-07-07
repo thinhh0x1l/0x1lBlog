@@ -9,12 +9,12 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
+/** Người dùng nền tảng, chứa thông tin xác thực, hồ sơ và chỉ số gamification. */
 @NoArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User extends BaseEntity {
-    String username;
     String email;
     String passwordHash;
     String displayName;
@@ -36,5 +36,13 @@ public class User extends BaseEntity {
     LocalDate lastCheckinAt;
     Long balance;
     Long bonus;
+    Long coins;
+    Long gems;
+    Long reputationWriting;
+    Long reputationCommunity;
+    Long reputationCreativity;
+    Long reputationInfluence;
     OffsetDateTime lastActiveAt;
+    String profileLayout;
+    Boolean gameMode;
 }

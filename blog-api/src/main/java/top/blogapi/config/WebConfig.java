@@ -4,6 +4,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * Cấu hình CORS toàn cục cho các endpoint API.
+ */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 

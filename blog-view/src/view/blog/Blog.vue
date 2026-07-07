@@ -1,123 +1,139 @@
 <template>
-  <div class="blog-layout" v-if="blog">
-    <BlogSidebar
-      :author="author"
-      :content="blog.content"
-      :is-following="isFollowing"
-      :reputation="reputation"
-      :streak="streakCount"
-      :badges="authorBadges"
-      :author-status="authorStatus"
-      :author-stories="authorStories"
-      @toggle-follow="toggleFollow"
-      @view-story="viewStory"
-    />
+  <div>
+    <template v-if="blog">
+      <ThreeColumnLayout>
+        <template #sidebar-left>
+          <BlogSidebar
+            :author="author"
+            :content="blog.content"
+            :is-following="isFollowing"
+            :reputation="reputation"
+            :streak="streakCount"
+            :badges="authorBadges"
+            :author-status="authorStatus"
+            :author-stories="authorStories"
+            :equipped-border="author?.equippedItems?.border"
+            :rolltext="author?.equippedItems?.rolltext"
+            :active-mischief="author?.activeMischief"
+            @toggle-follow="toggleFollow"
+            @view-story="viewStory"
+          />
+        </template>
 
-    <div class="blog-main">
-      <div class="blog-header">
-        <div class="blog-category" v-if="blog.categoryName">
-          <router-link :to="`/category/${blog.categoryName}`">{{ blog.categoryName }}</router-link>
-        </div>
-        <h1 class="blog-title">{{ blog.title }}</h1>
-        <div class="blog-meta">
-          <div class="meta-left">
-            <router-link :to="`/profile/${blog.authorId}`" class="author-info">
-              <el-avatar :size="40" :src="blog.authorAvatar">{{ blog.authorName?.charAt(0) }}</el-avatar>
-              <div class="author-detail">
-                <span class="author-name">{{ blog.authorName }}</span>
-                <span class="meta-date">{{ formatDate(blog.publishedAt) }} · {{ blog.readTime }} phút đọc</span>
+        <div class="blog-main">
+          <div class="blog-header">
+            <div class="blog-category" v-if="blog.categoryName">
+              <router-link :to="`/category/${blog.categoryName}`">{{ blog.categoryName }}</router-link>
+            </div>
+            <h1 class="blog-title">{{ blog.title }}</h1>
+            <div class="blog-meta">
+              <div class="meta-left">
+                <router-link :to="`/profile/${blog.authorId}`" class="author-info">
+                  <el-avatar :size="40" :src="blog.authorAvatar">{{ blog.authorName?.charAt(0) }}</el-avatar>
+                  <div class="author-detail">
+                    <span class="author-name">{{ blog.authorName }}</span>
+                    <span class="meta-date">{{ formatDate(blog.publishedAt) }} · {{ blog.readTime }} phút đọc</span>
+                  </div>
+                </router-link>
               </div>
-            </router-link>
-          </div>
-          <div class="blog-stats">
-            <span><el-icon><View /></el-icon> {{ blog.views }}</span>
-            <span><el-icon><ChatDotRound /></el-icon> {{ blog.commentCount }}</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="blog-cover" v-if="blog.coverImage">
-        <img :src="blog.coverImage" :alt="blog.title" />
-      </div>
-
-      <div class="blog-content typo" v-html="renderedContent" ref="contentRef"></div>
-
-      <div class="reaction-bar">
-        <div class="reaction-buttons">
-          <button v-for="r in reactions" :key="r.type" :class="['reaction-btn', { active: userReaction === r.type }]" @click="toggleReaction(r.type)">
-            {{ r.icon }} <span>{{ blog[r.key] || 0 }}</span>
-          </button>
-        </div>
-        <div class="action-buttons">
-          <el-button :type="isBookmarked ? 'primary' : 'default'" @click="toggleBookmark"><el-icon><Star /></el-icon> {{ isBookmarked ? 'Đã lưu' : 'Lưu' }}</el-button>
-          <el-button @click="shareBlog"><el-icon><Share /></el-icon> Chia sẻ</el-button>
-        </div>
-      </div>
-
-      <AuthorCta v-if="author && currentUserId !== author.id" :author="author" :is-following="isFollowing" @follow="toggleFollow" />
-
-      <div id="comments" class="comments-section">
-        <h3>Bình luận ({{ comments.length }})</h3>
-        <div class="comment-form" v-if="isLoggedIn">
-          <el-input v-model="commentContent" type="textarea" :rows="3" placeholder="Viết bình luận..." />
-          <div class="form-actions"><el-button type="primary" @click="submitComment" :loading="commentLoading">Gửi</el-button></div>
-        </div>
-        <div class="comment-form" v-else>
-          <el-button type="primary" @click="$router.push('/login')">Đăng nhập để bình luận</el-button>
-        </div>
-        <div class="comment-list">
-          <div v-for="comment in comments" :key="comment.id" class="comment-item">
-            <div class="comment-header">
-              <el-avatar :size="36" :src="comment.authorAvatar">{{ comment.authorName?.charAt(0) || 'G' }}</el-avatar>
-              <div class="comment-meta">
-                <span class="comment-author">{{ comment.authorName || comment.guestName || 'Khách' }}</span>
-                <span class="comment-time">{{ formatDate(comment.createdAt) }}</span>
+              <div class="blog-stats">
+                <span><el-icon><View /></el-icon> {{ blog.views }}</span>
+                <span><el-icon><ChatDotRound /></el-icon> {{ blog.commentCount }}</span>
               </div>
             </div>
-            <div class="comment-content">{{ comment.content }}</div>
-            <div class="comment-actions">
-              <el-button text size="small"><el-icon><Star /></el-icon> {{ comment.likeCount || 0 }}</el-button>
-              <el-button text size="small"><el-icon><ChatRound /></el-icon> Trả lời</el-button>
+          </div>
+
+          <div class="blog-cover" v-if="blog.coverImage">
+            <img :src="blog.coverImage" :alt="blog.title" />
+          </div>
+
+          <div class="blog-content typo" v-html="renderedContent" ref="contentRef"></div>
+
+          <div class="reaction-bar">
+            <div class="reaction-buttons">
+              <button v-for="r in reactions" :key="r.type" :class="['reaction-btn', { active: userReaction === r.type }]" @click="toggleReaction(r.type)">
+                {{ r.icon }} <span>{{ blog[r.key] || 0 }}</span>
+              </button>
             </div>
-            <div class="comment-replies" v-if="comment.children?.length">
-              <div v-for="reply in comment.children" :key="reply.id" class="reply-item">
+            <div class="action-buttons">
+              <el-button :type="isBookmarked ? 'primary' : 'default'" @click="toggleBookmark"><el-icon><Star /></el-icon> {{ isBookmarked ? 'Đã lưu' : 'Lưu' }}</el-button>
+              <el-button @click="shareBlog"><el-icon><Share /></el-icon> Chia sẻ</el-button>
+            </div>
+          </div>
+
+          <AuthorCta v-if="author && currentUserId !== author.id" :author="author" :is-following="isFollowing" @follow="toggleFollow" />
+
+          <div id="comments" class="comments-section">
+            <h3>Bình luận ({{ comments.length }})</h3>
+            <div class="comment-form" v-if="isLoggedIn">
+              <el-input v-model="commentContent" type="textarea" :rows="3" placeholder="Viết bình luận..." />
+              <div class="form-actions"><el-button type="primary" @click="submitComment" :loading="commentLoading">Gửi</el-button></div>
+            </div>
+            <div class="comment-form" v-else>
+              <el-button type="primary" @click="$router.push('/login')">Đăng nhập để bình luận</el-button>
+            </div>
+            <div class="comment-list">
+              <div v-for="comment in comments" :key="comment.id" class="comment-item">
                 <div class="comment-header">
-                  <el-avatar :size="28" :src="reply.authorAvatar">{{ reply.authorName?.charAt(0) || 'G' }}</el-avatar>
+                  <el-avatar :size="36" :src="comment.authorAvatar">{{ comment.authorName?.charAt(0) || 'G' }}</el-avatar>
                   <div class="comment-meta">
-                    <span class="comment-author">{{ reply.authorName || reply.guestName }}</span>
-                    <span class="comment-time">{{ formatDate(reply.createdAt) }}</span>
+                    <span class="comment-author">{{ comment.authorName || comment.guestName || 'Khách' }}</span>
+                    <span class="comment-time">{{ formatDate(comment.createdAt) }}</span>
                   </div>
                 </div>
-                <div class="comment-content">{{ reply.content }}</div>
+                <div class="comment-content">{{ comment.content }}</div>
+                <div class="comment-actions">
+                  <el-button text size="small"><el-icon><Star /></el-icon> {{ comment.likeCount || 0 }}</el-button>
+                  <el-button text size="small"><el-icon><ChatRound /></el-icon> Trả lời</el-button>
+                </div>
+                <div class="comment-replies" v-if="comment.children?.length">
+                  <div v-for="reply in comment.children" :key="reply.id" class="reply-item">
+                    <div class="comment-header">
+                      <el-avatar :size="28" :src="reply.authorAvatar">{{ reply.authorName?.charAt(0) || 'G' }}</el-avatar>
+                      <div class="comment-meta">
+                        <span class="comment-author">{{ reply.authorName || reply.guestName }}</span>
+                        <span class="comment-time">{{ formatDate(reply.createdAt) }}</span>
+                      </div>
+                    </div>
+                    <div class="comment-content">{{ reply.content }}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          <RelatedPosts v-if="relatedPosts.length" :posts="relatedPosts" />
         </div>
-      </div>
 
-      <RelatedPosts v-if="relatedPosts.length" :posts="relatedPosts" />
-    </div>
+        <template #sidebar-right>
+          <BlogDiscoverySidebar
+            :playlist="authorPlaylist"
+            :canvas="authorCanvas"
+            :quests="myQuests"
+            :challenge="todayBlind"
+            :my-guess="myBlindGuess"
+            :skill-trees="categorySkills"
+            :skill-progress="mySkillProgress"
+            :trending="trendingPosts"
+            :tags="blogTags"
+            :is-logged-in="isLoggedIn"
+            @claim="handleClaim"
+            @guess="handleBlindGuess"
+            @viewCanvas="openCanvas"
+          />
+        </template>
+      </ThreeColumnLayout>
 
-    <BlogDiscoverySidebar
-      v-if="!isMobile"
-      :playlist="authorPlaylist"
-      :canvas="authorCanvas"
-      :quests="myQuests"
-      :challenge="todayBlind"
-      :my-guess="myBlindGuess"
-      :skill-trees="categorySkills"
-      :skill-progress="mySkillProgress"
-      :trending="trendingPosts"
-      :tags="blogTags"
-      :is-logged-in="isLoggedIn"
-      @claim="handleClaim"
-      @guess="handleBlindGuess"
-    />
+      <StoryList />
+      <StoryViewer />
+      <CanvasViewer v-if="canvasViewerVisible" :canvas="viewingCanvas" :initial-strokes="[]" @close="canvasViewerVisible = false" @stroke="handleCanvasStroke" />
+      <FloatingTocButton v-if="isMobile" :visible="true" @toggle="showMobileToc = !showMobileToc" />
+      <FloatingReactionBar v-if="isMobile" :visible="true" :reactions="reactions" :user-reaction="userReaction" @react="toggleReaction" @bookmark="toggleBookmark" @share="shareBlog" />
+    </template>
+    <el-skeleton v-else-if="loading" :rows="10" animated />
+    <el-empty v-else description="Không tìm thấy bài viết" />
   </div>
-  <el-skeleton :rows="10" animated v-else-if="loading" />
-  <el-empty v-else description="Không tìm thấy bài viết" />
 </template>
-
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -135,10 +151,16 @@ import { reputationApi } from '@/api/reputation'
 import { questApi } from '@/api/quest'
 import { blindApi } from '@/api/blind'
 import { skillApi } from '@/api/skill'
+import ThreeColumnLayout from '@/components/layouts/ThreeColumnLayout.vue'
 import BlogSidebar from '@/components/blog/BlogSidebar.vue'
 import AuthorCta from '@/components/blog/AuthorCta.vue'
 import RelatedPosts from '@/components/blog/RelatedPosts.vue'
 import BlogDiscoverySidebar from '@/components/blog/BlogDiscoverySidebar.vue'
+import StoryList from '@/components/story/StoryList.vue'
+import StoryViewer from '@/components/story/StoryViewer.vue'
+import FloatingTocButton from '@/components/blog/FloatingTocButton.vue'
+import FloatingReactionBar from '@/components/blog/FloatingReactionBar.vue'
+import CanvasViewer from '@/components/canvas/CanvasViewer.vue'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/vi'
@@ -162,6 +184,9 @@ const isBookmarked = ref(false)
 const isFollowing = ref(false)
 const contentRef = ref(null)
 const isMobile = ref(window.innerWidth <= 767)
+const showMobileToc = ref(false)
+const canvasViewerVisible = ref(false)
+const viewingCanvas = ref(null)
 
 const reputation = ref(null)
 const streakCount = ref(0)
@@ -220,11 +245,14 @@ const loadComments = async () => {
   try { const res = await commentApi.getByBlog(route.params.id); comments.value = res.data || [] } catch (e) {}
 }
 
-const viewStory = (story) => { /* TODO: open story viewer */ }
+const viewStory = () => {}
 const handleClaim = async (userQuestId) => {
   try { await questApi.claim(userQuestId); ElMessage.success('Đã nhận thưởng!') }
   catch (e) { ElMessage.error('Lỗi nhận thưởng') }
 }
+const openCanvas = (canvas) => { viewingCanvas.value = canvas; canvasViewerVisible.value = true }
+const handleCanvasStroke = (stroke) => {}
+
 const handleBlindGuess = async (data) => {
   try { const res = await blindApi.submitGuess(data.challengeId, data.guessedTopicId); myBlindGuess.value = res.data; ElMessage.success('Đã gửi dự đoán!') }
   catch (e) { ElMessage.error('Lỗi gửi dự đoán') }
@@ -298,145 +326,22 @@ onMounted(async () => {
 onMounted(() => window.addEventListener('resize', checkMobile))
 onUnmounted(() => window.removeEventListener('resize', checkMobile))
 </script>
-
 <style scoped lang="scss">
-.blog-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr 280px;
-  gap: 24px;
-  max-width: 100%;
-}
-
-.blog-main {
-  min-width: 0;
-}
-
-.blog-header {
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-lg);
-  border-bottom: 1px solid var(--border-light);
-}
-
-.blog-category {
-  margin-bottom: var(--space-md);
-  a {
-    display: inline-block;
-    padding: 5px 14px;
-    background: var(--primary-50);
-    color: var(--primary);
-    border-radius: var(--radius-full);
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all var(--duration-fast) ease;
-    &:hover { background: var(--primary-100); }
-  }
-}
-
-.blog-title {
-  font-size: 2rem;
-  font-weight: 800;
-  line-height: 1.3;
-  margin-bottom: var(--space-md);
-  letter-spacing: -0.02em;
-}
-
-.blog-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.author-info {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  text-decoration: none;
-}
-
+.blog-main { min-width: 0; }
+.blog-header { margin-bottom: var(--space-lg); padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border-light); }
+.blog-category { margin-bottom: var(--space-md); a { display: inline-block; padding: 5px 14px; background: var(--primary-50); color: var(--primary); border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; text-decoration: none; transition: all var(--duration-fast) ease; &:hover { background: var(--primary-100); } } }
+.blog-title { font-size: 2rem; font-weight: 800; line-height: 1.3; margin-bottom: var(--space-md); letter-spacing: -0.02em; }
+.blog-meta { display: flex; justify-content: space-between; align-items: center; }
+.author-info { display: flex; align-items: center; gap: var(--space-sm); text-decoration: none; }
 .author-name { font-weight: 600; color: var(--text-primary); display: block; }
 .meta-date { font-size: 0.8rem; color: var(--text-muted); }
-.blog-stats {
-  display: flex;
-  gap: var(--space-md);
-  span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-}
-
-.blog-cover {
-  margin-bottom: var(--space-lg);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-  img {
-    width: 100%;
-    max-height: 400px;
-    object-fit: cover;
-    transition: transform var(--duration-slow) var(--ease-out);
-    &:hover { transform: scale(1.01); }
-  }
-}
-
-.blog-content {
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow);
-  padding: var(--space-2xl);
-  margin-bottom: var(--space-lg);
-  font-size: 1rem;
-  line-height: 1.8;
-  border: 1px solid var(--border-light);
-}
-
-.reaction-bar {
-  background: var(--surface);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
-  padding: var(--space-md) var(--space-lg);
-  margin-bottom: var(--space-lg);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-}
-
-.reaction-buttons {
-  display: flex;
-  gap: var(--space-xs);
-}
-
-.reaction-btn {
-  padding: 8px 14px;
-  border: 1px solid transparent;
-  background: transparent;
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-size: 1.1rem;
-  transition: all var(--duration-fast) ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  &:hover { background: var(--surface-hover); border-color: var(--border-light); transform: scale(1.05); }
-  &.active { background: var(--primary-50); border-color: var(--primary-100); }
-  span { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
-}
-
-.comments-section {
-  background: var(--surface);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
-  padding: var(--space-2xl);
-  h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-lg); }
-}
-
+.blog-stats { display: flex; gap: var(--space-md); span { display: flex; align-items: center; gap: 4px; font-size: 0.85rem; color: var(--text-muted); } }
+.blog-cover { margin-bottom: var(--space-lg); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-md); img { width: 100%; max-height: 400px; object-fit: cover; transition: transform var(--duration-slow) var(--ease-out); &:hover { transform: scale(1.01); } } }
+.blog-content { background: var(--surface); border-radius: var(--radius-xl); box-shadow: var(--shadow); padding: var(--space-2xl); margin-bottom: var(--space-lg); font-size: 1rem; line-height: 1.8; border: 1px solid var(--border-light); }
+.reaction-bar { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); padding: var(--space-md) var(--space-lg); margin-bottom: var(--space-lg); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-sm); }
+.reaction-buttons { display: flex; gap: var(--space-xs); }
+.reaction-btn { padding: 8px 14px; border: 1px solid transparent; background: transparent; border-radius: var(--radius); cursor: pointer; font-size: 1.1rem; transition: all var(--duration-fast) ease; display: flex; align-items: center; gap: 6px; &:hover { background: var(--surface-hover); border-color: var(--border-light); transform: scale(1.05); } &.active { background: var(--primary-50); border-color: var(--primary-100); } span { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; } }
+.comments-section { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); padding: var(--space-2xl); h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-lg); } }
 .comment-form { margin-bottom: var(--space-lg); padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border-light); }
 .form-actions { display: flex; justify-content: flex-end; margin-top: var(--space-sm); }
 .comment-list { display: flex; flex-direction: column; gap: var(--space-lg); }
@@ -450,13 +355,4 @@ onUnmounted(() => window.removeEventListener('resize', checkMobile))
 .comment-replies { margin-top: var(--space-md); padding-left: 48px; border-left: 2px solid var(--border); }
 .reply-item { padding: var(--space-sm) 0; }
 .reply-item .comment-content { padding-left: 40px; }
-
-// Responsive
-@media (max-width: 1199px) {
-  .blog-layout { grid-template-columns: 280px 1fr; }
-}
-
-@media (max-width: 767px) {
-  .blog-layout { grid-template-columns: 1fr; }
-}
 </style>

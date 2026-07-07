@@ -5,6 +5,10 @@ import top.blogapi.model.entity.Permission;
 
 import java.util.List;
 
+/**
+ * MyBatis mapper cho bảng {@code permissions}. Cung cấp tra cứu theo ID
+ * và kết nối qua role_permissions để tìm quyền cho vai trò.
+ */
 @Mapper
 public interface PermissionRepository {
 

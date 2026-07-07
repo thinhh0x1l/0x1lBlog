@@ -6,6 +6,10 @@ import top.blogapi.model.entity.AboutInfo;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code about_info}. Cung cấp các thao tác CRUD
+ * cho nội dung trang giới thiệu theo loại.
+ */
 @Mapper
 public interface AboutInfoRepository {
 

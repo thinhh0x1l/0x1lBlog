@@ -40,6 +40,13 @@ export const users = Array.from({length: 100}, (_, i) => ({
   balance: random(0, 1000000),
   bonus: random(0, 500000),
   createdAt: new Date(Date.now() - random(30, 365) * 86400000).toISOString(),
+  equippedItems: {
+    border: i % 3 === 0 ? null : { type: 'GRADIENT', colors: ['#0ea5e9', '#8b5cf6'], rarity: ['COMMON', 'UNCOMMON', 'RARE', 'EPIC'][i % 4] },
+    rolltext: i % 4 === 0 ? null : { text: ['Hello World! Welcome to my blog 🚀', 'Code, Coffee, Repeat ☕', 'Chill vibes only ✨', 'Học hỏi mỗi ngày 📚', 'Full-stack dev journey'][i % 5], speed: ['slow', 'normal', 'fast'][i % 3] },
+  },
+  activeMischief: i % 5 === 0 ? { type: 'SLIME', appliedBy: VietnameseNames[(i + 3) % VietnameseNames.length], appliedAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 86400000).toISOString() } : null,
+  profileLayout: ['AVATAR_BORDER', 'BIO', 'STATS', 'BLOG_LIST', 'BADGE_WALL', 'STATUSES', 'SKILL_TREE', 'STREAK', 'MUSIC_BOX', 'QUEST'].map((t, i) => ({ widgetType: t, isVisible: [true, true, true, true, true, true, false, false, false, false][i], sortOrder: i })),
+  gameMode: false,
 }))
 
 // ===== 2. CATEGORIES (15 records) =====
@@ -1175,48 +1182,180 @@ export const statuses = Array.from({length: 200}, (_, i) => ({
   createdAt: new Date(Date.now() - i * 3600000).toISOString(),
   updatedAt: new Date(Date.now() - i * 3600000).toISOString(),
 }))
-
 // ─── R301: Stories ────────────────────────────────────────────────
-export const stories = Array.from({length: 50}, (_, i) => ({
-  id: i + 1,
-  userId: users[i % 50].id,
-  mediaUrl: `https://picsum.photos/seed/story${i}/400/600`,
-  mediaType: 'IMAGE',
-  caption: ['Đang code đây...', 'Cà phê sáng ☕', 'Bug mới, ngày mới!', 'Mặt mộc đi làm'][i % 4],
-  expiresAt: new Date(Date.now() + (24 - i) * 3600000).toISOString(),
-  viewCount: Math.floor(Math.random() * 100),
-  createdAt: new Date(Date.now() - i * 7200000).toISOString(),
-}))
+const storyCaptions = [
+  'Đang code đây...', 'Cà phê sáng ☕', 'Bug mới, ngày mới!', 'Mặt mộc đi làm',
+  'Chill cuối tuần', 'Mới ra mắt tính năng 🚀', 'Ăn trưa cùng team', 'Đi dạo ngắm cảnh',
+  'Tản bộ sáng sớm', 'Laptop mới kìa!', 'Sương mù Hà Nội', 'Hoàng hôn đẹp quá',
+  'Đọc sách bên cafe', 'Giao diện mới đây', 'Đang review code', 'Meetup công nghệ',
+  'Mèo ú đáng yêu', 'Tập gym sáng', 'Mưa rồi ☔', 'Nấu ăn tối nay',
+  'Chuẩn bị đi chơi', 'Xem phim hay quá', 'Vẽ vời tí', 'Chụp góc nào cũng đẹp',
+  'Cảm giác bình yên', 'Tản mạn chiều thứ 7', 'Viết blog mới', 'Mãi mới xong task',
+  'Công viên cuối tuần', 'Cùng nhau code nào', 'Trà đá vỉa hè', 'Ốm mất rồi 😷',
+  'Demo sản phẩm mới', 'Team building vui vẻ', 'Đi phượt cuối tuần', 'Mây mù trên đỉnh núi',
+  'Biển xanh cát trắng', 'Món ngon mới thử', 'Workshop hôm nay', 'Hackathon đêm qua',
+  'Chụp cùng team dev', 'Đèn led bàn phím mới', 'Setup bàn làm việc', 'Sách mới mua 📚',
+  'Chạy bộ sáng sớm', 'Phố đi bộ cuối tuần', 'Thử nghiệm tính năng', 'Review pull request',
+  'Đang deploy lên prod', 'Hot fix đêm khuya 😅', 'Bàn phím cơ mới', 'Gym ngày chân 💪',
+  'Sinh nhật team 🎂', 'Chụp ảnh sản phẩm', 'UI/UX mới lên ý tưởng', 'Phỏng vấn ứng viên',
+  'Coding session cùng nhau', 'Đám mây trên bầu trời', 'Thức đêm code game', 'Bữa sáng healthy',
+  'Đi siêu thị mua sắm', 'Góc làm việc tối giản', 'Cây cảnh để bàn', 'Đèn ngủ ấm áp',
+  'Tuyết rơi ở Sa Pa', 'Check-in văn phòng mới', 'Họp team hàng tuần', 'Ăn vặt cùng đồng nghiệp',
+  'Đang học tiếng Nhật', 'Build thất bại lần N', 'Chạy unit test cả đêm', 'Đi cà phê coding',
+  'Sống ảo bên hồ', 'Chụp ảnh street style', 'Giao lưu cộng đồng dev', 'Đang nghĩ ý tưởng mới',
+  'Máy tính mới khoe tí', 'Mưa rào bất chợt', 'Bình minh trên phố', 'Đang nghiên cứu AI',
+  'Thử nghiệm Docker Swarm', 'Viết documentation', 'Đang refactor code cũ', 'Học thuật toán mới',
+  'Setup môi trường dev', 'Tối nay xem concert', 'Đi chợ hoa đêm', 'Nướng bánh cuối tuần',
+]
+
+const sampleVideoUrls = [
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+]
+
+const storyUserWeights = (() => {
+  const w = []
+  for (let u = 0; u < users.length; u++) {
+    const weight = u < 10 ? 5 + Math.floor(Math.random() * 3)
+      : u < 40 ? 2 + Math.floor(Math.random() * 2)
+      : 1
+    for (let c = 0; c < weight; c++) w.push(users[u].id)
+  }
+  return w
+})()
+
+export const stories = Array.from({length: 200}, (_, i) => {
+  const isVideo = i % 7 === 0
+  return {
+    id: i + 1,
+    userId: storyUserWeights[i % storyUserWeights.length],
+    mediaUrl: isVideo
+      ? sampleVideoUrls[i % sampleVideoUrls.length]
+      : `https://picsum.photos/seed/story${i}/400/700`,
+    mediaType: isVideo ? 'VIDEO' : 'IMAGE',
+    caption: storyCaptions[i % storyCaptions.length],
+    expiresAt: new Date(Date.now() + (72 - (i % 72)) * 3600000).toISOString(),
+    viewCount: Math.floor(Math.random() * 500),
+    durationMs: isVideo ? 10000 + Math.floor(Math.random() * 15000) : 3000 + Math.floor(Math.random() * 5000),
+    createdAt: new Date(Date.now() - (i % 168) * 3600000).toISOString(),
+  }
+})
 
 // ─── R302: Canvases ───────────────────────────────────────────────
 export const canvases = Array.from({length: 30}, (_, i) => ({
   id: i + 1,
-  userId: users[i % 30].id,
-  type: ['PROFILE', 'COMMUNITY'][i % 2],
-  canvasData: JSON.stringify({elements: [{type: 'rectangle', x: 10, y: 10, w: 180, h: 180, color: '#0ea5e9'}]}),
-  thumbnailUrl: `https://picsum.photos/seed/canvas${i}/200/200`,
+  type: i < 15 ? 'PROFILE' : (i < 25 ? 'COMMUNITY' : 'EVENT'),
+  title: i < 15 ? 'Soul Space' : (i < 25 ? `Community Canvas #${i - 14}` : `Event: ${['Tết 2026', 'Halloween 2026', 'Anniversary'][i - 25]}`),
+  width: i < 15 ? 200 : 500,
+  height: i < 15 ? 200 : 500,
+  ownerId: i < 15 ? users[i % 15].id : 0,
+  thumbnailUrl: i < 10 ? `https://picsum.photos/seed/canvas${i}/200/200` : null,
+  isActive: i < 15,
   isEquipped: i < 10,
+  startsAt: i >= 25 ? new Date(Date.now() - (i-25) * 86400000).toISOString() : null,
+  endsAt: i >= 25 ? new Date(Date.now() + (3-(i-25)) * 86400000).toISOString() : null,
   createdAt: new Date(Date.now() - i * 86400000).toISOString(),
+}))
+
+export const canvasStrokes = Array.from({length: 200}, (_, i) => ({
+  id: i + 1,
+  canvasId: (i % 5) + 1,
+  userId: users[i % 20].id,
+  x: Math.floor(Math.random() * 180) + 10,
+  y: Math.floor(Math.random() * 180) + 10,
+  color: ['#0ea5e9', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#ffffff'][i % 7],
+  brushSize: [1, 3, 5][i % 3],
+  createdAt: new Date(Date.now() - i * 5000).toISOString(),
 }))
 
 // ─── R303: Playlists ──────────────────────────────────────────────
 export const playlists = Array.from({length: 20}, (_, i) => ({
   id: i + 1,
   ownerId: users[i % 20].id,
-  name: ['Code Flow', 'Chill Vibes', 'Focus Mode', 'Late Night Coding'][i % 4],
+  title: ['Code Flow', 'Chill Vibes', 'Focus Mode', 'Late Night Coding', 'Road Trip'][i % 5],
   isActive: i < 5,
+  isPublic: true,
+  songCount: 0,
   createdAt: new Date(Date.now() - i * 86400000).toISOString(),
+  updatedAt: new Date(Date.now() - i * 3600000).toISOString(),
 }))
+
+const songTitles = [
+  'Coding Session', 'Midnight Dreams', 'Sunset Boulevard', 'Neon Lights',
+  'Ocean Waves', 'Digital Love', 'Starlight', 'Urban Beat',
+  'Forest Walk', 'Pixel Rain', 'Cosmic Drift', 'Electric Feel',
+  'Golden Hour', 'Deep Focus', 'Summer Nights', 'Lunar Phase',
+  'Crystal Clear', 'Firefly', 'Thunderstorm', 'Velvet Sky'
+]
+const songArtists = ['Lofi Artist', 'Chill Beats', 'Synthwave Pro', 'Ambient Flow', 'Electronic Soul']
 
 export const playlistSongs = Array.from({length: 100}, (_, i) => ({
   id: i + 1,
-  playlistId: (i % 20) + 1,
-  title: ['Song A', 'Song B', 'Song C', 'Song D', 'Song E'][i % 5],
-  artist: ['Artist X', 'Artist Y', 'Artist Z'][i % 3],
-  url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-  coverUrl: `https://picsum.photos/seed/song${i}/100/100`,
-  sortOrder: i % 5,
-  duration: 180 + Math.floor(Math.random() * 120),
+  playlistId: (i % 5) + 1,
+  addedBy: users[i % 10].id,
+  title: songTitles[i % 20],
+  artist: songArtists[i % 5],
+  source: 'url',
+  sourceId: '',
+  sourceUrl: '',
+  audioUrl: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(i % 16) + 1}.mp3`,
+  thumbnailUrl: `https://picsum.photos/seed/music${i}/100/100`,
+  durationSec: 180 + Math.floor(Math.random() * 180),
+  sortOrder: i % 20,
+  voteCount: Math.floor(Math.random() * 20) - 5,
+  isApproved: true,
+  createdAt: new Date(Date.now() - i * 7200000).toISOString(),
+}))
+
+// Update songCount for each playlist
+playlists.forEach(p => {
+  p.songCount = playlistSongs.filter(s => s.playlistId === p.id).length
+})
+
+// ─── Music Comments & Reactions ────────────────────────────────
+export const musicReactionTypes = ['LIKE', 'LOVE', 'HAHA', 'FIRE', 'SAD']
+
+export const musicComments = Array.from({length: 200}, (_, i) => ({
+  id: i + 1,
+  songId: (i % 100) + 1,
+  userId: users[i % 10].id,
+  content: [
+    'Hay quá!', 'Chill thật sự', 'Bài này hay lắm', 'Tuyệt vời',
+    'Nghe hoài không chán', 'Giai điệu đỉnh', 'Thư giãn quá',
+    'Nhạc nền chill', 'Cực phẩm!', 'Mê bài này'
+  ][i % 10],
+  parentId: null,
+  createdAt: new Date(Date.now() - i * 3600000).toISOString(),
+}))
+
+// Add nested replies
+musicComments.slice(0, 50).forEach((c, i) => {
+  if (i % 3 === 0) {
+    musicComments.push({
+      id: musicComments.length + 1,
+      songId: c.songId,
+      userId: users[(i + 5) % 10].id,
+      content: ['Đồng ý!', 'Mình cũng thấy vậy', 'Hay thật', 'Chuẩn luôn'][i % 4],
+      parentId: c.id,
+      createdAt: new Date(Date.now() - i * 1800000).toISOString(),
+    })
+  }
+})
+
+export const musicReactions = Array.from({length: 500}, (_, i) => ({
+  id: i + 1,
+  songId: (i % 100) + 1,
+  userId: users[i % 10].id,
+  type: musicReactionTypes[i % musicReactionTypes.length],
+  createdAt: new Date(Date.now() - i * 3600000).toISOString(),
 }))
 
 // ─── R104: Quests ─────────────────────────────────────────────────
@@ -1271,6 +1410,19 @@ export const userSkillUnlocks = Array.from({length: 30}, (_, i) => ({
   unlockedAt: new Date(Date.now() - i * 86400000).toISOString(),
 }))
 
+// ===== PROFILE VIEWS =====
+export const profileViews = Array.from({length: 500}, (_, i) => ({
+  id: i + 1,
+  userId: users[i % 100].id,
+  viewerId: users[(i + 30) % 100].id,
+  viewedAt: new Date(Date.now() - i * 3600000).toISOString(),
+}))
+
+export const reputationHistory = Array.from({length: 30}, (_, i) => ({
+  date: new Date(Date.now() - (29 - i) * 86400000).toISOString().split('T')[0],
+  points: Math.floor(Math.random() * 100 + 10),
+}))
+
 // ===== SUMMARY =====
 console.log('=== Dummy Data Summary ===')
 console.log(`Users: ${users.length}`)
@@ -1293,6 +1445,13 @@ console.log(`Shares: ${shares.length}`)
 console.log(`Mentions: ${mentions.length}`)
 console.log(`Comment Reactions: ${commentReactions.length}`)
 console.log(`Series Blogs: ${seriesBlogs.length}`)
+console.log(`Stories: ${stories.length}`)
+console.log(`Canvases: ${canvases.length}`)
+console.log(`Playlists: ${playlists.length}`)
+console.log(`Playlist Songs: ${playlistSongs.length}`)
+console.log(`Music Comments: ${musicComments.length}`)
+console.log(`Music Reactions: ${musicReactions.length}`)
 console.log(`Series Subscribers: ${seriesSubscribers.length}`)
-const total = [users, categories, hashtags, blogs, blogHashtags, comments, blogReactions, bookmarks, follows, notifications, blogSeries, badges, userBadges, dailyCheckins, userExpLog, sessions, shares, mentions, commentReactions, seriesBlogs, seriesSubscribers].reduce((a, b) => a + b.length, 0)
+const allArrays = [users, categories, hashtags, blogs, blogHashtags, comments, blogReactions, bookmarks, follows, notifications, blogSeries, badges, userBadges, dailyCheckins, userExpLog, sessions, shares, mentions, commentReactions, seriesBlogs, seriesSubscribers, musicComments, musicReactions, stories, canvases, playlists, playlistSongs]
+const total = allArrays.reduce((a, b) => a + b.length, 0)
 console.log(`\nTotal: ${total} records`)

@@ -269,20 +269,19 @@ defineExpose({
 <style scoped lang="scss">
 .toc-container {
   position: relative;
-  background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+  background: var(--surface);
   border-radius: 16px;
   padding: 1.25rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(59, 130, 246, 0.1);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   max-height: calc(100vh - 100px);
   overflow-y: auto;
-  backdrop-filter: blur(10px);
 }
 
 .toc-container:hover {
-  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.12);
-  border-color: rgba(59, 130, 246, 0.25);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border);
 }
 
 /* Header styles */
@@ -292,7 +291,7 @@ defineExpose({
   gap: 0.75rem;
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid rgba(59, 130, 246, 0.15);
+  border-bottom: 2px solid var(--border-light);
   position: relative;
 }
 
@@ -395,7 +394,7 @@ defineExpose({
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  color: #4b5563;
+  color: var(--text-secondary);
   text-decoration: none;
   border-radius: 10px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -413,7 +412,7 @@ defineExpose({
   top: 0;
   width: 0;
   height: 100%;
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.08), transparent);
+  background: linear-gradient(90deg, var(--primary-50), transparent);
   transition: width 0.3s ease;
 }
 
@@ -422,7 +421,7 @@ defineExpose({
 }
 
 .toc-link:hover {
-  background: rgba(59, 130, 246, 0.08);
+  background: var(--primary-50);
   color: var(--primary);
   transform: translateX(4px);
 }
@@ -430,7 +429,7 @@ defineExpose({
 .toc-link-indicator {
   width: 4px;
   height: 4px;
-  background: #cbd5e0;
+  background: var(--text-muted);
   border-radius: 50%;
   transition: all 0.25s ease;
 }
@@ -438,7 +437,7 @@ defineExpose({
 .toc-link:hover .toc-link-indicator {
   background: var(--primary);
   transform: scale(1.5);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 0 2px var(--primary-100);
 }
 
 .toc-link-text {
@@ -461,9 +460,9 @@ defineExpose({
 }
 
 .toc-item.is-active .toc-link {
-  background: linear-gradient(90deg, var(--primary) 0%, #2563eb 100%);
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
 }
 
 .toc-item.is-active .toc-link-indicator {
@@ -505,18 +504,18 @@ defineExpose({
 }
 
 .toc-container::-webkit-scrollbar-track {
-  background: rgba(59, 130, 246, 0.05);
+  background: transparent;
   border-radius: 10px;
 }
 
 .toc-container::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: var(--border);
   border-radius: 10px;
   transition: all 0.2s ease;
 }
 
 .toc-container::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #2563eb, #1e3a8a);
+  background: var(--text-muted);
 }
 
 /* Responsive */
@@ -570,7 +569,7 @@ defineExpose({
   }
 }
 
-[data-theme='dark'] .toc-link-indicator {
+html.dark .toc-link-indicator {
   background: var(--text-muted);
 }
 /* Print styles */

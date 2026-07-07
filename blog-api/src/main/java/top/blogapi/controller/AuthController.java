@@ -1,5 +1,7 @@
 package top.blogapi.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -7,32 +9,49 @@ import top.blogapi.common.response.ApiResponse;
 import top.blogapi.dto.request.auth.LoginRequest;
 import top.blogapi.dto.request.auth.RefreshTokenRequest;
 import top.blogapi.dto.request.auth.RegisterRequest;
+import top.blogapi.dto.response.AuthResponse;
 import top.blogapi.orchestrator.AuthOrchestrator;
-import top.blogapi.service.auth.JwtService;
+import top.blogapi.orchestrator.AuthResult;
 
+/**
+ * Xử lý xác thực người dùng: đăng ký, đăng nhập và làm mới token.
+ */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthOrchestrator authOrchestrator;
-    private final JwtService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(authOrchestrator.register(request)));
+    public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request,
+                                                               HttpServletRequest httpRequest) {
+        String ip = httpRequest.getRemoteAddr();
+        AuthResult result = authOrchestrator.register(request, ip);
+        AuthResponse response = new AuthResponse();
+        response.setAccessToken(result.getAccessToken());
+        response.setRefreshToken(result.getRefreshToken());
+        response.setTokenType("Bearer");
+        response.setUser(result.getUser());
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(authOrchestrator.login(request)));
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request,
+                                                            HttpServletRequest httpRequest) {
+        String ip = httpRequest.getRemoteAddr();
+        AuthResult result = authOrchestrator.login(request, ip);
+        AuthResponse response = new AuthResponse();
+        response.setAccessToken(result.getAccessToken());
+        response.setRefreshToken(result.getRefreshToken());
+        response.setTokenType("Bearer");
+        response.setUser(result.getUser());
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse> refresh(@RequestBody RefreshTokenRequest request) {
-        Long userId = jwtService.getUserIdFromToken(request.getRefreshToken());
-        var user = jwtService.getRoleFromToken(request.getRefreshToken());
-        String token = jwtService.generateAccessToken(userId, user);
+    public ResponseEntity<ApiResponse<String>> refresh(@Valid @RequestBody RefreshTokenRequest request) {
+        String token = authOrchestrator.refreshToken(request.getRefreshToken());
         return ResponseEntity.ok(ApiResponse.success(token));
     }
 }

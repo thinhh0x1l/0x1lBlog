@@ -4,47 +4,41 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import top.blogapi.common.response.ApiResponse;
-import top.blogapi.model.entity.User;
-import top.blogapi.repository.UserRepository;
-import top.blogapi.service.dashboard.DashboardService;
+import top.blogapi.orchestrator.DashboardOrchestrator;
+import top.blogapi.orchestrator.UserAdminOrchestrator;
 
-import java.util.List;
-
+/**
+ * Bảng điều khiển quản trị: thống kê trang web, danh sách người dùng, cập nhật vai trò và cấm người dùng.
+ */
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class DashboardAdminController {
 
-    private final DashboardService dashboardService;
-    private final UserRepository userRepository;
+    private final DashboardOrchestrator dashboardOrchestrator;
+    private final UserAdminOrchestrator userAdminOrchestrator;
 
     @GetMapping("/stats")
     public ResponseEntity<ApiResponse> getStats() {
-        return ResponseEntity.ok(ApiResponse.success(dashboardService.getStats()));
+        return ResponseEntity.ok(ApiResponse.success(dashboardOrchestrator.getStats()));
     }
 
     @GetMapping("/users")
     public ResponseEntity<ApiResponse> getUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        List<User> users = userRepository.findAll(size, page * size);
-        long total = userRepository.count();
-        return ResponseEntity.ok(ApiResponse.success(users));
+        return ResponseEntity.ok(ApiResponse.success(userAdminOrchestrator.findAll(page, size)));
     }
 
     @PutMapping("/users/{id}/role")
     public ResponseEntity<ApiResponse> updateRole(@PathVariable Long id, @RequestParam String role) {
-        User user = userRepository.findById(id).orElseThrow();
-        user.setRole(role);
-        userRepository.update(user);
+        userAdminOrchestrator.updateRole(id, role);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PutMapping("/users/{id}/ban")
     public ResponseEntity<ApiResponse> banUser(@PathVariable Long id) {
-        User user = userRepository.findById(id).orElseThrow();
-        user.setStatus("BANNED");
-        userRepository.update(user);
+        userAdminOrchestrator.banUser(id);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

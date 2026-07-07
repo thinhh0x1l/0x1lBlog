@@ -4,6 +4,10 @@ import top.blogapi.model.entity.Follow;
 
 import java.util.List;
 
+/**
+ * Giao diện service cho thao tác theo dõi/hủy theo dõi, quản lý quan hệ
+ * người theo dõi và cung cấp danh sách phân trang.
+ */
 public interface FollowService {
     void follow(Long followerId, Long followingId);
     void unfollow(Long followerId, Long followingId);

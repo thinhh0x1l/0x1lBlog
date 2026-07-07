@@ -5,6 +5,10 @@ import top.blogapi.model.entity.UserBadge;
 
 import java.util.List;
 
+/**
+ * MyBatis mapper cho bảng {@code user_badges}. Liên kết người dùng với
+ * huy hiệu đã đạt được và ngăn thưởng trùng lặp.
+ */
 @Mapper
 public interface UserBadgeRepository {
 

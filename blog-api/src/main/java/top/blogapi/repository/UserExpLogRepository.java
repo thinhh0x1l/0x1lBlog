@@ -5,6 +5,10 @@ import top.blogapi.model.entity.UserExpLog;
 
 import java.util.List;
 
+/**
+ * MyBatis mapper cho bảng {@code user_exp_log}. Theo dõi giao dịch điểm
+ * kinh nghiệm và tổng hợp tổng EXP theo người dùng.
+ */
 @Mapper
 public interface UserExpLogRepository {
 

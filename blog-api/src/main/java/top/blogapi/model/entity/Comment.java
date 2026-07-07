@@ -8,17 +8,19 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 
+/** Bình luận trên bài viết blog hoặc nội dung khác, hỗ trợ trả lời theo luồng. */
 @NoArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Comment extends BaseEntity {
-    Long blogId;
+    String targetType;
+    Long targetId;
     Long parentId;
     Long userId;
-    String guestName;
+    String authorName;
+    String authorAvatar;
     String content;
     String status;
-    Integer likeCount;
     Integer replyCount;
 }

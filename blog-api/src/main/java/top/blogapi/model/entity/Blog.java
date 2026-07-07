@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
+/** Bài viết blog do người dùng tạo, với nội dung, siêu dữ liệu và bộ đếm tương tác. */
 @NoArgsConstructor
 @Getter
 @Setter
@@ -16,6 +17,9 @@ import java.time.OffsetDateTime;
 public class Blog extends BaseEntity {
     Long authorId;
     Long categoryId;
+    String authorName;
+    String authorAvatar;
+    String categoryName;
     String title;
     String slug;
     String content;

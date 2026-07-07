@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.time.OffsetDateTime;
 
+/**
+ * DTO phản hồi cho danh mục blog với siêu dữ liệu hiển thị và số lượng bài viết.
+ */
 @Data
 public class CategoryResponse {
     private Long id;

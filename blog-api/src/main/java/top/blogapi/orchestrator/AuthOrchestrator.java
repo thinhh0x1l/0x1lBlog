@@ -1,67 +1,82 @@
 package top.blogapi.orchestrator;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.dto.mapper.UserMapper;
 import top.blogapi.dto.request.auth.LoginRequest;
 import top.blogapi.dto.request.auth.RegisterRequest;
-import top.blogapi.dto.response.AuthResponse;
 import top.blogapi.dto.response.UserResponse;
 import top.blogapi.model.entity.User;
 import top.blogapi.model.event.UserRegisteredEvent;
-import top.blogapi.repository.UserRepository;
-import top.blogapi.service.auth.JwtService;
+import top.blogapi.security.UserPrincipal;
+import top.blogapi.security.auth.JwtService;
+import top.blogapi.service.auth.RefreshTokenService;
+import top.blogapi.service.user.UserService;
 
+/**
+ * Orchestrates authentication flows including registration, login, and token refresh.
+ */
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthOrchestrator {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
-    private final ApplicationEventPublisher eventPublisher;
-    private final UserMapper userMapper;
+    UserService userService;
+    PasswordEncoder passwordEncoder;
+    JwtService jwtService;
+    AuthenticationManager authenticationManager;
+    ApplicationEventPublisher eventPublisher;
+    RefreshTokenService refreshTokenService;
+    UserMapper userMapper;
 
     @Transactional
-    public AuthResponse register(RegisterRequest request) {
+    public AuthResult register(RegisterRequest request, String ipAddress) {
         User user = new User();
-        user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setDisplayName(request.getDisplayName() != null ? request.getDisplayName() : request.getUsername());
+        user.setDisplayName(request.getDisplayName() != null ? request.getDisplayName() : request.getEmail());
         user.setRole("USER");
         user.setIsCreator(false);
         user.setStatus("ACTIVE");
-        userRepository.insert(user);
+        user = userService.create(user);
 
-        eventPublisher.publishEvent(new UserRegisteredEvent(user.getId(), user.getUsername(), user.getEmail()));
+        eventPublisher.publishEvent(new UserRegisteredEvent(user.getId(), user.getEmail()));
 
-        String token = jwtService.generateAccessToken(user.getId(), user.getRole());
-        AuthResponse response = new AuthResponse();
-        response.setAccessToken(token);
-        response.setTokenType("Bearer");
-        response.setUser(userMapper.toResponse(user));
-        return response;
+        String accessToken = jwtService.generateAccessToken(user.getId(), user.getRole());
+        String refreshToken = jwtService.generateRefreshToken(user.getId());
+        refreshTokenService.persistRefreshToken(refreshToken, user.getId(), ipAddress);
+
+        UserResponse userResp = userMapper.toResponse(user);
+        return new AuthResult(accessToken, refreshToken, userResp);
     }
 
-    public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+    public AuthResult login(LoginRequest request, String ipAddress) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
-        userRepository.updateLastActive(user.getId());
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        userService.updateLastActive(principal.getId());
 
-        String token = jwtService.generateAccessToken(user.getId(), user.getRole());
-        AuthResponse response = new AuthResponse();
-        response.setAccessToken(token);
-        response.setTokenType("Bearer");
-        response.setUser(userMapper.toResponse(user));
-        return response;
+        String accessToken = jwtService.generateAccessToken(principal.getId(), principal.getRole());
+        String refreshToken = jwtService.generateRefreshToken(principal.getId());
+        refreshTokenService.persistRefreshToken(refreshToken, principal.getId(), ipAddress);
+
+        UserResponse userResp = userMapper.toResponse(principal.getUser());
+        return new AuthResult(accessToken, refreshToken, userResp);
     }
+
+    public String refreshToken(String refreshToken) {
+        Long userId = jwtService.getUserIdFromToken(refreshToken);
+        String role = jwtService.getRoleFromToken(refreshToken);
+        return jwtService.generateAccessToken(userId, role);
+    }
+
 }

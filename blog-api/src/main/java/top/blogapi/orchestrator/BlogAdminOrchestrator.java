@@ -2,33 +2,36 @@ package top.blogapi.orchestrator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.blogapi.dto.mapper.BlogMapper;
-import top.blogapi.dto.response.BlogResponse;
+import org.springframework.transaction.annotation.Transactional;
+import top.blogapi.model.entity.Blog;
 import top.blogapi.service.blog.BlogService;
 
 import java.util.List;
 
+/**
+ * Điều phối các thao tác blog cấp quản trị: liệt kê, ghim, đề xuất và xoá blog.
+ */
 @Component
 @RequiredArgsConstructor
 public class BlogAdminOrchestrator {
 
     private final BlogService blogService;
-    private final BlogMapper blogMapper;
 
-    public List<BlogResponse> getAll(int page, int size) {
-        return blogService.getPublished(page, size).stream()
-                .map(blogMapper::toResponse)
-                .toList();
+    public List<Blog> getAll(int page, int size) {
+        return blogService.getPublished(page, size);
     }
 
+    @Transactional
     public void toggleTop(Long id, boolean isTop) {
         blogService.toggleTop(id, isTop);
     }
 
+    @Transactional
     public void toggleRecommend(Long id, boolean isRecommend) {
         blogService.toggleRecommend(id, isRecommend);
     }
 
+    @Transactional
     public void delete(Long id) {
         blogService.softDelete(id);
     }

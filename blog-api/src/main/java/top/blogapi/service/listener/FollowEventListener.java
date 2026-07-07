@@ -2,8 +2,9 @@ package top.blogapi.service.listener;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 import top.blogapi.model.event.FollowEvent;
 import top.blogapi.repository.BlogRepository;
 import top.blogapi.repository.UserRepository;
@@ -11,12 +12,15 @@ import top.blogapi.repository.UserRepository;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+/**
+ * Lắng nghe sự kiện theo dõi/hủy theo dõi, ghi nhật ký thay đổi quan hệ người theo dõi.
+ */
 public class FollowEventListener {
 
     private final UserRepository userRepository;
     private final BlogRepository blogRepository;
 
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleFollow(FollowEvent event) {
         if ("FOLLOW".equals(event.getAction())) {
             log.info("User {} followed user {}", event.getFollowerId(), event.getFollowingId());

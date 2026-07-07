@@ -1,5 +1,6 @@
 package top.blogapi.util;
 
+/** Tiện ích kiểm tra chuỗi phổ biến (rỗng, ký tự đặc biệt). */
 public class StringUtils {
     public static boolean isEmpty(String ...str) {
         for(String s : str) {

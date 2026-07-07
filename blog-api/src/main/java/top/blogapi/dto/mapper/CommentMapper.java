@@ -5,10 +5,11 @@ import org.mapstruct.Mapping;
 import top.blogapi.dto.response.CommentResponse;
 import top.blogapi.model.entity.Comment;
 
-@Mapper(componentModel = "spring")
+/**
+ * Mapper MapStruct để chuyển đổi entity Comment sang CommentResponse DTO.
+ */
+@Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface CommentMapper {
 
-    @Mapping(target = "authorName", ignore = true)
-    @Mapping(target = "authorAvatar", ignore = true)
     CommentResponse toResponse(Comment comment);
 }

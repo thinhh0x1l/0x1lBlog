@@ -6,6 +6,9 @@ import top.blogapi.service.dashboard.DashboardService;
 
 import java.util.Map;
 
+/**
+ * Điều phối tổng hợp thống kê bảng điều khiển quản trị.
+ */
 @Component
 @RequiredArgsConstructor
 public class DashboardOrchestrator {

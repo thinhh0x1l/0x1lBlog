@@ -6,6 +6,10 @@ import top.blogapi.model.entity.Bookmark;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code bookmarks}. Hỗ trợ upsert, xóa và truy
+ * vấn phân trang theo người dùng và bộ sưu tập.
+ */
 @Mapper
 public interface BookmarkRepository {
 

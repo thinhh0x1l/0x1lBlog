@@ -7,6 +7,7 @@ import org.commonmark.renderer.html.HtmlWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+/** Renderer HTML cho node Cover — bọc nội dung trong span với lớp m-text-cover. */
 public class CoverHtmlNodeRenderer extends AbstractCoverNodeRenderer {
 
     private final HtmlWriter html;

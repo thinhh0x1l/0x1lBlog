@@ -6,6 +6,10 @@ import top.blogapi.model.entity.Badge;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code badges}. Cung cấp truy vấn định nghĩa
+ * huy hiệu và kiểm tra tồn tại theo tên.
+ */
 @Mapper
 public interface BadgeRepository {
 

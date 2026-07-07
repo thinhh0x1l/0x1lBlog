@@ -1,6 +1,6 @@
 <template>
   <aside class="discovery-sidebar">
-    <MusicBox v-if="playlist" :playlist="playlist" />
+    <MusicBox v-if="playlist" :playlist="playlist" :is-logged-in="isLoggedIn" />
     <CanvasPreview v-if="canvas" :canvas="canvas" @viewCanvas="(c) => $emit('viewCanvas', c)" />
     <DailyQuestPanel v-if="isLoggedIn && quests.length" :quests="quests" @claim="(id) => $emit('claim', id)" />
     <BlindChallengeCard v-if="challenge" :challenge="challenge" :my-guess="myGuess" @guess="(g) => $emit('guess', g)" />

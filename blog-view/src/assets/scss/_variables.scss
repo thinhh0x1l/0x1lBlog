@@ -115,7 +115,7 @@ $chart-colors: (
   '#84cc16',
 );
 $chart-title-size: 18px;
-$chart-title-color: #050505;
+$chart-title-color: var(--text-primary);
 $chart-title-weight: 600;
 
 // ===== Transitions =====
@@ -142,13 +142,13 @@ $z-popover: 1060;
 $z-tooltip: 1070;
 
 // ===== Dark Mode Colors =====
-$dark-bg: #0b1121;
-$dark-bg-secondary: #131c31;
-$dark-surface: #1a2332;
-$dark-surface-hover: #1e293b;
-$dark-surface-active: #253044;
-$dark-border: #1e293b;
-$dark-border-light: #1a2332;
-$dark-text-primary: #e2e8f0;
-$dark-text-secondary: #94a3b8;
-$dark-text-muted: #64748b;
+$dark-bg: #0a0a0a;
+$dark-bg-secondary: #141414;
+$dark-surface: #1d1e1f;
+$dark-surface-hover: #2d2d2d;
+$dark-surface-active: #363636;
+$dark-border: #2d2d2d;
+$dark-border-light: #1f1f1f;
+$dark-text-primary: #e5eaf3;
+$dark-text-secondary: #cfd3dc;
+$dark-text-muted: #a3a6ad;

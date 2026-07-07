@@ -6,6 +6,7 @@ import top.blogapi.util.markdown.ext.heimu.Heimu;
 
 import java.util.Set;
 
+/** Triển khai cơ sở {@link NodeRenderer} đăng ký loại node Heimu. */
 abstract class AbstractHeimuNodeRenderer implements NodeRenderer {
     @Override
     public Set<Class<? extends Node>> getNodeTypes() {

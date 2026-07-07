@@ -2,6 +2,9 @@ package top.blogapi.dto.internal;
 
 import lombok.Value;
 
+/**
+ * DTO nội bộ chứa dữ liệu chi tiết blog để truyền giữa các service.
+ */
 @Value
 public class BlogDetailInternal {
     Long id;

@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 
+/** Tài khoản OAuth2 từ nhà cung cấp bên thứ ba liên kết với người dùng. */
 @NoArgsConstructor
 @Getter
 @Setter
@@ -17,6 +18,7 @@ public class OAuth2Account {
     Long userId;
     String provider;
     String providerId;
+    String email;
     String avatarUrl;
     String rawAttributes;
     OffsetDateTime createdAt;

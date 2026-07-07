@@ -94,22 +94,18 @@ function toggleTheme(e) {
   )
 
   transition.ready.then(() => {
-    // Chỉ thêm clipPath animation nếu muốn hiệu ứng đặc biệt
-    // Nếu không thì bỏ phần này, CSS fade đủ dùng
-    if (x && y) { // Nếu có tọa độ click
+    if (x && y) {
       document.documentElement.animate(
           {
-            clipPath: isDark
-                ? [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`]
-                : [`circle(${endRadius}px at ${x}px ${y}px)`, `circle(0px at ${x}px ${y}px)`]
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${endRadius}px at ${x}px ${y}px)`
+            ]
           },
           {
-            duration: 1000,
-            easing: isDark
-                ? 'ease-in'
-                : 'ease-out',
-
-            pseudoElement: isDark ? '::view-transition-new(root)' : '::view-transition-old(root)'
+            duration: 800,
+            easing: 'ease-in-out',
+            pseudoElement: '::view-transition-new(root)'
           }
       )
     }

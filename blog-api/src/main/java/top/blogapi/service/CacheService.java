@@ -1,87 +1,38 @@
 package top.blogapi.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.stereotype.Service;
-import top.blogapi.dto.response.BlogResponse;
-import top.blogapi.dto.response.UserResponse;
-import top.blogapi.dto.mapper.BlogMapper;
-import top.blogapi.dto.mapper.UserMapper;
-import top.blogapi.model.entity.Blog;
-import top.blogapi.model.entity.User;
-import top.blogapi.repository.BlogRepository;
-import top.blogapi.repository.UserRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import top.blogapi.service.cache.CacheMetrics;
+import top.blogapi.service.cache.CachePolicy;
+import top.blogapi.service.cache.CacheRegion;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.function.Supplier;
 
-@Service
-@RequiredArgsConstructor
-public class CacheService {
+/**
+ * Entry-point duy nhất cho cache.
+ * <p>
+ * Mỗi domain inject {@code CacheService} và chọn {@link CachePolicy} phù hợp.
+ * Không dùng Spring {@code @Cacheable} — key mismatch và stale data.
+ * <p>
+ * Cache layers:
+ * <ul>
+ *   <li>L1: Caffeine (in-process, striped-lock stampede protection + double-check)</li>
+ *   <li>L2: Redis (JSON serialization via ObjectMapper)</li>
+ *   <li>DB: Supplier fallback khi miss cả 2 tầng</li>
+ * </ul>
+ */
+public interface CacheService {
+    <T> T get(String key, Class<T> clazz, Supplier<T> loader, CachePolicy policy);
 
-    private static final String BLOG_CACHE = "blogs";
-    private static final String USER_CACHE = "users";
+    <T> T get(String key, TypeReference<T> type, Supplier<T> loader, CachePolicy policy);
 
-    private final CacheManager cacheManager;
-    private final BlogRepository blogRepository;
-    private final UserRepository userRepository;
-    private final BlogMapper blogMapper;
-    private final UserMapper userMapper;
+    void put(String key, Object value, CachePolicy policy);
 
-    public Optional<BlogResponse> getBlogResponse(Long id) {
-        Cache cache = cacheManager.getCache(BLOG_CACHE);
-        if (cache != null) {
-            BlogResponse cached = cache.get("blog:" + id, BlogResponse.class);
-            if (cached != null) {
-                return Optional.of(cached);
-            }
-        }
-        return blogRepository.findById(id)
-                .map(blogMapper::toResponse)
-                .map(response -> {
-                    if (cache != null) {
-                        cache.put("blog:" + id, response);
-                    }
-                    return response;
-                });
-    }
+    void evict(String key);
 
-    public Optional<UserResponse> getUserResponse(Long id) {
-        Cache cache = cacheManager.getCache(USER_CACHE);
-        if (cache != null) {
-            UserResponse cached = cache.get("user:" + id, UserResponse.class);
-            if (cached != null) {
-                return Optional.of(cached);
-            }
-        }
-        return userRepository.findById(id)
-                .map(userMapper::toResponse)
-                .map(response -> {
-                    if (cache != null) {
-                        cache.put("user:" + id, response);
-                    }
-                    return response;
-                });
-    }
+    void evictAll(Collection<String> keys);
 
-    public void evictBlog(Long id) {
-        Cache cache = cacheManager.getCache(BLOG_CACHE);
-        if (cache != null) {
-            cache.evict("blog:" + id);
-        }
-    }
+    void evictRegion(CacheRegion region);
 
-    public void evictUser(Long id) {
-        Cache cache = cacheManager.getCache(USER_CACHE);
-        if (cache != null) {
-            cache.evict("user:" + id);
-        }
-    }
-
-    public void evictAllBlogs() {
-        Cache cache = cacheManager.getCache(BLOG_CACHE);
-        if (cache != null) {
-            cache.clear();
-        }
-    }
+    CacheMetrics metrics();
 }

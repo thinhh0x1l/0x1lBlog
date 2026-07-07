@@ -1,5 +1,7 @@
 package top.blogapi.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,14 +14,15 @@ import top.blogapi.dto.request.blog.UpdateBlogRequest;
 import top.blogapi.dto.response.BlogResponse;
 import top.blogapi.orchestrator.BlogOrchestrator;
 import top.blogapi.security.UserPrincipal;
-import top.blogapi.service.blog.BlogService;
 
+/**
+ * Xử lý các thao tác CRUD blog, xuất bản, tìm kiếm, thịnh hành và theo dõi lượt xem.
+ */
 @RestController
 @RequestMapping("/api/blogs")
 @RequiredArgsConstructor
 public class BlogController {
 
-    private final BlogService blogService;
     private final BlogOrchestrator blogOrchestrator;
     private final BlogMapper blogMapper;
 
@@ -27,32 +30,35 @@ public class BlogController {
     public ResponseEntity<PagedResponse<BlogResponse>> getPublished(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        var blogs = blogService.getPublished(page, size).stream()
+        var blogs = blogOrchestrator.getPublished(page, size).stream()
                 .map(blogMapper::toResponse)
                 .toList();
-        var total = blogService.countPublished();
+        var total = blogOrchestrator.countPublished();
         return ResponseEntity.ok(PagedResponse.of(blogs, page, size, total));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success(blogOrchestrator.getBlog(id)));
+        return ResponseEntity.ok(ApiResponse.success(blogMapper.toResponse(blogOrchestrator.getBlog(id))));
     }
 
     @GetMapping("/slug/{slug}")
     public ResponseEntity<ApiResponse> getBySlug(@PathVariable String slug) {
-        return ResponseEntity.ok(ApiResponse.success(blogOrchestrator.getBlogBySlug(slug)));
+        return ResponseEntity.ok(ApiResponse.success(blogMapper.toResponse(blogOrchestrator.getBlogBySlug(slug))));
     }
 
     @PostMapping
     public ResponseEntity<ApiResponse> create(@AuthenticationPrincipal UserPrincipal principal,
-                                              @RequestBody CreateBlogRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(blogOrchestrator.createBlog(request, principal.getId())));
+                                              @Valid @RequestBody CreateBlogRequest request) {
+        if (principal == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("Vui lòng đăng nhập"));
+        }
+        return ResponseEntity.ok(ApiResponse.success(blogMapper.toResponse(blogOrchestrator.createBlog(request, principal.getId()))));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody UpdateBlogRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(blogOrchestrator.updateBlog(id, request)));
+    public ResponseEntity<ApiResponse> update(@PathVariable Long id, @Valid @RequestBody UpdateBlogRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(blogMapper.toResponse(blogOrchestrator.updateBlog(id, request))));
     }
 
     @DeleteMapping("/{id}")
@@ -63,12 +69,12 @@ public class BlogController {
 
     @PostMapping("/{id}/publish")
     public ResponseEntity<ApiResponse> publish(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success(blogOrchestrator.publishBlog(id)));
+        return ResponseEntity.ok(ApiResponse.success(blogMapper.toResponse(blogOrchestrator.publishBlog(id))));
     }
 
     @GetMapping("/trending")
     public ResponseEntity<ApiResponse> getTrending(@RequestParam(defaultValue = "10") int limit) {
-        var blogs = blogService.getTrending(limit).stream()
+        var blogs = blogOrchestrator.getTrending(limit).stream()
                 .map(blogMapper::toResponse)
                 .toList();
         return ResponseEntity.ok(ApiResponse.success(blogs));
@@ -79,10 +85,10 @@ public class BlogController {
             @RequestParam String q,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        var blogs = blogService.search(q, page, size).stream()
+        var blogs = blogOrchestrator.search(q, page, size).stream()
                 .map(blogMapper::toResponse)
                 .toList();
-        var total = blogs.size();
+        var total = blogOrchestrator.countSearch(q);
         return ResponseEntity.ok(PagedResponse.of(blogs, page, size, total));
     }
 
@@ -91,16 +97,16 @@ public class BlogController {
             @PathVariable Long authorId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        var blogs = blogService.getByAuthorId(authorId, page, size).stream()
+        var blogs = blogOrchestrator.getByAuthor(authorId, page, size).stream()
                 .map(blogMapper::toResponse)
                 .toList();
-        var total = blogService.countByAuthorId(authorId);
+        var total = blogOrchestrator.countByAuthor(authorId);
         return ResponseEntity.ok(PagedResponse.of(blogs, page, size, total));
     }
 
     @PostMapping("/{id}/view")
-    public ResponseEntity<ApiResponse> incrementView(@PathVariable Long id) {
-        blogService.incrementViews(id);
+    public ResponseEntity<ApiResponse> incrementView(@PathVariable Long id, HttpServletRequest request) {
+        blogOrchestrator.incrementView(id, request.getSession().getId());
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

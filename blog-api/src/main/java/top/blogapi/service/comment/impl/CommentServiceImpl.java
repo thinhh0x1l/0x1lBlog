@@ -1,8 +1,8 @@
 package top.blogapi.service.comment.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import top.blogapi.common.exception.AppException;
 import top.blogapi.common.exception.ErrorCode;
 import top.blogapi.model.entity.Comment;
@@ -12,15 +12,19 @@ import top.blogapi.service.comment.CommentService;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Triển khai CommentService áp dụng giới hạn 2 cấp bình luận
+ * và đồng bộ bộ đếm bình luận blog khi tạo mới.
+ */
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final BlogRepository blogRepository;
 
     @Override
-    @Transactional
     public Comment create(Comment comment) {
         if (comment.getParentId() != null) {
             Comment parent = commentRepository.findById(comment.getParentId())
@@ -30,12 +34,13 @@ public class CommentServiceImpl implements CommentService {
             }
         }
         commentRepository.insert(comment);
-        blogRepository.incrementCommentCount(comment.getBlogId());
+        if ("BLOG".equals(comment.getTargetType())) {
+            blogRepository.incrementCommentCount(comment.getTargetId());
+        }
         return comment;
     }
 
     @Override
-    @Transactional
     public Comment update(Long id, String content) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
@@ -45,14 +50,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public void softDelete(Long id) {
         commentRepository.softDelete(id);
     }
 
     @Override
-    public List<Comment> getRootByBlogId(Long blogId, int page, int size) {
-        return commentRepository.findRootByBlogId(blogId, size, page * size);
+    public List<Comment> getRootByTarget(String targetType, Long targetId, int page, int size) {
+        return commentRepository.findRootByTarget(targetType, targetId, size, page * size);
     }
 
     @Override
@@ -61,30 +65,27 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public void approve(Long id) {
         commentRepository.updateStatus(id, "APPROVED");
     }
 
     @Override
-    @Transactional
     public void reject(Long id) {
         commentRepository.updateStatus(id, "REJECTED");
     }
 
     @Override
-    @Transactional
     public void flag(Long id) {
         commentRepository.updateStatus(id, "FLAGGED");
     }
 
     @Override
-    public long countByBlogId(Long blogId) {
-        return commentRepository.countByBlogId(blogId);
+    public long countByTarget(String targetType, Long targetId) {
+        return commentRepository.countByTarget(targetType, targetId);
     }
 
     @Override
-    public long countRootByBlogId(Long blogId) {
-        return commentRepository.countRootByBlogId(blogId);
+    public long countRootByTarget(String targetType, Long targetId) {
+        return commentRepository.countRootByTarget(targetType, targetId);
     }
 }

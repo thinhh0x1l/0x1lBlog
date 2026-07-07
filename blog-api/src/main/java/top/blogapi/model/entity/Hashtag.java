@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 
+/** Hashtag dùng để gắn nhãn và khám phá bài viết blog. */
 @NoArgsConstructor
 @Getter
 @Setter

@@ -5,38 +5,47 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import top.blogapi.common.response.ApiResponse;
+import top.blogapi.orchestrator.ReactionOrchestrator;
 import top.blogapi.security.UserPrincipal;
-import top.blogapi.service.reaction.ReactionService;
 
+/**
+ * Quản lý cảm xúc nội dung: thêm, xoá và lấy tổng quan cảm xúc.
+ */
 @RestController
 @RequestMapping("/api/reactions")
 @RequiredArgsConstructor
 public class ReactionController {
 
-    private final ReactionService reactionService;
+    private final ReactionOrchestrator reactionOrchestrator;
 
-    @PostMapping("/{blogId}")
+    @PostMapping
     public ResponseEntity<ApiResponse> react(@AuthenticationPrincipal UserPrincipal principal,
-                                             @PathVariable Long blogId,
-                                             @RequestParam String type) {
-        return ResponseEntity.ok(ApiResponse.success(reactionService.react(principal.getId(), blogId, type)));
-    }
-
-    @DeleteMapping("/{blogId}")
-    public ResponseEntity<ApiResponse> unreact(@AuthenticationPrincipal UserPrincipal principal,
-                                               @PathVariable Long blogId) {
-        reactionService.unreact(principal.getId(), blogId);
+                                              @RequestParam String targetType,
+                                              @RequestParam Long targetId,
+                                              @RequestParam String type) {
+        if (principal == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("Vui lòng đăng nhập"));
+        }
+        reactionOrchestrator.react(targetType, targetId, principal.getId(), type);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    @GetMapping("/{blogId}")
-    public ResponseEntity<ApiResponse> getSummary(@PathVariable Long blogId,
-                                                   @AuthenticationPrincipal UserPrincipal principal) {
-        var summary = reactionService.getSummary(blogId);
-        java.util.Map<String, Object> result = new java.util.HashMap<>(summary);
-        if (principal != null) {
-            result.put("userReaction", reactionService.getUserReaction(principal.getId(), blogId));
+    @DeleteMapping
+    public ResponseEntity<ApiResponse> unreact(@AuthenticationPrincipal UserPrincipal principal,
+                                                @RequestParam String targetType,
+                                                @RequestParam Long targetId) {
+        if (principal == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("Vui lòng đăng nhập"));
         }
+        reactionOrchestrator.unreact(targetType, targetId, principal.getId());
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse> getSummary(@RequestParam String targetType,
+                                                   @RequestParam Long targetId,
+                                                   @AuthenticationPrincipal UserPrincipal principal) {
+        var result = reactionOrchestrator.getSummary(targetType, targetId, principal != null ? principal.getId() : null);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 }

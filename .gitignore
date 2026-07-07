@@ -1,11 +1,42 @@
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- IDE ---
 .idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# --- Node ---
+blog-view/node_modules/
+blog-cms/node_modules/
+node_modules/
+
+# --- Build output ---
+blog-view/dist/
+
+# --- Logs ---
+log/
 logs/
-blog-view.iml
+*.log
+
+# --- Environment ---
 .env
+*.prod.*
+
+# --- Project-specific ---
 docker/*.sql
 docker/*.js
 docker/export*
 blog-api/src/main/resources/db/**
 RuoYi-Vue3-master/**
+opencode.json
+tui.json
+.junie/
 .mimocode/
-docs/
+blog-view/.sdd/
+
+# --- Agent / AI config ---
+.claude/

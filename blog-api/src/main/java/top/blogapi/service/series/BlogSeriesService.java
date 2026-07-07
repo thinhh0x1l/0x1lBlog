@@ -4,6 +4,10 @@ import top.blogapi.model.entity.BlogSeries;
 
 import java.util.List;
 
+/**
+ * Giao diện service quản lý chuỗi bài viết, cho phép tác giả
+ * nhóm các bài blog liên quan thành chuỗi có thứ tự.
+ */
 public interface BlogSeriesService {
     BlogSeries create(BlogSeries series);
     BlogSeries update(BlogSeries series);

@@ -1,6 +1,7 @@
 package top.blogapi.service.dashboard.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.blogapi.repository.BlogRepository;
 import top.blogapi.repository.CommentRepository;
@@ -10,8 +11,13 @@ import top.blogapi.service.dashboard.DashboardService;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Triển khai DashboardService tổng hợp thống kê toàn trang
+ * từ user và blog repository cho bảng điều khiển admin.
+ */
 public class DashboardServiceImpl implements DashboardService {
 
     private final UserRepository userRepository;

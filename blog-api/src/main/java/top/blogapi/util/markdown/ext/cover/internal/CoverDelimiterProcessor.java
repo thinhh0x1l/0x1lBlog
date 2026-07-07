@@ -7,6 +7,7 @@ import org.commonmark.parser.delimiter.DelimiterRun;
 import top.blogapi.util.markdown.ext.cover.Cover;
 import top.blogapi.util.markdown.ext.heimu.Heimu;
 
+/** Bộ xử lý dấu phân cách khớp cặp %% và xây dựng node Cover trong AST. */
 public class CoverDelimiterProcessor implements DelimiterProcessor {
     @Override
     public char getOpeningCharacter() {

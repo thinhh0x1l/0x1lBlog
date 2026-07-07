@@ -4,31 +4,33 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import top.blogapi.common.response.ApiResponse;
-import top.blogapi.model.entity.Comment;
-import top.blogapi.service.comment.CommentService;
+import top.blogapi.orchestrator.CommentAdminOrchestrator;
 
+/**
+ * Endpoint quản trị để kiểm duyệt bình luận: phê duyệt, từ chối và xoá.
+ */
 @RestController
 @RequestMapping("/api/admin/comments")
 @RequiredArgsConstructor
 public class CommentAdminController {
 
-    private final CommentService commentService;
+    private final CommentAdminOrchestrator commentAdminOrchestrator;
 
     @PutMapping("/{id}/approve")
     public ResponseEntity<ApiResponse> approve(@PathVariable Long id) {
-        commentService.approve(id);
+        commentAdminOrchestrator.approve(id);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PutMapping("/{id}/reject")
     public ResponseEntity<ApiResponse> reject(@PathVariable Long id) {
-        commentService.reject(id);
+        commentAdminOrchestrator.reject(id);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable Long id) {
-        commentService.softDelete(id);
+        commentAdminOrchestrator.delete(id);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

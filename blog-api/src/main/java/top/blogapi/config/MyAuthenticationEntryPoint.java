@@ -11,6 +11,9 @@ import top.blogapi.common.response.ApiResponse;
 
 import java.io.IOException;
 
+/**
+ * Trả về phản hồi JSON 401 Unauthorized khi yêu cầu không có xác thực hợp lệ.
+ */
 @Component
 public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

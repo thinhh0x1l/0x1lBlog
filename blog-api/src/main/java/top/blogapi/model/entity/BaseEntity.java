@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 
+/** Thực thể cơ sở cung cấp các trường chung (id, thời gian) và hành vi xóa mềm. */
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PROTECTED)

@@ -5,6 +5,10 @@ import top.blogapi.model.entity.SeriesSubscriber;
 
 import java.util.Optional;
 
+/**
+ * MyBatis mapper cho bảng {@code series_subscribers}. Theo dõi đăng ký
+ * series của người dùng với truy vấn tồn tại và đếm.
+ */
 @Mapper
 public interface SeriesSubscriberRepository {
 
