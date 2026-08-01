@@ -23,7 +23,7 @@ Framework chính：Vue3.x、Vue Router、Pinia
 
 Dự án Vue được xây dựng dựa trên  Vite + Vue 3.
 
-### blog-cms (Admin)
+### space-cms (Admin)
 - Thư viện chính: [element-plus](https://element-plus.org/en-US/)
 
 ### blog-view (Client)

@@ -1,0 +1,26 @@
+package top.blogapi.util;
+
+/** Tiện ích kiểm tra chuỗi phổ biến (rỗng, ký tự đặc biệt). */
+public class StringUtils {
+    public static boolean isEmpty(String ...str) {
+        for(String s : str) {
+            if(!org.springframework.util.StringUtils.hasText(s))
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean hasSpecialChar(String ...str){
+        for(String s: str)
+            if (s.contains("%") || s.contains("_") || s.contains("[") || s.contains("#") || s.contains("*"))
+                return true;
+		return false;
+    }
+
+    private StringUtils(){}
+
+    public static void main(String[] args) {
+        int i =1;
+        System.out.println(i++ + ++i );
+    }
+}

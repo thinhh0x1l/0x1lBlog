@@ -1,0 +1,186 @@
+// ============================================
+// Utility Classes
+// ============================================
+
+.container {
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.line-clamp-1 { @include line-clamp(1); }
+.line-clamp-2 { @include line-clamp(2); }
+.line-clamp-3 { @include line-clamp(3); }
+
+.truncate { @include truncate; }
+
+// Animations
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-fadeIn { animation: fadeIn var(--duration-normal) var(--ease-out) forwards; }
+.animate-fadeInUp { animation: fadeInUp var(--duration-slow) var(--ease-out) forwards; }
+.animate-scaleIn { animation: scaleIn var(--duration-normal) var(--ease-out) forwards; }
+.animate-pulse { animation: pulse 2s infinite; }
+
+// ===== Scrollbar =====
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: var(--radius-full); }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+// ===== Selection =====
+::selection { background: var(--primary-100); color: var(--primary-dark); }
+
+html.dark {
+  ::-webkit-scrollbar-thumb { background: #334155; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+  ::selection { background: rgba(14,165,233,0.3); color: var(--text-primary); }
+}
+
+// ===== Focus Visible =====
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+// ===== Stack Spacing =====
+.stack-xs  > * + * { margin-top: var(--space-xs); }
+.stack-sm  > * + * { margin-top: var(--space-sm); }
+.stack     > * + * { margin-top: var(--space-md); }
+.stack-lg  > * + * { margin-top: var(--space-lg); }
+.stack-xl  > * + * { margin-top: var(--space-xl); }
+
+// ===== Card Padding Variants =====
+.card--compact { padding: var(--space-sm) var(--space-md); }
+.card--standard { padding: var(--space-md) var(--space-lg); }
+.card--relaxed { padding: var(--space-lg) var(--space-xl); }
+
+// ===== Section Spacing =====
+.section--sm { padding: var(--space-lg) 0; }
+.section--md { padding: var(--space-2xl) 0; }
+.section--lg { padding: var(--space-4xl) 0; }
+
+// ===== Prose (blog content) =====
+.prose {
+  > * + * { margin-top: 1em; }
+  > h2 { margin-top: var(--space-2xl); }
+  > h3 { margin-top: var(--space-xl); }
+  > h2 + h3 { margin-top: var(--space-md); }
+  > p { margin-bottom: 1em; }
+  > ul, > ol { margin-left: var(--space-lg); }
+  > blockquote {
+    margin: var(--space-lg) 0;
+    padding: var(--space-md) var(--space-lg);
+    border-left: 4px solid var(--primary);
+    background: var(--bg-secondary);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  > pre, > code {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+  }
+  > pre {
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+    padding: var(--space-md);
+    overflow-x: auto;
+  }
+  > img {
+    border-radius: var(--radius);
+    margin: var(--space-lg) auto;
+  }
+}
+
+// ===== Label =====
+.label {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+// ===== Body Small =====
+.body-small {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+  color: var(--text-secondary);
+}
+
+// ===== Responsive Font Scale =====
+@include respond-to(xl) {
+  :root {
+    --fs-4xl: 1.875rem;
+    --fs-3xl: 1.625rem;
+  }
+}
+@include respond-to(lg) {
+  :root {
+    --fs-4xl: 1.625rem;
+    --fs-3xl: 1.375rem;
+  }
+}
+@include respond-to(md) {
+  html { font-size: 15px; }
+  :root {
+    --fs-4xl: 1.5rem;
+    --fs-3xl: 1.25rem;
+  }
+}
+@include respond-to(sm) {
+  html { font-size: 14px; }
+  :root {
+    --fs-4xl: 1.375rem;
+    --fs-3xl: 1.125rem;
+  }
+}
+
+// ===== Print =====
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+  .sidebar { display: none; }
+}
+
+// ===== Skeleton CSS class =====
+.sk {
+  @include skeleton;
+  display: block;
+  height: 1em;
+  margin-bottom: 8px;
+}

@@ -31,15 +31,16 @@ docker/*.sql
 docker/*.js
 docker/export*
 blog-api/src/main/resources/db/**
-RuoYi-Vue3-master/**
-opencode.json
-tui.json
 .junie/
-.mimocode/
 blog-view/.sdd/
 
-# --- Docs ---
+# --- Not managed by git ---
+opencode.json
+AGENTS.md
+tui.json
 docs/
+.mimocode/
+RuoYi-Vue3-master/
 
-# --- Agent / AI config ---
-.claude/
+
+
