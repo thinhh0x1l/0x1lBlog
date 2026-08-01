@@ -34,7 +34,7 @@ code[class*="language-"] {
 .copy-to-clipboard-button {
     background: #4299e1 !important;
     color: white !important;
-    border: none !important;w   
+    border: none !important;
     border-radius: 4px !important;
     padding: 4px 12px !important;
     margin-right: 1em !important;

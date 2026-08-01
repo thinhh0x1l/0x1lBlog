@@ -1,50 +1,74 @@
-import axios from "axios";
-import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
-import {pinia} from "@/store/pinia/pinia.js";
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
 
-import {useGuestStore} from "@/store/guessStore";
-
-const api = import.meta.env.VITE_API_URL
-const request = axios.create({
-    baseURL: 'http://localhost:8090/',
-    timeout: 10000,
-    // withCredentials: true
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || '/api',
+  timeout: 10000,
 })
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
 
-request.interceptors.request.use((config) => {
-    NProgress.start();
-    const guestStore =
-        useGuestStore(pinia);
-    const isYourApi = !(config.url)?.includes("http");
+let isRefreshing = false
+let failedQueue = []
 
-    if ( isYourApi && guestStore.guestToken) {
-        config.headers["X-Guest-Token" ] = guestStore.guestToken;
-        const cleared = guestStore.backUpToken();
-        if(cleared){
-            console.log('cleared')
-        }
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) prom.reject(error)
+    else prom.resolve(token)
+  })
+  failedQueue = []
+}
+
+api.interceptors.response.use(
+  (res) => res.data,
+  async (err) => {
+    const originalRequest = err.config
+
+    if (err.response?.status === 401 && !originalRequest._retry) {
+      const refreshToken = localStorage.getItem('refreshToken')
+      if (!refreshToken) {
+        localStorage.clear()
+        window.location.href = '/login'
+        return Promise.reject(err)
+      }
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject })
+        }).then(token => {
+          originalRequest.headers.Authorization = `Bearer ${token}`
+          return api(originalRequest)
+        })
+      }
+
+      originalRequest._retry = true
+      isRefreshing = true
+
+      try {
+        const res = await api.post('/auth/refresh', { refreshToken })
+        const newToken = res.data
+        localStorage.setItem('token', newToken)
+        processQueue(null, newToken)
+        originalRequest.headers.Authorization = `Bearer ${newToken}`
+        return api(originalRequest)
+      } catch (refreshErr) {
+        processQueue(refreshErr)
+        localStorage.clear()
+        ElMessage.error('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại')
+        window.location.href = '/login'
+        return Promise.reject(refreshErr)
+      } finally {
+        isRefreshing = false
+      }
     }
 
-    return config;
-});
+    ElMessage.error(err.response?.data?.message || 'Lỗi hệ thống')
+    return Promise.reject(err)
+  }
+)
 
-
-request.interceptors.response.use((response) => {
-    NProgress.done();
-
-    const guestStore =
-        useGuestStore(pinia);
-
-    const newToken = response.headers["x-guest-token"];
-
-    if (newToken) {
-        guestStore.setToken( newToken);
-    }
-
-    return response.data;
-});
-
-
-export default request
+export default api

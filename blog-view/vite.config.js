@@ -1,10 +1,8 @@
 import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
@@ -18,10 +16,17 @@ export default defineConfig({
     },
     extensions: ['.ts', '.js', '.vue', '.json']
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@/assets/scss/_variables.scss";\n@import "@/assets/scss/_mixins.scss";\n`,
+        api: 'modern-compiler',
+        silenceDeprecations: ['import']
+      }
+    }
+  },
   server: {
     host: true,
     port: 5174
-  },"rewrites": [
-    { "source": "/(.*)", "destination": "/" }
-  ]
+  }
 })

@@ -1,96 +1,40 @@
 <template>
-  <div>
-    <div class="category-wrapper">
-      {{ 'Bạn đang chọn ở Phân loại '}}<span class="text">{{category.name}}</span> {{ ` quay trở lại` }}
-      <router-link class="backhome" to="/home">{{` trang chủ`}}</router-link>
+  <TwoColumnLayout>
+    <template #sidebar-left>
+      <AppSidebar />
+    </template>
+    <div class="category-page">
+      <h1>Danh mục: {{ $route.params.name }}</h1>
+      <p class="page-desc">Bài viết trong danh mục này</p>
+      <div class="category-blogs">
+        <div v-for="blog in blogs" :key="blog.id" class="category-blog-item">
+          <router-link :to="`/blog/${blog.id}`" class="category-blog-title">{{ blog.title }}</router-link>
+          <p class="category-blog-desc">{{ blog.description }}</p>
+          <div class="category-blog-meta">{{ blog.views }} lượt xem · {{ blog.readTime }} phút đọc</div>
+        </div>
+      </div>
+      <el-empty v-if="blogs.length === 0" description="Chưa có bài viết" />
     </div>
-    <BlogList
-        :loading="loading"
-        :page-info="pageInfo"
-        :blog-list="blogList"
-        :get-blog-list="getBlogListByCategoryName"
-    />
-  </div>
+  </TwoColumnLayout>
 </template>
-
-<script setup lang="ts">
-import BlogList from "@/components/blogList/BlogList.vue";
-import {computed, onMounted, ref, watch} from "vue";
-import type {BlogInfo} from "@/types/blogType";
-import {fGetBlogListByCategoryName} from "@/api/category";
-import {useRoute} from "vue-router";
-import type {Category, CategoryGetBlogsResponse} from "@/types/categoryType";
-import {updatePageInfo} from "@/util/pageInfo";
-import type {ApiResponse} from "@/types/commonType";
-
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { blogApi } from '@/api'
+import TwoColumnLayout from '@/components/layouts/TwoColumnLayout.vue'
+import AppSidebar from '@/components/layout/AppSidebar.vue'
 const route = useRoute()
-
-const category = ref<Category>({
-  name: '',
-  slug: '',
-})
-
-const pageInfo = ref({
-  pageNum: 0,
-  pageSize: 0,
-  totalPages: 0,
-  totalElements: 0,
-})
-
-const loading = ref<boolean>(true)
-
-const blogList = ref<BlogInfo[]>([])
-const categoryName = computed<string>(() => <string>route.params.name)
-
-const getBlogListByCategoryName = async (pageNum: number) => {
-  loading.value = true
-  try {
-    const response: ApiResponse<CategoryGetBlogsResponse> =
-        await fGetBlogListByCategoryName(categoryName.value,pageNum, 5)
-    if (response.code === 200){
-      loading.value = false
-      updatePageInfo(pageInfo, response.data.blogInfos)
-      blogList.value = response.data.blogInfos.items
-      category.value = response.data.categorySlug
-    }
-  }catch (err) {
-  }finally {
-    // loading.value = false
-  }
-}
-watch(() => route.params.name, () => {
-      if(route.name === 'category')
-        getBlogListByCategoryName(1)
-    },
-    {immediate: true}
-)
-
-
+const blogs = ref([])
+onMounted(async () => { const res = await blogApi.trending(10); blogs.value = res.data || [] })
 </script>
-
-<style>
-.category-wrapper{
-  padding: 10px 0;
-  background: #c6dcfa;
-  position: relative;
-  display: flex;
-  font-size: 24px;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-.category-wrapper .text{
-  margin:0 10px;
-  background: #d3d3d3;
-  font-size: 26px;
-}
-.backhome{
-  margin-left: 10px;
-  color: #00a7e0;
-  text-decoration: none;
-}
-.backhome:hover{
-  color: #009bd1;
-  font-weight: 400;
-  background: #b4d1fa;
-}
+<style scoped lang="scss">
+.category-page h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+.page-desc { color: var(--text-muted); margin-bottom: var(--space-xl); }
+.category-blogs { display: flex; flex-direction: column; gap: var(--space-sm); }
+.category-blog-item { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: var(--space-lg); box-shadow: var(--shadow-sm); transition: all var(--duration-fast) ease; }
+.category-blog-item:hover { border-color: var(--primary); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.category-blog-title { font-size: 1rem; font-weight: 600; color: var(--text-primary); text-decoration: none; display: block; margin-bottom: 4px; }
+.category-blog-title:hover { color: var(--primary); }
+.category-blog-desc { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px; }
+.category-blog-meta { font-size: 0.78rem; color: var(--text-muted); }
 </style>

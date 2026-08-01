@@ -1,0 +1,142 @@
+// ============================================
+// Design Tokens — Light Theme
+// ============================================
+
+@import 'variables';
+
+:root {
+  --primary: #{$primary};
+  --primary-dark: #{$primary-dark};
+  --primary-light: #{$primary-light};
+  --primary-50: #{$primary-50};
+  --primary-100: #{$primary-100};
+
+  --accent: #{$accent};
+  --accent-light: #{$accent-light};
+
+  --success: #{$success};
+  --warning: #{$warning};
+  --danger: #{$danger};
+  --info: #{$info};
+
+  --bg: #{$bg};
+  --bg-secondary: #{$bg-secondary};
+  --surface: #{$surface};
+  --surface-hover: #{$surface-hover};
+  --surface-active: #{$surface-active};
+  --border: #{$border};
+  --border-light: #{$border-light};
+  --border-focus: #{$border-focus};
+
+  --text-primary: #{$text-primary};
+  --text-secondary: #{$text-secondary};
+  --text-muted: #{$text-muted};
+  --text-inverse: #{$text-inverse};
+  --text-link: #{$text-link};
+  --text-link-hover: #{$text-link-hover};
+
+  --shadow-xs: #{$shadow-xs};
+  --shadow-sm: #{$shadow-sm};
+  --shadow: #{$shadow};
+  --shadow-md: #{$shadow-md};
+  --shadow-lg: #{$shadow-lg};
+  --shadow-xl: #{$shadow-xl};
+  --shadow-inner: #{$shadow-inner};
+  --shadow-colored: #{$shadow-colored};
+  --shadow-colored-accent: #{$shadow-colored-accent};
+  --shadow-colored-info: #{$shadow-colored-info};
+
+  --radius-xs: #{$radius-xs};
+  --radius-sm: #{$radius-sm};
+  --radius: #{$radius};
+  --radius-md: #{$radius-md};
+  --radius-lg: #{$radius-lg};
+  --radius-xl: #{$radius-xl};
+  --radius-2xl: #{$radius-2xl};
+  --radius-3xl: #{$radius-3xl};
+  --radius-full: #{$radius-full};
+
+  --space-2xs: #{$space-2xs};
+  --space-xs: #{$space-xs};
+  --space-sm: #{$space-sm};
+  --space-12: #{$space-12};
+  --space-md: #{$space-md};
+  --space-lg: #{$space-lg};
+  --space-xl: #{$space-xl};
+  --space-2xl: #{$space-2xl};
+  --space-3xl: #{$space-3xl};
+  --space-4xl: #{$space-4xl};
+
+  --header-height: #{$header-height};
+  --sidebar-width: #{$sidebar-width};
+  --page-max-width: #{$page-max-width};
+  --content-max-width: #{$content-max-width};
+
+  --font-sans: #{$font-sans};
+  --font-mono: #{$font-mono};
+
+  // Typography tokens
+  --fs-xs: #{$font-size-xs};
+  --fs-sm: #{$font-size-sm};
+  --fs-base: #{$font-size-base};
+  --fs-lg: #{$font-size-lg};
+  --fs-xl: #{$font-size-xl};
+  --fs-2xl: #{$font-size-2xl};
+  --fs-3xl: #{$font-size-3xl};
+  --fs-4xl: #{$font-size-4xl};
+  --fs-5xl: #{$font-size-5xl};
+
+  --fw-normal: #{$font-weight-normal};
+  --fw-medium: #{$font-weight-medium};
+  --fw-semibold: #{$font-weight-semibold};
+  --fw-bold: #{$font-weight-bold};
+  --fw-extrabold: #{$font-weight-extrabold};
+
+  --lh-tight: #{$line-height-tight};
+  --lh-normal: #{$line-height-normal};
+  --lh-relaxed: #{$line-height-relaxed};
+  --lh-loose: #{$line-height-loose};
+
+  // Animation tokens
+  --ease-out: #{$ease-out};
+  --ease-in-out: #{$ease-in-out};
+  --ease-bounce: #{$ease-bounce};
+  --ease-in: #{$ease-in};
+  --ease-linear: #{$ease-linear};
+
+  --duration-instant: #{$duration-instant};
+  --duration-fast: #{$duration-fast};
+  --duration-normal: #{$duration-normal};
+  --duration-slow: #{$duration-slow};
+  --duration-slower: #{$duration-slower};
+  --duration-slowest: #{$duration-slowest};
+
+  // Z-index
+  --z-dropdown: #{$z-dropdown};
+  --z-sticky: #{$z-sticky};
+  --z-fixed: #{$z-fixed};
+  --z-modal-backdrop: #{$z-modal-backdrop};
+  --z-modal: #{$z-modal};
+  --z-popover: #{$z-popover};
+  --z-tooltip: #{$z-tooltip};
+
+  // Element Plus overrides
+  --el-color-primary: var(--primary);
+  --el-color-primary-light-3: var(--primary-light);
+  --el-color-primary-light-5: #7dd3fc;
+  --el-color-primary-light-7: #bae6fd;
+  --el-color-primary-light-9: var(--primary-50);
+  --el-color-primary-dark-2: var(--primary-dark);
+  --el-color-success: var(--success);
+  --el-color-warning: var(--warning);
+  --el-color-danger: var(--danger);
+  --el-color-info: var(--info);
+  --el-border-radius-base: var(--radius);
+  --el-font-family: var(--font-sans);
+  --el-border-color: var(--border);
+  --el-fill-color-light: var(--bg-secondary);
+
+  // Glass
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.3);
+}

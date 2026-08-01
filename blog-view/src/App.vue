@@ -1,12 +1,14 @@
 <template>
-  <div id="app">
-    <Toast />
-    <ConfirmDialog />
-    <router-view/>
-  </div>
+  <el-config-provider :locale="locale">
+    <router-view v-slot="{ Component }">
+      <transition name="page" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+  </el-config-provider>
 </template>
-
 <script setup>
-</script>
+import vi from 'element-plus/dist/locale/vi.mjs'
 
-<style scoped></style>
+const locale = vi
+</script>

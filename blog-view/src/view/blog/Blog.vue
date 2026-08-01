@@ -1,524 +1,358 @@
 <template>
-  <div style="z-index: 10">
-    <div class="pb-2 blog-container pt-4 surface-card relative" style="border: 1px solid #d4d4d5;">
-      <!-- Skeleton loading chi tiết -->
-      <div v-if="loading" class="skeleton-wrapper">
-        <!-- PinTop skeleton (chỉ hiển thị khi blog.top là true) -->
-        <div v-if="blog.top" class="skeleton-pin-top">
-          <Skeleton width="60px" height="24px" class="mb-2" />
-        </div>
+  <div>
+    <template v-if="blog">
+      <ThreeColumnLayout>
+        <template #sidebar-left>
+          <BlogSidebar
+            :author="author"
+            :content="blog.content"
+            :is-following="isFollowing"
+            :reputation="reputation"
+            :streak="streakCount"
+            :badges="authorBadges"
+            :author-status="authorStatus"
+            :author-stories="authorStories"
+            :equipped-border="author?.equippedItems?.border"
+            :rolltext="author?.equippedItems?.rolltext"
+            :active-mischief="author?.activeMischief"
+            @toggle-follow="toggleFollow"
+            @view-story="viewStory"
+          />
+        </template>
 
-        <!-- Tiêu đề skeleton -->
-        <div class="col-12 text-center" style="padding-top: 0">
-          <Skeleton width="70%" height="32px" class="mx-auto mb-2" />
-          <Skeleton width="50%" height="32px" class="mx-auto" />
-        </div>
-
-        <!-- Thông tin bài viết skeleton -->
-        <div class="col-12 text-center">
-          <div class="flex flex-wrap justify-content-center gap-4">
-            <Skeleton width="120px" height="20px" />
-            <Skeleton width="80px" height="20px" />
-            <Skeleton width="100px" height="20px" />
-            <Skeleton width="130px" height="20px" />
-            <Skeleton width="40px" height="20px" />
-          </div>
-        </div>
-
-        <!-- Category ribbon skeleton -->
-        <div class="px-3 py-2">
-          <Skeleton width="100px" height="28px" class="mb-3" />
-        </div>
-
-        <!-- Nút ghim skeleton -->
-        <div class="px-3 py-2">
-          <Skeleton width="80px" height="32px" class="mb-3" />
-        </div>
-
-        <!-- Player skeleton -->
-        <div v-if="blog.musicId" class="px-3 py-2">
-          <Skeleton width="100%" height="80px" class="mb-3" />
-        </div>
-
-        <!-- Nội dung bài viết skeleton -->
-        <div class="typo m-padded-tb-small px-3 blog-content">
-          <Skeleton width="100%" height="20px" class="mb-2" />
-          <Skeleton width="95%" height="20px" class="mb-2" />
-          <Skeleton width="98%" height="20px" class="mb-2" />
-          <Skeleton width="60%" height="20px" class="mb-4" />
-
-          <!-- Paragraph 2 -->
-          <Skeleton width="100%" height="20px" class="mb-2" />
-          <Skeleton width="97%" height="20px" class="mb-2" />
-          <Skeleton width="92%" height="20px" class="mb-2" />
-          <Skeleton width="85%" height="20px" class="mb-4" />
-
-          <!-- Paragraph 3 -->
-          <Skeleton width="100%" height="20px" class="mb-2" />
-          <Skeleton width="96%" height="20px" class="mb-2" />
-          <Skeleton width="88%" height="20px" class="mb-4" />
-
-          <!-- Image skeleton -->
-          <Skeleton width="100%" height="300px" class="mb-4" />
-
-          <!-- Paragraph 4 -->
-          <Skeleton width="100%" height="20px" class="mb-2" />
-          <Skeleton width="95%" height="20px" class="mb-2" />
-          <Skeleton width="90%" height="20px" class="mb-2" />
-          <Skeleton width="75%" height="20px" class="mb-4" />
-
-          <!-- Code block skeleton -->
-          <Skeleton width="100%" height="160px" class="mb-4" />
-
-          <!-- Paragraph 5 -->
-          <Skeleton width="100%" height="20px" class="mb-2" />
-          <Skeleton width="94%" height="20px" class="mb-2" />
-          <Skeleton width="86%" height="20px" class="mb-2" />
-          <Skeleton width="70%" height="20px" class="mb-4" />
-
-          <!-- List skeleton -->
-          <Skeleton width="90%" height="20px" class="mb-2" />
-          <Skeleton width="88%" height="20px" class="mb-2" />
-          <Skeleton width="85%" height="20px" class="mb-4" />
-
-          <!-- Quote skeleton -->
-          <Skeleton width="95%" height="80px" class="mb-4" />
-
-          <!-- Paragraph 6 -->
-          <Skeleton width="100%" height="20px" class="mb-2" />
-          <Skeleton width="92%" height="20px" class="mb-2" />
-          <Skeleton width="65%" height="20px" class="mb-4" />
-        </div>
-
-        <!-- Divider skeleton -->
-        <div class="col-12">
-          <div class="border-top-1 surface-border my-2"></div>
-        </div>
-
-        <!-- Tags skeleton -->
-        <div class="m-padded-tb-no">
-          <div class="flex flex-wrap gap-2">
-            <Skeleton width="60px" height="28px" borderRadius="16px" />
-            <Skeleton width="80px" height="28px" borderRadius="16px" />
-            <Skeleton width="70px" height="28px" borderRadius="16px" />
-            <Skeleton width="90px" height="28px" borderRadius="16px" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Nội dung thực tế -->
-      <div v-else>
-        <PinTop v-if="blog.top" />
-
-        <!-- Container với flex layout -->
-        <div class="flex flex-column">
-          <div>
-            <!-- Tiêu đề -->
-            <div class="col-12 text-center" style="padding-top: 0">
-              <h2 class="header m-scaleup">
-                <a href="#" class="text-900 hover:text-primary transition-colors no-underline">
-                  {{ blog.title }}
-                </a>
-              </h2>
+        <div class="blog-main">
+          <div class="blog-header">
+            <div class="blog-category" v-if="blog.categoryName">
+              <router-link :to="`/category/${blog.categoryName}`">{{ blog.categoryName }}</router-link>
             </div>
-
-            <!-- Thông tin bài viết -->
-            <div class="col-12 text-center">
-              <div class="flex flex-wrap justify-content-center gap-4">
-                <div class="flex align-items-center m-datetime">
-                  <font-awesome-icon icon="calendar-alt" class="mr-2" />
-                  <span>{{ formatDate(blog.updateTime) }}</span>
-                </div>
-
-                <div class="flex align-items-center m-views">
-                  <font-awesome-icon icon="eye" class="mr-2" />
-                  <span>{{ blog.views }}</span>
-                </div>
-
-                <div class="flex align-items-center m-common-black">
-                  <font-awesome-icon icon="pencil-alt" class="mr-2" />
-                  <span>Số chữ ≈ {{ blog.words }} từ</span>
-                </div>
-
-                <div class="flex align-items-center m-common-black">
-                  <font-awesome-icon icon="clock" class="mr-2" />
-                  <span>Thời gian đọc ≈ {{ blog.readTime }} phút</span>
-                </div>
-                <a
-                    class="flex align-items-center m-common-black"
-                    @click.prevent="bigFontSize = !bigFontSize"
-                    v-tooltip.top="'Nhấp chuột để thay đổi kích thước phông chữ'"
-                >
-                  <font-awesome-icon icon="font" class="mr-2" />
-                </a>
+            <h1 class="blog-title">{{ blog.title }}</h1>
+            <div class="blog-meta">
+              <div class="meta-left">
+                <router-link :to="`/profile/${blog.authorId}`" class="author-info">
+                  <el-avatar :size="40" :src="blog.authorAvatar">{{ blog.authorName?.charAt(0) }}</el-avatar>
+                  <div class="author-detail">
+                    <span class="author-name">{{ blog.authorName }}</span>
+                    <span class="meta-date">{{ formatDate(blog.publishedAt) }} · {{ blog.readTime }} phút đọc</span>
+                  </div>
+                </router-link>
+              </div>
+              <div class="blog-stats">
+                <span><el-icon><View /></el-icon> {{ blog.views }}</span>
+                <span><el-icon><ChatDotRound /></el-icon> {{ blog.commentCount }}</span>
               </div>
             </div>
+          </div>
 
-            <Ribbon v-if="blog.category" :category="blog.category" />
+          <div class="blog-cover" v-if="blog.coverImage">
+            <img :src="blog.coverImage" :alt="blog.title" />
+          </div>
 
-            <div class="px-3 py-2">
-              <button @click="toggleFixed">
-                {{ isFixed ? ' Hủy ghim ' : ' Ghim ' }}
+          <div class="blog-content typo" v-html="renderedContent" ref="contentRef"></div>
+
+          <div class="reaction-bar">
+            <div class="reaction-buttons">
+              <button v-for="r in reactions" :key="r.type" :class="['reaction-btn', { active: userReaction === r.type }]" @click="toggleReaction(r.type)">
+                {{ r.icon }} <span>{{ blog[r.key] || 0 }}</span>
               </button>
-              <div v-if="blog.musicId" ref="playerRef" />
+            </div>
+            <div class="action-buttons">
+              <el-button :type="isBookmarked ? 'primary' : 'default'" @click="toggleBookmark"><el-icon><Star /></el-icon> {{ isBookmarked ? 'Đã lưu' : 'Lưu' }}</el-button>
+              <el-button @click="shareBlog"><el-icon><Share /></el-icon> Chia sẻ</el-button>
+            </div>
+          </div>
 
-              <!-- Mô tả bài viết -->
-              <div
-                  class="typo m-padded-tb-small px-3 blog-content line-numbers match-braces rainbow-braces"
-                  :class="{ 'm-big-fontsize': bigFontSize }"
-                  v-html="blog.content"
-              ></div>
+          <AuthorCta v-if="author && currentUserId !== author.id" :author="author" :is-following="isFollowing" @follow="toggleFollow" />
 
-              <!-- Divider -->
-              <div class="col-12">
-                <div class="border-top-1 surface-border my-2"></div>
-              </div>
-
-              <!-- Tags -->
-              <div class="m-padded-tb-no">
-                <Tag v-if="blog.tags" :list-tag="blog.tags"></Tag>
+          <div id="comments" class="comments-section">
+            <h3>Bình luận ({{ comments.length }})</h3>
+            <div class="comment-form" v-if="isLoggedIn">
+              <el-input v-model="commentContent" type="textarea" :rows="3" placeholder="Viết bình luận..." />
+              <div class="form-actions"><el-button type="primary" @click="submitComment" :loading="commentLoading">Gửi</el-button></div>
+            </div>
+            <div class="comment-form" v-else>
+              <el-button type="primary" @click="$router.push('/login')">Đăng nhập để bình luận</el-button>
+            </div>
+            <div class="comment-list">
+              <div v-for="comment in comments" :key="comment.id" class="comment-item">
+                <div class="comment-header">
+                  <el-avatar :size="36" :src="comment.authorAvatar">{{ comment.authorName?.charAt(0) || 'G' }}</el-avatar>
+                  <div class="comment-meta">
+                    <span class="comment-author">{{ comment.authorName || comment.guestName || 'Khách' }}</span>
+                    <span class="comment-time">{{ formatDate(comment.createdAt) }}</span>
+                  </div>
+                </div>
+                <div class="comment-content">{{ comment.content }}</div>
+                <div class="comment-actions">
+                  <el-button text size="small"><el-icon><Star /></el-icon> {{ comment.likeCount || 0 }}</el-button>
+                  <el-button text size="small"><el-icon><ChatRound /></el-icon> Trả lời</el-button>
+                </div>
+                <div class="comment-replies" v-if="comment.children?.length">
+                  <div v-for="reply in comment.children" :key="reply.id" class="reply-item">
+                    <div class="comment-header">
+                      <el-avatar :size="28" :src="reply.authorAvatar">{{ reply.authorName?.charAt(0) || 'G' }}</el-avatar>
+                      <div class="comment-meta">
+                        <span class="comment-author">{{ reply.authorName || reply.guestName }}</span>
+                        <span class="comment-time">{{ formatDate(reply.createdAt) }}</span>
+                      </div>
+                    </div>
+                    <div class="comment-content">{{ reply.content }}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          <RelatedPosts v-if="relatedPosts.length" :posts="relatedPosts" />
         </div>
-      </div>
-    </div>
 
-    <!-- Blog info container -->
-    <div v-if="loading" class="blog-info-container">
-      <div style="display: flex; align-items: center;">
-        <ul style="list-style-type: disc; padding-left: 1.5em; margin: 0; width: 100%;">
-          <li style="margin-bottom: 0.5em;">
-            <Skeleton width="200px" height="20px" />
-          </li>
-          <li style="margin-bottom: 0.5em;">
-            <Skeleton width="250px" height="20px" />
-          </li>
-          <li style="margin-bottom: 0.5em;">
-            <Skeleton width="280px" height="20px" />
-          </li>
-          <li>
-            <Skeleton width="100%" height="40px" />
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div v-else class="blog-info-container">
-      <div style="display: flex; align-items: center;">
-        <ul style="list-style-type: disc; padding-left: 1.5em; margin: 0;">
-          <li style="margin-bottom: 0.5em;">
-            Tác giả: {{ author }}
-            <router-link to="/about" class="blog-info-link" target="_blank">(Liên hệ tác giả)</router-link>
-          </li>
-          <li style="margin-bottom: 0.5em;">Ngày phát hành: {{ formatDate(blog.createTime, 'YYYY-MM-DD HH:mm') }}</li>
-          <li style="margin-bottom: 0.5em;">Cập nhật lần cuối: {{ formatDate(blog.updateTime, 'YYYY-MM-DD HH:mm') }}</li>
-          <li>
-            Trang web này được cấp phép theo
-            <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" class="blog-info-link">
-              giấy phép Creative Commons Attribution 4.0 International (CC BY 4.0)
-            </a>.
-            Bạn được phép sao chép, trích dẫn và sử dụng nội dung này cho mục đích thương mại.
-            Tuy nhiên, bạn phải ghi rõ tên tác giả và nguồn bài viết.
-          </li>
-        </ul>
-      </div>
-    </div>
+        <template #sidebar-right>
+          <BlogDiscoverySidebar
+            :playlist="authorPlaylist"
+            :canvas="authorCanvas"
+            :quests="myQuests"
+            :challenge="todayBlind"
+            :my-guess="myBlindGuess"
+            :skill-trees="categorySkills"
+            :skill-progress="mySkillProgress"
+            :trending="trendingPosts"
+            :tags="blogTags"
+            :is-logged-in="isLoggedIn"
+            @claim="handleClaim"
+            @guess="handleBlindGuess"
+            @viewCanvas="openCanvas"
+          />
+        </template>
+      </ThreeColumnLayout>
 
-    <!-- Comment container -->
-    <div v-if="loading" class="comment-container">
-      <Skeleton width="60%" height="28px" class="mx-auto mb-4" />
-      <Skeleton width="100%" height="100px" class="mb-3" borderRadius="8px" />
-      <Skeleton width="100%" height="100px" class="mb-3" borderRadius="8px" />
-      <Skeleton width="100%" height="100px" class="mb-3" borderRadius="8px" />
-      <Skeleton width="100%" height="100px" class="mb-3" borderRadius="8px" />
-    </div>
-    <div v-else class="comment-container">
-      <CommentList v-if="blog.commentEnabled" :blog-id="blogId" :page="0" />
-      <h3 style="text-align: center;" v-else>Chức năng bình luận đã bị tắt.</h3>
-    </div>
+      <StoryList />
+      <StoryViewer />
+      <CanvasViewer v-if="canvasViewerVisible" :canvas="viewingCanvas" :initial-strokes="[]" @close="canvasViewerVisible = false" @stroke="handleCanvasStroke" />
+      <FloatingTocButton v-if="isMobile" :visible="true" @toggle="showMobileToc = !showMobileToc" />
+      <FloatingReactionBar v-if="isMobile" :visible="true" :reactions="reactions" :user-reaction="userReaction" @react="toggleReaction" @bookmark="toggleBookmark" @share="shareBlog" />
+    </template>
+    <el-skeleton v-else-if="loading" :rows="10" animated />
+    <el-empty v-else description="Không tìm thấy bài viết" />
   </div>
 </template>
-
 <script setup>
-import APlayer from 'aplayer'
-import 'aplayer/dist/APlayer.min.css'
-import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
-import Tag from '@/components/blogList/Tag.vue'
-import {fMusicInfoBySongId, getBlogById} from '@/api/blog'
-import { formatDate } from "@/util/dateTimeFormatUtils.js"
-import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute } from "vue-router"
-import { useAppStore } from "@/store/index.ts"
-import { storeToRefs } from "pinia"
-import Ribbon from "@/components/blogList/Ribbon.vue"
-import PinTop from "@/components/blogList/PinTop.vue"
-import CommentList from "@/components/comments/CommentList.vue"
-import { useBlogDetailStore } from "@/store/blogDetailStore.ts"
-import { useScrollToTop } from "@/util/ScrollToTop.js"
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { View, ChatDotRound, Star, Share, ChatRound } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
+import { useAuthStore } from '@/store/auth'
+import { blogApi, commentApi, reactionApi, bookmarkApi, followApi, profileApi, hashtagApi } from '@/api'
+import { statusApi } from '@/api/status'
+import { storyApi } from '@/api/story'
+import { playlistApi } from '@/api/playlist'
+import { canvasApi } from '@/api/canvas'
+import { reputationApi } from '@/api/reputation'
+import { questApi } from '@/api/quest'
+import { blindApi } from '@/api/blind'
+import { skillApi } from '@/api/skill'
+import ThreeColumnLayout from '@/components/layouts/ThreeColumnLayout.vue'
+import BlogSidebar from '@/components/blog/BlogSidebar.vue'
+import AuthorCta from '@/components/blog/AuthorCta.vue'
+import RelatedPosts from '@/components/blog/RelatedPosts.vue'
+import BlogDiscoverySidebar from '@/components/blog/BlogDiscoverySidebar.vue'
+import StoryList from '@/components/story/StoryList.vue'
+import StoryViewer from '@/components/story/StoryViewer.vue'
+import FloatingTocButton from '@/components/blog/FloatingTocButton.vue'
+import FloatingReactionBar from '@/components/blog/FloatingReactionBar.vue'
+import CanvasViewer from '@/components/canvas/CanvasViewer.vue'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/vi'
+dayjs.extend(relativeTime)
+dayjs.locale('vi')
 
-import mediumZoom from "medium-zoom"
-import {useStreamPost} from "@/api/useStreamPost.ts";
-
-let zoom
-const { scrollToTop } = useScrollToTop()
-const store = useAppStore()
-const blogDetail = useBlogDetailStore()
 const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+const isLoggedIn = computed(() => authStore.isLoggedIn)
+const currentUserId = computed(() => authStore.user?.id)
 
-const { author } = storeToRefs(store)
-const { isBlogRenderCompleted } = storeToRefs(blogDetail)
+const blog = ref(null)
+const author = ref(null)
+const comments = ref([])
+const loading = ref(true)
+const commentContent = ref('')
+const commentLoading = ref(false)
+const userReaction = ref(null)
+const isBookmarked = ref(false)
+const isFollowing = ref(false)
+const contentRef = ref(null)
+const isMobile = ref(window.innerWidth <= 767)
+const showMobileToc = ref(false)
+const canvasViewerVisible = ref(false)
+const viewingCanvas = ref(null)
 
-const {
-  post,
-  loading,
-  progress,
-  fetchPost
-} = useStreamPost()
-const bigFontSize = ref(false)
-const blogId = computed(() => parseInt(route.params.id))
-const blog = ref({
-  top: false,
-  title: '',
-  updateTime: '',
-  views: 0,
-  words: 0,
-  readTime: 0,
-  category: null,
-  content: '',
-  tags: null,
-  createTime: '',
-  commentEnabled: true
-})
-const musicInfo = ref(null)
-const playerRef = ref(null)
-let playerInstance = null
-const isFixed = ref(false)
-const playerOptions = ref({
-  lrcType: 3,
-  autoplay: true,
-  fixed: false,
-  audio: {
-    name:'UNKNOWN',
-    artist:'UNKNOWN',
-    lrc:'UNKNOWN',
-    url:'',
-    theme:"#000",
-    cover:''
-  }
-})
+const reputation = ref(null)
+const streakCount = ref(0)
+const authorBadges = ref([])
+const authorStatus = ref(null)
+const authorStories = ref([])
+const authorPlaylist = ref(null)
+const authorCanvas = ref(null)
+const myQuests = ref([])
+const todayBlind = ref(null)
+const myBlindGuess = ref(null)
+const categorySkills = ref([])
+const mySkillProgress = ref(null)
+const trendingPosts = ref([])
+const blogTags = ref([])
+const relatedPosts = ref([])
 
-const toggleFixed = () => {
-  if (!playerInstance) return
+const reactions = [
+  { type: 'LIKE', icon: '👍', key: 'likeCount' },
+  { type: 'LOVE', icon: '❤️', key: 'loveCount' },
+  { type: 'HAHA', icon: '😂', key: 'hahaCount' },
+  { type: 'WOW', icon: '😮', key: 'wowCount' },
+  { type: 'SAD', icon: '😢', key: 'sadCount' },
+  { type: 'ANGRY', icon: '😡', key: 'angryCount' },
+]
 
-  isFixed.value = !isFixed.value
+const renderedContent = computed(() => blog.value?.content ? DOMPurify.sanitize(marked.parse(blog.value.content)) : '')
+const formatDate = (d) => dayjs(d).fromNow()
 
-  const currentTime = playerInstance.audio.currentTime
-  const isCurrentlyPlaying = !playerInstance.audio.paused
-
-  playerInstance.options.fixed = isFixed.value
-
-  const container = playerInstance.container
-  const playerFixedClass = 'aplayer-fixed'
-
-  if (isFixed.value) {
-    container.classList.add(playerFixedClass)
-  } else {
-    container.classList.remove(playerFixedClass)
-  }
-
-  if (isCurrentlyPlaying) {
-    setTimeout(() => {
-      playerInstance.seek(currentTime)
-      playerInstance.play()
-    }, 10)
-  }
+const toggleReaction = async (type) => {
+  try { await reactionApi.toggle(blog.value.id, type); userReaction.value = userReaction.value === type ? null : type; ElMessage.success('Đã react') }
+  catch (e) { console.error(e) }
 }
 
-function initPlayer() {
-  if (!playerRef.value) return
-  clearPlayer()
-  playerOptions.value.container = playerRef.value
-  playerInstance = new APlayer(playerOptions.value)
+const toggleBookmark = async () => {
+  try { await bookmarkApi.toggle({ blogId: blog.value.id }); isBookmarked.value = !isBookmarked.value; ElMessage.success(isBookmarked.value ? 'Đã lưu' : 'Đã bỏ lưu') }
+  catch (e) { console.error(e) }
 }
 
-const fetchBlog = async () => {
-  try {
-    loading.value = true
-
-    const response = await getBlogById(blogId.value)
-    console.log(response)
-    if (response.code !== 200) return
-
-    blog.value = response.data
-
-    loading.value = false
-
-    await nextTick()
-
-    isBlogRenderCompleted.value = true
-    zoom?.detach()
-    initZoom()
-
-    if (typeof Prism !== 'undefined') {
-      Prism.highlightAll()
-    }
-
-    if (blog.value.musicId) {
-      await loadMusicAsync(blog.value.musicId)
-    }
-
-  } catch (error) {
-    console.log(error)
-    loading.value = false
-  }
+const toggleFollow = async () => {
+  try { if (isFollowing.value) await followApi.unfollow(blog.value.authorId); else await followApi.follow(blog.value.authorId); isFollowing.value = !isFollowing.value }
+  catch (e) { console.error(e) }
 }
 
-const loadMusicAsync = async (musicId) => {
-  try {
-    const musicRes = await fMusicInfoBySongId(musicId)
+const shareBlog = () => { navigator.clipboard.writeText(window.location.href); ElMessage.success('Đã copy link') }
 
-    if (!musicRes?.data) return
-
-    playerOptions.value.audio = musicRes.data
-    musicInfo.value = musicRes.data
-
-    initPlayer()
-
-  } catch (err) {
-    console.log("music load failed", err)
-  }
+const submitComment = async () => {
+  if (!commentContent.value.trim()) return
+  commentLoading.value = true
+  try { await commentApi.create({ blogId: blog.value.id, content: commentContent.value }); commentContent.value = ''; ElMessage.success('Bình luận thành công'); loadComments() }
+  catch (e) { ElMessage.error('Lỗi') }
+  finally { commentLoading.value = false }
 }
 
-watch(() => route.params.id, async () => {
-  clearPlayer()
-  await fetchPost(54)
-  const hash = route.hash
-  if (!hash) {
-    scrollToTop()
-  }
-}, { immediate: true })
-
-onBeforeRouteLeave(() => {
-  isBlogRenderCompleted.value = false
-})
-
-onBeforeRouteUpdate(async (to, from) => {
-  if (to.path !== from.path) {
-    await nextTick()
-  }
-})
-
-function clearPlayer() {
-  if (playerInstance) {
-    playerInstance.destroy()
-    playerInstance = null
-  }
+const loadComments = async () => {
+  try { const res = await commentApi.getByBlog(route.params.id); comments.value = res.data || [] } catch (e) {}
 }
 
-
-const initZoom = () => {
-  zoom = mediumZoom(".typo img", {
-    margin: 24,
-    background: "#000"
-  })
+const viewStory = () => {}
+const handleClaim = async (userQuestId) => {
+  try { await questApi.claim(userQuestId); ElMessage.success('Đã nhận thưởng!') }
+  catch (e) { ElMessage.error('Lỗi nhận thưởng') }
 }
+const openCanvas = (canvas) => { viewingCanvas.value = canvas; canvasViewerVisible.value = true }
+const handleCanvasStroke = (stroke) => {}
+
+const handleBlindGuess = async (data) => {
+  try { const res = await blindApi.submitGuess(data.challengeId, data.guessedTopicId); myBlindGuess.value = res.data; ElMessage.success('Đã gửi dự đoán!') }
+  catch (e) { ElMessage.error('Lỗi gửi dự đoán') }
+}
+
+const checkMobile = () => { isMobile.value = window.innerWidth < 768 }
 
 onMounted(async () => {
-  await nextTick()
-  initZoom()
+  loading.value = true
+  try {
+    const blogRes = await blogApi.getById(route.params.id)
+    blog.value = blogRes.data
+    if (blog.value) {
+      const authorId = blog.value.authorId
+
+      const [
+        , /* blogApi.incrementView */
+        commentRes,
+        repRes, profileRes, statusRes, storyRes,
+        playlistRes, canvasRes,
+        questRes, blindRes,
+        skillRes, relatedRes, trendRes, tagRes,
+        skillProgressRes,
+      ] = await Promise.all([
+        blogApi.incrementView(route.params.id),
+        commentApi.getByBlog(route.params.id),
+        reputationApi.getByUser(authorId),
+        profileApi.getPublic(authorId).then(r => { author.value = r.data; return r.data }),
+        statusApi.getByUser(authorId),
+        storyApi.getByUser(authorId),
+        playlistApi.getByUser(authorId),
+        canvasApi.getByUser(authorId),
+        isLoggedIn.value ? questApi.getMyQuests(currentUserId.value) : Promise.resolve({ data: [] }),
+        blindApi.getToday(),
+        skillApi.getByCategory(blog.value.categoryId),
+        blogApi.getByAuthor(authorId),
+        blogApi.trending(3),
+        hashtagApi.getTop(10),
+        isLoggedIn.value ? skillApi.getMyProgress(currentUserId.value, blog.value.categoryId) : Promise.resolve({ data: null }),
+      ])
+
+      comments.value = commentRes.data || []
+      reputation.value = repRes.data
+      authorStatus.value = (statusRes.data || [])[0]
+      authorStories.value = storyRes.data || []
+      authorPlaylist.value = playlistRes.data
+      authorCanvas.value = canvasRes.data
+      myQuests.value = questRes.data || []
+      todayBlind.value = blindRes.data
+      categorySkills.value = skillRes.data || []
+      relatedPosts.value = (relatedRes.data || []).filter(p => p.id !== blog.value.id).slice(0, 3)
+      trendingPosts.value = trendRes.data || []
+      blogTags.value = tagRes.data || []
+
+      streakCount.value = repRes.data?.level || 0
+      mySkillProgress.value = skillProgressRes.data
+
+      try {
+        const { badges, userBadges } = await import('@/data/dummy')
+        const myBadges = userBadges.filter(b => b.userId === authorId)
+        authorBadges.value = myBadges.map(b => {
+          const badgeDef = badges.find(bd => bd.id === b.badgeId)
+          return badgeDef || { id: b.badgeId, displayName: `Badge #${b.badgeId}`, icon: '🏆' }
+        })
+      } catch (e) { authorBadges.value = [] }
+    }
+  } catch (e) { console.error(e) }
+  finally { loading.value = false }
 })
 
-onUnmounted(() => {
-  clearPlayer()
-  isBlogRenderCompleted.value = false
-})
+onMounted(() => window.addEventListener('resize', checkMobile))
+onUnmounted(() => window.removeEventListener('resize', checkMobile))
 </script>
-
-<style scoped>
-.comment-container {
-  margin-top: -1px;
-  padding: 0 15px;
-  background: #fff;
-  border: 1px solid #d4d4d5;
-}
-
-.blog-info-container {
-  background: #fcfff5;
-  color: #2c662d;
-  border: 1px solid #a3c293;
-  margin-top: -1px;
-  padding: 1em 1.53666666em;
-  font-size: 1em;
-  line-height: 1.4285em;
-  min-height: 1em;
-  position: relative;
-  justify-content: space-between;
-}
-
-.blog-info-link {
-  color: #4183c4;
-  text-decoration: none;
-  font-weight: 500;
-  transition: opacity 0.2s ease;
-}
-
-.blog-info-link:hover {
-  opacity: 0.7;
-  text-decoration: none;
-}
-
-.blog-container {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-
-@media (max-width: 768px) {
-  .blog-container {
-    padding-right: max((100vw - 421px)/25, 0px) !important;
-    padding-left: max((100vw - 421px)/25, 0px) !important;
-  }
-  .comment-container {
-    padding-right: max((100vw - 421px)/25, 2px) !important;
-    padding-left: max((100vw - 421px)/25, 2px) !important;
-  }
-}
-
-.header {
-  border: none;
-  margin: 0 1rem;
-  top: 13px;
-  padding: 0 0;
-  font-size: 1.71428571rem;
-  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  font-weight: 700;
-  line-height: 1.28571429em;
-  text-transform: none;
-  color: rgba(0, 0, 0, .87);
-}
-
-/* Skeleton styles */
-.skeleton-wrapper {
-  width: 100%;
-}
-
-.skeleton-pin-top {
-  padding: 0 1rem;
-  margin-bottom: 0.5rem;
-}
-
-/* Animation cho skeleton */
-:deep(.p-skeleton) {
-  animation: skeleton-wave 1.2s ease-in-out infinite;
-}
-
-@keyframes skeleton-wave {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 1;
-  }
-}
+<style scoped lang="scss">
+.blog-main { min-width: 0; }
+.blog-header { margin-bottom: var(--space-lg); padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border-light); }
+.blog-category { margin-bottom: var(--space-md); a { display: inline-block; padding: 5px 14px; background: var(--primary-50); color: var(--primary); border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; text-decoration: none; transition: all var(--duration-fast) ease; &:hover { background: var(--primary-100); } } }
+.blog-title { font-size: 2rem; font-weight: 800; line-height: 1.3; margin-bottom: var(--space-md); letter-spacing: -0.02em; }
+.blog-meta { display: flex; justify-content: space-between; align-items: center; }
+.author-info { display: flex; align-items: center; gap: var(--space-sm); text-decoration: none; }
+.author-name { font-weight: 600; color: var(--text-primary); display: block; }
+.meta-date { font-size: 0.8rem; color: var(--text-muted); }
+.blog-stats { display: flex; gap: var(--space-md); span { display: flex; align-items: center; gap: 4px; font-size: 0.85rem; color: var(--text-muted); } }
+.blog-cover { margin-bottom: var(--space-lg); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-md); img { width: 100%; max-height: 400px; object-fit: cover; transition: transform var(--duration-slow) var(--ease-out); &:hover { transform: scale(1.01); } } }
+.blog-content { background: var(--surface); border-radius: var(--radius-xl); box-shadow: var(--shadow); padding: var(--space-2xl); margin-bottom: var(--space-lg); font-size: 1rem; line-height: 1.8; border: 1px solid var(--border-light); }
+.reaction-bar { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); padding: var(--space-md) var(--space-lg); margin-bottom: var(--space-lg); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-sm); }
+.reaction-buttons { display: flex; gap: var(--space-xs); }
+.reaction-btn { padding: 8px 14px; border: 1px solid transparent; background: transparent; border-radius: var(--radius); cursor: pointer; font-size: 1.1rem; transition: all var(--duration-fast) ease; display: flex; align-items: center; gap: 6px; &:hover { background: var(--surface-hover); border-color: var(--border-light); transform: scale(1.05); } &.active { background: var(--primary-50); border-color: var(--primary-100); } span { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; } }
+.comments-section { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); padding: var(--space-2xl); h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-lg); } }
+.comment-form { margin-bottom: var(--space-lg); padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border-light); }
+.form-actions { display: flex; justify-content: flex-end; margin-top: var(--space-sm); }
+.comment-list { display: flex; flex-direction: column; gap: var(--space-lg); }
+.comment-item { padding-bottom: var(--space-md); border-bottom: 1px solid var(--border-light); &:last-child { border-bottom: none; } }
+.comment-header { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: 8px; }
+.comment-meta { display: flex; flex-direction: column; }
+.comment-author { font-size: 0.9rem; font-weight: 600; }
+.comment-time { font-size: 0.75rem; color: var(--text-muted); }
+.comment-content { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 8px; padding-left: 48px; }
+.comment-actions { padding-left: 48px; }
+.comment-replies { margin-top: var(--space-md); padding-left: 48px; border-left: 2px solid var(--border); }
+.reply-item { padding: var(--space-sm) 0; }
+.reply-item .comment-content { padding-left: 40px; }
 </style>

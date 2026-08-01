@@ -1,0 +1,32 @@
+html.dark {
+  .tags-view-container {
+    background: var(--el-bg-color);
+    border-bottom-color: var(--el-border-color);
+
+    .tags-view-wrapper .tags-view-item {
+      background: var(--el-bg-color-overlay);
+      border-color: var(--el-border-color);
+      color: var(--el-text-color-regular);
+
+      &.active {
+        background-color: var(--el-color-primary);
+        border-color: var(--el-color-primary);
+        color: #fff;
+      }
+
+      .close-icon:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+
+  .contextmenu {
+    background: var(--el-bg-color-overlay);
+    border: 1px solid var(--el-border-color);
+    color: var(--el-text-color-primary);
+
+    li:hover {
+      background: var(--el-fill-color);
+    }
+  }
+}
