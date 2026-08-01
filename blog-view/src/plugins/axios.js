@@ -7,7 +7,7 @@ import {useGuestStore} from "@/store/guessStore";
 
 const api = import.meta.env.VITE_API_URL
 const request = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
+    baseURL: 'http://localhost:8090/',
     timeout: 10000,
     // withCredentials: true
 })

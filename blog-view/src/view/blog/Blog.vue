@@ -256,6 +256,7 @@ import { useBlogDetailStore } from "@/store/blogDetailStore.ts"
 import { useScrollToTop } from "@/util/ScrollToTop.js"
 
 import mediumZoom from "medium-zoom"
+import {useStreamPost} from "@/api/useStreamPost.ts";
 
 let zoom
 const { scrollToTop } = useScrollToTop()
@@ -266,7 +267,12 @@ const route = useRoute()
 const { author } = storeToRefs(store)
 const { isBlogRenderCompleted } = storeToRefs(blogDetail)
 
-const loading = ref(true)
+const {
+  post,
+  loading,
+  progress,
+  fetchPost
+} = useStreamPost()
 const bigFontSize = ref(false)
 const blogId = computed(() => parseInt(route.params.id))
 const blog = ref({
@@ -339,7 +345,7 @@ const fetchBlog = async () => {
     loading.value = true
 
     const response = await getBlogById(blogId.value)
-
+    console.log(response)
     if (response.code !== 200) return
 
     blog.value = response.data
@@ -357,7 +363,7 @@ const fetchBlog = async () => {
     }
 
     if (blog.value.musicId) {
-      loadMusicAsync(blog.value.musicId)
+      await loadMusicAsync(blog.value.musicId)
     }
 
   } catch (error) {
@@ -384,7 +390,7 @@ const loadMusicAsync = async (musicId) => {
 
 watch(() => route.params.id, async () => {
   clearPlayer()
-  await fetchBlog()
+  await fetchPost(54)
   const hash = route.hash
   if (!hash) {
     scrollToTop()
